@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "458286722247",
+    "project_id": "clone-44aed",
+    "storage_bucket": "clone-44aed.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:458286722247:android:760cae8c3e3142e094a2e2",
+        "android_client_info": {
+          "package_name": "com.nfc_reader"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSJqVdXXsBoggVQQ7visCBYQbQGxiegE8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
