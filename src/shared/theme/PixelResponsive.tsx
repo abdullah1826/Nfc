@@ -1,5 +1,5 @@
 import { Dimensions, PixelRatio, Platform } from 'react-native';
-// import {RFValue} from 'react-native-responsive-fontsize';
+import {RFValue} from 'react-native-responsive-fontsize';
 const scrWidth = Dimensions.get('window').width;
 const scrHeight = Dimensions.get('window').height;
 const widthPercentageToDP = (widthPercent: any) => {
@@ -17,7 +17,7 @@ const platformOrientedCode = (androidVal: any, iOSVal: any) =>
 export {
     widthPercentageToDP as WP,
     heightPercentageToDP as HP,
-    //   RFValue as RF,
+      RFValue as RF,
     scrWidth,
     scrHeight,
     platformOrientedCode,

@@ -12,19 +12,26 @@ import auth from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
 import { useDispatch } from 'react-redux'
 import { setUserData } from '../../../redux/Slices/UserSlice'
+import {useNetworkStatus } from '../../../exporter'
 
 const Login = ({ navigation }: any) => {
 
+    // redux stuff
     const dispatch = useDispatch();
 
+    const isConnected = useNetworkStatus()
+
+// handle functions
     const handleSubmit = async (values: any, { resetForm }: any) => {
+        if (!isConnected) {
+            Alert.alert('No Internet Connection', 'Please check your internet connection and try again.');
+            return;
+          }
         try {
             console.log('Login Values =>>>>>>>>>', values);
             const userCredentials = await auth().signInWithEmailAndPassword(values.email, values.password);
             const user = userCredentials.user;
-
             await getUserData(user.uid);
-
             // console.log('Auth User Data Login =>>>>>>>>>>.', user.uid);
             navigation.replace('HomeStack', { Screen: 'Home' });
             resetForm();

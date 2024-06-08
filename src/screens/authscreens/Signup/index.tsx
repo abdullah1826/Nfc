@@ -1,4 +1,4 @@
-import { View, Text, Image, Keyboard, Alert } from 'react-native'
+import { View, Text, Image, Alert } from 'react-native'
 import React, { useState } from 'react'
 import style from './style'
 import { applogos } from '../../../shared/theme/assets'
@@ -10,11 +10,22 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { colors } from '../../../shared/theme/colors'
 import auth from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
+import { useNetworkStatus } from '../../../exporter'
 
 const Signup = ({ navigation }: any) => {
+// internet checking
+const Innternet = useNetworkStatus()
+
+    // local states
+const [isLoading, setIsLoading] = useState(false)
 
 
+// functions
     const handleSubmit = async (values: any, { resetForm }: any) => {
+        if (!Innternet) {
+            Alert.alert('No Internet Connection', 'Please check your internet connection and try again.');
+            return;
+          }
         try {
             console.log('Signup Values =>>>>>>>>>>>>', values);
             const userCredentials = await auth().createUserWithEmailAndPassword(values.email, values.password);
