@@ -1,4 +1,4 @@
-import { View, Text, FlatList } from 'react-native'
+import { View, Text, FlatList,Linking } from 'react-native'
 import React from 'react'
 import style from './style'
 import ScreenHeader from '../../../components/screenHeader/ScreenHeader'
@@ -9,19 +9,27 @@ import { HP } from '../../../shared/theme/PixelResponsive'
 
 
 const Setting = ({ navigation }: any) => {
+    const openPlayStoreForRating = () => {
+        // Replace 'your-app-package-name' with the actual package name of your app
+        const appPackageName = 'your-app-package-name';
+        // Replace 'market://' with 'http://' if you want to open in the browser instead of the Play Store app
+        const playStoreUrl = `market://details?id=${appPackageName}`;
+        Linking.openURL(playStoreUrl).catch((err) => console.error('An error occurred', err));
+    };
+
 
     const settingScreenData = [
         {
             key: 1,
             label: 'Rate this app',
             icon: appIcons.Rate,
-            onClick: () => { }
+            onClick: () => { navigation.navigate('Rating')}
         },
         {
             key: 2,
             label: 'Contact Us',
             icon: appIcons.ContactUs,
-            onClick: () => { }
+            onClick: () => { navigation.navigate('ContactUs')}
         },
         {
             key: 3,
