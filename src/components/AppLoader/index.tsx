@@ -12,7 +12,7 @@ import {
   } from 'react-native-indicators';
 import {WP, HP, colors, family, size} from '../../exporter';
 
-export const AppLoader = ({loading, tagline = '', showTagLine = false}) => {
+export const AppLoader = ({loading, tagline = '', showTagLine = false}:any) => {
   return (
     <Modal
       avoidKeyboard={true}
@@ -23,9 +23,11 @@ export const AppLoader = ({loading, tagline = '', showTagLine = false}) => {
       style={styles.container}>
       <View style={showTagLine ? styles.alertWithTagline : styles.alert}>
         <DotIndicator
-          size={'large'}
-          color={colors.p1}
-          animating={loading}
+          size={10}
+          color={colors.green}
+          // animating={loading}
+          count={3}
+
         />
         {showTagLine ? <Text style={styles.tagline}>{tagline}</Text> : null}
       </View>

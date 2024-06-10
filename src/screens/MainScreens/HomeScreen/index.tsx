@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native'
 import React, { useCallback, useEffect, useRef, } from 'react'
 import style from './style'
-import MyAppHeader from '../../../components/appHeader/MyAppHeader'
+
 import ActionCard from '../../../components/card/ActionCard'
 import { appIcons, appImages } from '../../../shared/theme/assets'
 import RecentRecordsCard from '../../../components/RecentRecordsCard/RecentRecordsCard'
@@ -9,6 +9,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import ReadTagBottomSheetModal from '../../../components/BottomSheetReadTag/ReadTagBottomSheetModal'
 import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { useSelector } from 'react-redux'
+import { MyAppHeader } from '../../../exporter'
 
 const HomeScreen = ({ navigation }: any) => {
 
@@ -16,11 +17,7 @@ const HomeScreen = ({ navigation }: any) => {
 
     const userData = useSelector<any>(state => state.user);
 
-    useEffect(() => {
-        if (userData) {
-            console.log('Home UserData=>>>>>>>>>>>>>>>>>', userData);
-        }
-    }, []);
+
 
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
@@ -29,7 +26,7 @@ const HomeScreen = ({ navigation }: any) => {
         bottomSheetModalRef.current?.present();
     }, []);
     const handleSheetChanges = useCallback((index: number) => {
-        console.log('handleSheetChanges', index);
+   
     }, []);
 
     return (

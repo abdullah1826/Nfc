@@ -28,7 +28,6 @@ const SocailLinksScreen = ({ navigation }: any) => {
     }, []);
 
     const handleSheetChanges = useCallback((index: number) => {
-        console.log('handleSheetChanges', index);
     }, []);
 
     useEffect(() => {

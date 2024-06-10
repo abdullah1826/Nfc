@@ -14,7 +14,8 @@ export {
     platformOrientedCode,
   } from './shared/theme/PixelResponsive';
 
-
+export {MyAppHeader} from './components/appHeader/MyAppHeader'
+export {MyStatusBar} from './components/StatusBar/MyStatusBar'
 
 export {family,appRadius,size} from './shared/theme/sizes'
 

@@ -10,7 +10,8 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { colors } from '../../../shared/theme/colors'
 import auth from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
-import { useNetworkStatus } from '../../../exporter'
+import { MyStatusBar, useNetworkStatus } from '../../../exporter'
+import { AppLoader } from '../../../components/AppLoader'
 
 const Signup = ({ navigation }: any) => {
 // internet checking
@@ -22,30 +23,33 @@ const [isLoading, setIsLoading] = useState(false)
 
 // functions
     const handleSubmit = async (values: any, { resetForm }: any) => {
+        setIsLoading(true)
         if (!Innternet) {
             Alert.alert('No Internet Connection', 'Please check your internet connection and try again.');
+            setIsLoading(false)
             return;
+           
           }
         try {
-            console.log('Signup Values =>>>>>>>>>>>>', values);
-            const userCredentials = await auth().createUserWithEmailAndPassword(values.email, values.password);
-            const user = userCredentials.user;
 
-            await database().ref(`/users/${user.uid}`).set({
-                username: values.username,
-                email: values.email,
-                password: values.password,
+            const userCredentials = await auth().createUserWithEmailAndPassword(values.email, values.password);
+            const user = userCredentials?.user;
+            await database().ref(`/users/${user?.uid}`).set({
+                username: values?.username || "",
+                email: values?.email || "",
+                password: values?.password || "" ,
                 fcmToken: '',
             });
-
-            console.log('Auth User Data =>>>>>>>>>>.', user.uid);
+            setIsLoading(false)
             navigation.navigate('Login');
         } catch (error: any) {
             if (error.code === 'auth/email-already-in-use') {
                 // console.log('Email already exists');
                 Alert.alert('Email already exists');
+                setIsLoading(false)
             } else {
-                console.log('Signup error =>>>>>>>>>>>>>>>>.', error);
+                
+                setIsLoading(false)
             }
         }
     };
@@ -59,6 +63,8 @@ const [isLoading, setIsLoading] = useState(false)
             >
                 {({ values, errors, touched, setFieldTouched, handleChange, handleSubmit }) => (
                     <View style={style.container}>
+                        <MyStatusBar/>
+                        <AppLoader loading={isLoading}/>
                         <Image source={applogos.logo} style={style.logo} />
                         <Text style={style.headingTxt}>Create Account</Text>
                         <Text style={style.descTxt}>Lorem ipsum dolor sit amet consectetur. Erat hendrerit arcu rhoncus sed.</Text>
