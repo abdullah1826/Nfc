@@ -12,21 +12,25 @@ export const style = StyleSheet.create({
         padding: HP(3)
     },
     scanQRBox: {
-        width: WP(85),
-        height: HP(78),
-        backgroundColor: colors.b1,
+        flex:1,
         alignSelf: 'center',
         marginTop: HP(3),
-        borderRadius: appRadius.boxRadius + 10
+        // borderRadius: appRadius.boxRadius + 10
+        justifyContent:"center",
+        alignItems:"center",
     },
     footerContainer: {
+        // flex:1,
         flexDirection: 'row',
         alignItems: 'center',
         marginTop: HP(1),
-        paddingHorizontal: WP(5),
+        // paddingHorizontal: WP(5),
         // backgroundColor: 'lightblue',
         justifyContent: 'space-between',
-        height: HP(8)
+        alignSelf:"center",
+        // position:"absolute",
+    // bottom:5,
+    backgroundColor:"green"
     },
     imagePicker: {
         width: WP(9),
@@ -34,12 +38,37 @@ export const style = StyleSheet.create({
     },
     ClickQrIcon: {
         width: WP(14),
-        height: HP(7)
+        height: HP(7),
+        resizeMode:"contain"
     },
     flashIcon: {
         width: WP(4.5),
-        height: HP(3.5)
-    }
+        height: HP(3.5),
+        resizeMode:"contain"
+    },
+    centerText: {
+        flex: 1,
+        fontSize: 18,
+        padding: 32,
+        color: '#777'
+      },
+      textBold: {
+        fontWeight: '500',
+        color: '#000'
+      },
+      buttonText: {
+        fontSize: 21,
+        color: 'rgb(0,122,255)'
+      },
+      buttonTouchable: {
+        padding: 16
+      },
+      width:WP("90"),
+      
+       height:HP("70"),
+       justifyContent:"center",
+        alignItems:"center",
+         alignSelf:"center"
 });
 
 export default style;
