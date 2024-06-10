@@ -20,7 +20,7 @@ const MyAppHeader: React.FC<Props> = ({ onClick }) => {
     )
 }
 
-export default MyAppHeader
+export {MyAppHeader}
 
 const styles = StyleSheet.create({
     Container: {
