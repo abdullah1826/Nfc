@@ -17,10 +17,9 @@ interface selectedItemProps {
 }
 
 const WriteTag = ({ navigation }: any) => {
-
+// local states
     const [selectedItem, setSelectedItem] = useState<selectedItemProps | null>(null);
-
-    console.log(selectedItem);
+    const [search, setSearch] = useState('');
 
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
@@ -59,7 +58,9 @@ const WriteTag = ({ navigation }: any) => {
         ],
         // Add other item types and their fields as needed
     };
-
+    const filteredData = writeTagScreenCardData?.filter(item =>
+        item?.title.toLowerCase().includes(search.toLowerCase())
+      );
 
     return (
         <BottomSheetModalProvider>
@@ -74,6 +75,8 @@ const WriteTag = ({ navigation }: any) => {
                         placeholder='Search'
                         placeholderTextColor={colors.g21}
                         style={style.input}
+                        onChangeText={setSearch}
+                        value={search}
                     />
                 </View>
 
@@ -81,7 +84,7 @@ const WriteTag = ({ navigation }: any) => {
                     <FlatList
                         contentContainerStyle={{ marginHorizontal: WP(1), height: HP(80) }}
                         columnWrapperStyle={{ justifyContent: 'space-between', paddingHorizontal: 10 }}
-                        data={writeTagScreenCardData}
+                        data={filteredData}
                         numColumns={2}
                         keyExtractor={(item) => item.key.toString()}
                         renderItem={({ item, index }) => (

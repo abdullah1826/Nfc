@@ -36,8 +36,8 @@ const Login = ({ navigation }: any) => {
         try {
             const userCredentials = await auth().signInWithEmailAndPassword(values?.email, values?.password);
             const user = userCredentials.user;
-            await getUserData(user.uid);
             dispatch(setAuthenticated(true))
+            await getUserData(user.uid);
             navigation.replace('HomeStack', { Screen: 'Home' });
         
             resetForm()

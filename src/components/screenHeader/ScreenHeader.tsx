@@ -27,7 +27,8 @@ export default ScreenHeader
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        marginTop:WP("4")
     },
     icon: {
         height: HP(3),

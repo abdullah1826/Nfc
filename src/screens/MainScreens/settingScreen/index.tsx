@@ -5,10 +5,15 @@ import ScreenHeader from '../../../components/screenHeader/ScreenHeader'
 import SettingScreenCard from '../../../components/settingScreenCard/SettingScreenCard'
 import { appIcons } from '../../../shared/theme/assets'
 import { HP } from '../../../shared/theme/PixelResponsive'
-
+import { UseDispatch, useDispatch } from 'react-redux'
+import { signOut } from '../../../redux/Slices/UserSlice'
 
 
 const Setting = ({ navigation }: any) => {
+
+    // redux staff
+    const dispatch=useDispatch()
+
     const openPlayStoreForRating = () => {
         // Replace 'your-app-package-name' with the actual package name of your app
         const appPackageName = 'your-app-package-name';
@@ -65,7 +70,10 @@ const Setting = ({ navigation }: any) => {
             key: 8,
             label: 'Logout',
             icon: appIcons.Logout,
-            onClick: () => { }
+            onClick: () => { 
+                dispatch(signOut())
+                navigation.replace('AuthStack', { Screen: 'Login' });
+            }
         },
     ];
 

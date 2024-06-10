@@ -17,9 +17,10 @@ interface selectedItemProps {
 
 const SocailLinksScreen = ({ navigation }: any) => {
 
+    // local states
     const [selectedItem, setSelectedItem] = useState<selectedItemProps | null>(null);
-
-    console.log('Icon Select =>>>>>>>>>>>...', selectedItem);
+    const [search, setSearch] = useState('');
+   
 
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
@@ -36,6 +37,11 @@ const SocailLinksScreen = ({ navigation }: any) => {
         }
     }, [selectedItem]);
 
+    const filteredData = SocialLinksScreenData?.filter(item =>
+        item?.iconName.toLowerCase().includes(search.toLowerCase())
+      );
+
+
     return (
         <BottomSheetModalProvider>
             <View style={style.container}>
@@ -49,12 +55,14 @@ const SocailLinksScreen = ({ navigation }: any) => {
                         placeholder='Search'
                         placeholderTextColor={colors.g21}
                         style={style.input}
+                        onChangeText={setSearch}
+                        value={search}
                     />
                 </View>
 
                 <View>
                     <FlatList
-                        data={SocialLinksScreenData}
+                        data={filteredData}
                         numColumns={3}
                         contentContainerStyle={{ marginTop: HP(5), gap: HP(4), paddingHorizontal: WP(5) }}
                         columnWrapperStyle={{ justifyContent: 'space-between' }}
@@ -64,10 +72,7 @@ const SocailLinksScreen = ({ navigation }: any) => {
                                     setSelectedItem(null);
                                     setTimeout(() => {
                                         setSelectedItem(item);
-                                    }, 0);
-
-                                }}
-                            >
+                                    }, 0)}}>
                                 <Image source={item.icon} style={style.icon} />
                                 <Text style={style.iconName}>{item.iconName}</Text>
                             </TouchableOpacity>
@@ -77,7 +82,6 @@ const SocailLinksScreen = ({ navigation }: any) => {
 
                 {
                     selectedItem &&
-
                     <BottomSheetSocailLinks
                         ref={bottomSheetModalRef}
                         onChange={handleSheetChanges}
