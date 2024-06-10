@@ -10,6 +10,8 @@ import SocailLinksScreen from '../../screens/MainScreens/socialLinksScreen';
 import PrivacyPolicyScreen from '../../screens/MainScreens/settingScreen/privacyPolicyScreen';
 import HelpAndSupportScreen from '../../screens/MainScreens/settingScreen/helpAndSupportScreen';
 import About from '../../screens/MainScreens/settingScreen/aboutScreen';
+import RatingScreen from '../../screens/MainScreens/settingScreen/RateScreen';
+import ContactUsScreen from '../../screens/MainScreens/settingScreen/ContactScreen';
 
 const Stack = createStackNavigator();
 
@@ -25,6 +27,8 @@ const HomeStack = () => {
             <Stack.Screen name='PrivacyPolicy' component={PrivacyPolicyScreen} />
             <Stack.Screen name='HelpAndSupport' component={HelpAndSupportScreen} />
             <Stack.Screen name='About' component={About} />
+            <Stack.Screen name='Rating' component={RatingScreen} />
+            <Stack.Screen name='ContactUs' component={ContactUsScreen}/>
 
         </Stack.Navigator>
     )
