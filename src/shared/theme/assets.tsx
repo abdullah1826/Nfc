@@ -1,5 +1,6 @@
 export const applogos = {
-    logo: require('../../assets/logos/logoGreen.png')
+    logo: require('../../assets/logos/logoGreen.png'),
+    AppLogo:require("../../assets/logos/AppLogo.png")
 };
 
 export const appImages = {
@@ -62,5 +63,6 @@ export const appIcons = {
     AboutBlue: require('../../assets/icons/AboutBlue.png'),
     Dot: require('../../assets/icons/Dot.png'),
     EyeOff: require('../../assets/icons/Eye-Off.png')
+
 }
 

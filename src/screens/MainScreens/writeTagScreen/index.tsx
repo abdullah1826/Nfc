@@ -7,63 +7,65 @@ import { colors } from '../../../shared/theme/colors'
 import WriteTagScreenCard from '../../../components/writeTagScreenCard/WriteTagScreenCard'
 import { writeTagScreenCardData } from '../../../shared/utilities/constants'
 import { HP, WP } from '../../../shared/theme/PixelResponsive'
-import BottomSheetForWriteTag from '../../../components/bottomSheetForWriteTag/BottomSheetForWriteTag'
-import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet'
+import { Contactsheet, EmailSheet, Locationsheet, PhoneSheet, TextAction, UrlActionSheet } from '../../../exporter'
 
-interface selectedItemProps {
-    key: number;
-    title: string;
-    icon: any; // Adjust this type based on what the icon is, e.g., string or a specific type if you're using a particular icon library
-}
 
 const WriteTag = ({ navigation }: any) => {
+// ref sheets
+const refTextSheet = useRef();
+const refUrlSheet = useRef();
+const refPhoneSheet = useRef();
+const refContectSheet = useRef();
+const refEmailShet = useRef();
+const refLocationsheet = useRef();
+    
 // local states
-    const [selectedItem, setSelectedItem] = useState<selectedItemProps | null>(null);
+    const [selectedItem, setSelectedItem] = useState<any>(null);
     const [search, setSearch] = useState('');
+    const [selectedData, setSelectedData] = useState(null);
 
-    const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-
-    const handlePresentModalPress = useCallback(() => {
-        bottomSheetModalRef.current?.present();
-    }, []);
-
-    const handleSheetChanges = useCallback((index: number) => {
-    }, []);
-
-    useEffect(() => {
-        if (selectedItem) {
-            handlePresentModalPress();
-        }
-    }, [selectedItem]);
-
-    const fieldConfigurations = {
-        text: [{ type: 'text', label: 'Text', value: '' }],
-        url: [{ type: 'text', label: 'URL', value: '' }],
-        phonecall: [{ type: 'text', label: 'Phone Call', value: '' }],
-        email: [
-            { type: 'text', label: 'Recipient Email', value: '' },
-            { type: 'text', label: 'Email Subject', value: '' },
-            { type: 'text', label: 'Email Body', value: '' },
-        ],
-        contact: [
-            { type: 'text', label: 'Contact Name', value: '' },
-            { type: 'text', label: 'Company', value: '' },
-            { type: 'text', label: 'Address', value: '' },
-            { type: 'text', label: 'Phone Number', value: '' },
-            { type: 'text', label: 'Website', value: '' }
-        ],
-        location: [
-            { type: 'text', label: 'Latitude', value: '' },
-            { type: 'text', label: 'Longitude', value: '' }
-        ],
-        // Add other item types and their fields as needed
-    };
+    // refs
     const filteredData = writeTagScreenCardData?.filter(item =>
         item?.title.toLowerCase().includes(search.toLowerCase())
       );
 
+
+const handleOnclicked=(item:any)=>{
+    setSelectedData(item);
+    switch (item.title) {
+      case 'Text':
+        refTextSheet.current.open();
+        break;
+      case 'URL':
+        refUrlSheet.current.open();
+        break;
+      case 'PhoneCall':
+        refPhoneSheet.current.open();
+        break;
+      case 'Contact':
+        refContectSheet.current.open();
+        break;
+      case 'Email':
+        refEmailShet.current.open();
+        break;
+      case 'Location':
+        refLocationsheet.current.open();
+        break;
+      case 'Social Links':
+        navigation.navigate('SocialLinksScreen');
+        break;
+      case 'QR Code':
+        navigation.navigate('QRCodeScreen');
+        break;
+      default:
+        break;
+    }
+
+
+}
+
+
     return (
-        <BottomSheetModalProvider>
             <View style={style.container}>
                 <ScreenHeader
                     heading={'Write Tag'}
@@ -88,39 +90,44 @@ const WriteTag = ({ navigation }: any) => {
                         numColumns={2}
                         keyExtractor={(item) => item.key.toString()}
                         renderItem={({ item, index }) => (
+                            
                             <WriteTagScreenCard
-                                title={item.title}
-                                icon={item.icon}
-                                onClick={() => {
-                                    if (item.title == 'QR Code') {
-                                        navigation.navigate('QRCodeScreen');
-                                        bottomSheetModalRef?.current?.close();
-                                    } else if (item.title == 'Socail Links') {
-                                        navigation.navigate('SocailLinksScreen');
-                                        bottomSheetModalRef?.current?.close();
-                                    } else {
-                                        setSelectedItem(null);
-                                        setTimeout(() => {
-                                            setSelectedItem(item);
-                                        }, 0);
-                                    }
-                                }}
+                                title={item?.title}
+                                icon={item?.icon}
+                                onClick={() => handleOnclicked(item)}
                             />
                         )}
                     />
                 </View>
-                {
-                    selectedItem &&
 
-                    <BottomSheetForWriteTag
-                        ref={bottomSheetModalRef}
-                        onChange={handleSheetChanges}
-                        item={selectedItem}
-                        fields={fieldConfigurations[selectedItem.title.toLowerCase()]}
-                    />
-                }
+<TextAction 
+ref={refTextSheet}
+textdata={selectedData}
+/>
+<UrlActionSheet
+ref={refUrlSheet}
+textdata={selectedData}
+/>
+<PhoneSheet
+ref={refPhoneSheet}
+textdata={selectedData}
+/>
+<Contactsheet
+ref={refContectSheet}
+textdata={selectedData}
+/>
+
+<EmailSheet
+ref={refEmailShet}
+textdata={selectedData}
+/>
+
+<Locationsheet
+ref={refLocationsheet}
+textdata={selectedData}
+/>
+
             </View>
-        </BottomSheetModalProvider>
     )
 }
 

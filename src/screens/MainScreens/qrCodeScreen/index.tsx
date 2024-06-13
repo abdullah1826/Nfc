@@ -2,14 +2,13 @@ import { Alert,Platform, StyleSheet, Text, TouchableOpacity, View,PermissionsAnd
 import React,{useEffect, useState} from 'react'
 import style from './style'
 import ScreenHeader from '../../../components/screenHeader/ScreenHeader'
-import { appIcons } from '../../../shared/theme/assets'
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
-import { RNCamera } from 'react-native-camera';
-import { HP, WP, colors, family, size } from '../../../exporter'
+import { HP, WP, colors } from '../../../exporter';
+
 const QRCodeScreen = ({ navigation }: any) => {
 // local staffs
-const [openCmera , setOpenCamera] = useState(false)
+const [openCmera , setOpenCamera] = useState(true)
 const [QrData , setQrData] = useState("")
   useEffect(() => {
     const requestCameraPermission = async () => {
@@ -32,36 +31,39 @@ const [QrData , setQrData] = useState("")
   }, []);
 
 
-   const onSuccess = e => {
-      // Alert.alert("hello msg ++++++",JSON.stringify(e))
-      setQrData(JSON.stringify(e))
-      console.log("res",e)
-      setOpenCamera(false)
+   const onSuccess = ({data, rawData, type, bounds, target}:any) => {
+    // setQrData(JSON.stringify({ data, rawData, type, bounds, target }));
+    setOpenCamera(false)
+    console.log("QR Code Data:", { data, rawData, type, bounds, target });
       };
 
-      const openQrcode =()=>{
-setOpenCamera(true)
-      }
     return (
         <View style={style.container}>
             <ScreenHeader
                 heading={'Scan QR'}
                 onClick={() => navigation.goBack()}
             />
+{openCmera &&
 
-         <QRCodeScanner
+<QRCodeScanner
         onRead={onSuccess}
-        // flashMode={RNCamera.Constants.FlashMode.torch}
+        // flashMode={RNCamera.Constants}
         cameraStyle={style.camerastyle}
-        // containerStyle={style.scanQRBox}
+        reactivate={false}
+        // reactivateTimeout={3000}
+        containerStyle={style.scanQRBox}
+        topViewStyle={{backgroundColor:"white"}}
+        showMarker={true}
+        markerStyle={{width:WP("70"), height:HP("40"), borderWidth:1, borderColor:colors.green}}
+        // buttonPositive='okey'
          topContent={
            <Text style={style.centerText}>
-        {/* {QrData} */}
+        {QrData}
+        <Text> Scanning QR Code...</Text>
            </Text>
          }
-       
       />
-    
+        }
         </View>
     )
 }

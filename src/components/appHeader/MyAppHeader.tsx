@@ -10,11 +10,11 @@ interface Props {
 const MyAppHeader: React.FC<Props> = ({ onClick }) => {
     return (
         <View style={styles.Container}>
-            <Image source={applogos.logo} style={styles.icon} />
+            <Image source={applogos.AppLogo} style={styles.icon} />
             <TouchableOpacity
                 onPress={() => onClick()}
             >
-                <Image source={appIcons.Setting} style={[styles.icon, { height: HP(4) }]} />
+                <Image source={appIcons.Setting} style={styles.settingicon} />
             </TouchableOpacity>
         </View>
     )
@@ -30,7 +30,13 @@ const styles = StyleSheet.create({
 
     },
     icon: {
-        height: HP(3),
-        width: WP(10)
+        height: HP(5),
+        width: WP(25),
+        resizeMode:"contain"
+    },
+    settingicon:{
+        width:WP("12"),
+        height:HP("4"),
+        resizeMode:"contain"
     }
 })

@@ -24,7 +24,8 @@ export const style = StyleSheet.create({
     // },
     icon: {
         width: WP(16),
-        height: HP(7.5)
+        height: HP(7.5),
+        resizeMode:"contain"
     },
     iconName: {
         color: colors.g21,
