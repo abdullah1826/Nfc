@@ -65,7 +65,7 @@ const [isLoading, setIsLoading] = useState(false)
                     <View style={style.container}>
                         <MyStatusBar/>
                         <AppLoader loading={isLoading}/>
-                        <Image source={applogos.logo} style={style.logo} />
+                        <Image source={applogos.AppLogo} style={style.logo} />
                         <Text style={style.headingTxt}>Create Account</Text>
                         <Text style={style.descTxt}>Lorem ipsum dolor sit amet consectetur. Erat hendrerit arcu rhoncus sed.</Text>
 

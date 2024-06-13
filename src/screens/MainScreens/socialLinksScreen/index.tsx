@@ -4,16 +4,11 @@ import style from './style'
 import ScreenHeader from '../../../components/screenHeader/ScreenHeader'
 import { SocialLinksScreenData } from '../../../shared/utilities/constants'
 import { HP, WP } from '../../../shared/theme/PixelResponsive'
-import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet'
-import BottomSheetSocailLinks from '../../../components/bottomSheetSocialLinks/BottomSheetSocailLinks'
 import { appIcons } from '../../../shared/theme/assets'
 import { colors } from '../../../shared/theme/colors'
+import { MyStatusBar, SocialSheet } from '../../../exporter'
 
-interface selectedItemProps {
-    key: number;
-    iconName: string;
-    icon: any; // Adjust this type based on what the icon is, e.g., string or a specific type if you're using a particular icon library
-}
+
 
 const SocailLinksScreen = ({ navigation }: any) => {
 
@@ -22,29 +17,25 @@ const SocailLinksScreen = ({ navigation }: any) => {
     const [search, setSearch] = useState('');
    
 
-    const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+// ref
+const refsociallink = useRef();
 
-    const handlePresentModalPress = useCallback(() => {
-        bottomSheetModalRef.current?.present();
-    }, []);
+  
 
-    const handleSheetChanges = useCallback((index: number) => {
-    }, []);
-
-    useEffect(() => {
-        if (selectedItem) {
-            handlePresentModalPress();
-        }
-    }, [selectedItem]);
+ 
 
     const filteredData = SocialLinksScreenData?.filter(item =>
         item?.iconName.toLowerCase().includes(search.toLowerCase())
       );
 
+    const handleopen =(item:any)=>{
+        setSelectedItem(item)
+refsociallink.current.open();
+    }
 
     return (
-        <BottomSheetModalProvider>
             <View style={style.container}>
+                <MyStatusBar backgroundColor={"white"}/>
                 <ScreenHeader
                     heading={'Social Links'}
                     onClick={() => navigation.goBack()}
@@ -68,29 +59,19 @@ const SocailLinksScreen = ({ navigation }: any) => {
                         columnWrapperStyle={{ justifyContent: 'space-between' }}
                         renderItem={({ item, index }) => (
                             <TouchableOpacity key={item.key} style={style.socialLinksBox}
-                                onPress={() => {
-                                    setSelectedItem(null);
-                                    setTimeout(() => {
-                                        setSelectedItem(item);
-                                    }, 0)}}>
+                                onPress={() =>handleopen(item)}>
                                 <Image source={item.icon} style={style.icon} />
                                 <Text style={style.iconName}>{item.iconName}</Text>
                             </TouchableOpacity>
                         )}
                     />
                 </View>
-
-                {
-                    selectedItem &&
-                    <BottomSheetSocailLinks
-                        ref={bottomSheetModalRef}
-                        onChange={handleSheetChanges}
-                        item={selectedItem}
-                    />
-                }
-
+                
+<SocialSheet
+ref={refsociallink}
+textdata={selectedItem}
+/>
             </View>
-        </BottomSheetModalProvider>
     )
 }
 

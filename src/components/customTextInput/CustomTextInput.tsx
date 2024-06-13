@@ -13,13 +13,13 @@ interface Props {
     onBlur: () => void,
 }
 
-const CustomTextInput: React.FC<Props> = ({ placeholder, value, error, onChangeText, onBlur }) => {
+const CustomTextInput: React.FC<Props> = ({ placeholder, value, error, onChangeText, onBlur,style = {},inputStyle={} }) => {
 
     const [secureText, setSecureText] = useState(false);
     return (
-        <View style={[styles.inputContainer]}>
+        <View style={[styles.inputContainer,style]}>
             <TextInput
-                style={styles.input}
+                style={[styles.input,inputStyle]}
                 placeholder={placeholder}
                 placeholderTextColor={colors.g21}
                 value={value}

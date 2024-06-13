@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, View } from 'react-native'
+import { Image, SafeAreaView, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect } from 'react'
 import style from './style'
 import { useSelector } from 'react-redux'
@@ -25,10 +25,10 @@ const {isAuthenticated} = useSelector((state:any)=>state?.user)
     
 
     return (
-        <View style={style.rootConatiner}>
-          <MyStatusBar/>
-            <Image source={applogos.logo} style={style.logo} />
-        </View>
+        <SafeAreaView style={style.rootConatiner}>
+          <MyStatusBar backgroundColor={"#FFFFFF"}/>
+            <Image source={applogos.AppLogo} style={style.logo} />
+        </SafeAreaView>
 
     )
 }

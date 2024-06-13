@@ -5,7 +5,9 @@ import LinearGradient from 'react-native-linear-gradient';
 import { HP, WP } from '../../shared/theme/PixelResponsive';
 import { colors } from '../../shared/theme/colors';
 import { appRadius, family, size } from '../../shared/theme/sizes';
-
+import {Formik } from 'formik';
+import { SocialLinkFields } from '../../shared/utilities/validation';
+import { UrlTextInput } from '../UrlTextInput/UrlTextInput';
 
 interface Props {
     onChange: (index: number) => void,
@@ -27,8 +29,16 @@ const BottomSheetSocailLinks = forwardRef<BottomSheetModal, Props>(({ onChange, 
             opacity={.5}
             {...Props}
         />, []);
+const handleSubmit =()=>{
+
+}
 
     return (
+        <Formik
+        initialValues={SocialLinkFields}
+        validationSchema={SocialLinkFields}
+        onSubmit={handleSubmit}>
+        {({ values, errors, touched, setFieldTouched, handleChange, handleSubmit }) => (
         <BottomSheetModal
             ref={ref}
             index={1}
@@ -49,12 +59,16 @@ const BottomSheetSocailLinks = forwardRef<BottomSheetModal, Props>(({ onChange, 
                 <Image source={item.icon} style={styles.icon} />
                 <Text style={styles.txt}>{item.iconName}</Text>
 
-                <TextInput
-                    style={styles.input}
-                    placeholder={`Add Link`}
-                    placeholderTextColor={colors.g21}
+            
+                <UrlTextInput
+ placeholder={`Add ${item?.iconName || "" } Link`}
+ placeholderTextColor="gray"
+value={values.SocailUrl}
+onChangeText={handleChange("SocailUrl")}
+touched={errors.SocailUrl}
+errorMessage={errors.SocailUrl}
+/>
 
-                />
 
                 <View style={styles.buttonsBox}>
                     <TouchableOpacity style={styles.cancelBtn}
@@ -79,6 +93,8 @@ const BottomSheetSocailLinks = forwardRef<BottomSheetModal, Props>(({ onChange, 
 
             </BottomSheetView>
         </BottomSheetModal>
+          )}
+          </Formik>
     );
 });
 
@@ -88,7 +104,10 @@ const styles = StyleSheet.create({
     bottomSheetRootcontainer: {
         alignItems: 'center',
         marginTop: HP(3),
-        // backgroundColor: 'red'
+        justifyContent:"center",
+        textAlign:"center",
+        // backgroundColor: 'red',
+
     },
     icon: {
         width: WP(17.4),

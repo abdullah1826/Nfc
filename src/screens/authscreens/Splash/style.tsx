@@ -7,12 +7,15 @@ const style = StyleSheet.create({
     rootConatiner: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        backgroundColor:"#FFFFFF"
     },
     logo: {
-        width: WP(30),
-        height: HP(10),
-    }
+        width: WP(70),
+        height: HP(12),
+        resizeMode:"contain"
+    },
+   
 });
 
 export default style;

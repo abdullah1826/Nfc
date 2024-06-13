@@ -3,7 +3,6 @@ import React from 'react'
 import { colors } from '../../shared/theme/colors'
 import { HP, WP } from '../../shared/theme/PixelResponsive'
 import { appRadius, size } from '../../shared/theme/sizes'
-import { appImages } from '../../shared/theme/assets'
 
 interface Props {
     icon: any,

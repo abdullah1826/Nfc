@@ -30,7 +30,6 @@ export const style = StyleSheet.create({
         alignSelf:"center",
         // position:"absolute",
     // bottom:5,
-    backgroundColor:"green"
     },
     imagePicker: {
         width: WP(9),
@@ -63,12 +62,13 @@ export const style = StyleSheet.create({
       buttonTouchable: {
         padding: 16
       },
-      width:WP("90"),
-      
-       height:HP("70"),
+      camerastyle:{
+      width:WP("80"),
+       height:HP("60"),
        justifyContent:"center",
         alignItems:"center",
-         alignSelf:"center"
+         alignSelf:"center",
+      }
 });
 
 export default style;

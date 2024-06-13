@@ -13,10 +13,11 @@ const style = StyleSheet.create({
         padding: HP(5)
     },
     logo: {
-        width: WP(20),
-        height: HP(6),
+        width: WP(45),
+        height: HP(7),
         alignSelf: 'center',
-        marginTop: HP(6)
+        marginTop: HP(6),
+        resizeMode:"contain"
     },
     headingTxt: {
         color: colors.green,

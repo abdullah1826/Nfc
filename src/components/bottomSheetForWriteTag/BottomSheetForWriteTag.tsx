@@ -1,10 +1,11 @@
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React, { forwardRef, useCallback, useMemo } from 'react'
+import React, { forwardRef, useCallback, useMemo, useState,useEffect } from 'react'
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet'
 import { HP, WP } from '../../shared/theme/PixelResponsive'
 import { colors } from '../../shared/theme/colors'
 import { appRadius, family, size } from '../../shared/theme/sizes'
 import LinearGradient from 'react-native-linear-gradient'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 interface Field {
     type: string;
@@ -24,25 +25,42 @@ interface Props {
 };
 
 const BottomSheetForWriteTag = forwardRef<BottomSheetModal, Props>(({ onChange, item, fields }, ref) => {
+    const [fieldValues, setFieldValues] = useState<any>({});
 
+    // useEffect(() => {
+    //     // Set initial field values based on the fields prop
+    //     const initialFieldValues: { [key: string]: any } = {};
+    //     fields.forEach(field => {
+    //         initialFieldValues[field.label] = field.value;
+    //     });
+    //     setFieldValues(initialFieldValues);
+    // }, [fields]);
+// console.log("fieldValues",fieldValues)
     const snapPoints = useMemo(() => ['25%', fields.length > 3 ? '80%' : fields.length >= 2 ? '60%' : '40%'], [fields.length]);
 
-    console.log('Field Length =>>>>>>>>>>>>>>>>..', fields);
+    // const renderBackdrop = useCallback(
+    //     (props: any) => <BottomSheetBackdrop
+    //         appearsOnIndex={0}
+    //         disappearsOnIndex={-1}
+    //         opacity={.5}
+    //         {...props}
+    //     />, [])
 
-    const renderBackdrop = useCallback(
-        (Props: any) => <BottomSheetBackdrop
-            appearsOnIndex={0}
-            disappearsOnIndex={-1}
-            opacity={.5}
-            {...Props}
-        />, []);
+        const handleInputChange = (label: string, text: string) => {
+            setFieldValues(prevValues => ({
+                ...prevValues,
+                [label]: text
+            }));
+        };
+    
+
 
     return (
         <BottomSheetModal
             ref={ref}
             index={1}
             snapPoints={snapPoints}
-            backdropComponent={renderBackdrop}
+            // backdropComponent={renderBackdrop}
             handleIndicatorStyle={{ backgroundColor: '#DDDDDD', width: WP(10), height: HP(1) }}
             onChange={onChange}
             style={{
@@ -53,10 +71,11 @@ const BottomSheetForWriteTag = forwardRef<BottomSheetModal, Props>(({ onChange, 
                 borderTopRightRadius: WP(10)
             }}
         >
+            <KeyboardAwareScrollView style={{flex:1}}>
             <BottomSheetView style={styles.bottomSheetRootcontainer}>
 
-                <Image source={item.icon} style={styles.icon} />
-                <Text style={styles.txt}>{item.title}</Text>
+                <Image source={item?.icon} style={styles?.icon} />
+                <Text style={styles.txt}>{item?.title}</Text>
                 {
                     fields.map((item, index) => (
                         <TextInput
@@ -64,13 +83,18 @@ const BottomSheetForWriteTag = forwardRef<BottomSheetModal, Props>(({ onChange, 
                             style={[styles.input, { marginTop: index == 0 ? HP(4) : HP(2) }]}
                             placeholder={`Add ${item.label}`}
                             placeholderTextColor={colors.g21}
-
+                            onFocus={() => {
+                                if (ref.current) {
+                                    ref.current.expand();
+                                }
+                            }}
+                            onChangeText={(text) => handleInputChange(item?.label, text)} // Handle text change
+                          
                         />
                     ))
                 }
-
                 {
-                    item.title == 'Location' &&
+                    item?.title == 'Location' &&
                     <LinearGradient colors={["#17AE41", '#4DCB2E']}
                         style={styles.gradientBorder}
                     >
@@ -106,9 +130,9 @@ const BottomSheetForWriteTag = forwardRef<BottomSheetModal, Props>(({ onChange, 
                     </TouchableOpacity>
 
                 </View>
-
+               
             </BottomSheetView>
-
+            </KeyboardAwareScrollView>
 
         </BottomSheetModal>
     )

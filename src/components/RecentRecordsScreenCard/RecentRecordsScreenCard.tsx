@@ -3,32 +3,37 @@ import React from 'react'
 import { HP, WP } from '../../shared/theme/PixelResponsive'
 import { appRadius, family, size } from '../../shared/theme/sizes'
 import { colors } from '../../shared/theme/colors'
-import { appIcons } from '../../shared/theme/assets'
+import { appIcons } from '../../exporter'
+
 
 interface props {
     Icon: any,
     title: string,
-    Desc: string
+    Desc: string,
+    deletepress?:()=>void,
+    editpress?:()=>void,
 }
 
-const RecentRecordsScreenCard: React.FC<props> = ({ Icon, title, Desc }) => {
+const RecentRecordsScreenCard: React.FC<props> = ({ Icon, title, Desc,deletepress,editpress }) => {
     return (
-        <TouchableOpacity style={styles.container}>
+        <View style={styles.container}>
             <Image source={Icon} style={styles.cardIcon} />
             <View style={styles.innerContainer}>
                 <Text style={styles.cardTitle}>{title}</Text>
                 <Text style={styles.cardDesc}>{Desc}</Text>
             </View>
-            <TouchableOpacity>
+            <TouchableOpacity
+            onPress={editpress}
+            >
                 <Image source={appIcons.Edit} style={[styles.icon, { marginLeft: WP(.5) }]} />
             </TouchableOpacity>
 
-            <TouchableOpacity>
+            <TouchableOpacity
+            onPress={deletepress}
+            >
                 <Image source={appIcons.Delete} style={styles.icon} />
             </TouchableOpacity>
-
-
-        </TouchableOpacity>
+        </View>
     )
 }
 
@@ -69,6 +74,7 @@ const styles = StyleSheet.create({
         width: WP(7),
         height: HP(3.3),
         marginLeft: WP(1.2),
+        resizeMode:"contain"
 
     }
 })
