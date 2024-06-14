@@ -11,7 +11,7 @@ const MainNavigation = () => {
     return (
         <NavigationContainer>
             <AppStack.Navigator initialRouteName='AuthStack' screenOptions={{ headerShown: false }}>
-                <AppStack.Screen name='AuthStack' component={AuthStack} />
+                {/* <AppStack.Screen name='AuthStack' component={AuthStack} /> */}
                 <AppStack.Screen name='HomeStack' component={HomeStack} />
             </AppStack.Navigator>
         </NavigationContainer>
