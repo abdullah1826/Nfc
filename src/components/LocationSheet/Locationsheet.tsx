@@ -53,7 +53,12 @@ const Locationsheet = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
         },
     }));
 const handleSubmit = ()=>{
-    refRBSheet.current.close();
+  console.log("heloo")
+  if (location === "" || location === undefined || location === null) {
+    Alert.alert("Warning!", "Please select a location.");
+    return; // Prevent further execution
+}
+refRBSheet.current.close();
 }
 
 const getLocation = () => {
@@ -128,11 +133,6 @@ const handlePress = (data, details = null) => {
   };
 
     return (       
-        <Formik
-        initialValues={EmailField}
-        validationSchema={EmailShema}
-        onSubmit={handleSubmit}>
-        {({ values, errors, touched, setFieldTouched, handleChange, handleSubmit }) => (
         <RBSheet
             ref={refRBSheet}
             closeOnDragDown={true}
@@ -277,9 +277,7 @@ onPress={()=>getLocation()}
             </View>
             </KeyboardAwareScrollView>
         </RBSheet>
-          )}
-          </Formik>
-          
+        
     );
 });
 

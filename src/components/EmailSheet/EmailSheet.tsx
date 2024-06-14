@@ -1,4 +1,4 @@
-import React, { useRef, forwardRef, useImperativeHandle, useState } from 'react';
+import React, { useRef, forwardRef, useImperativeHandle, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image,TouchableOpacity, Dimensions } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { HP, UrlTextInput, WP, appRadius, colors, family, size } from '../../exporter';
@@ -10,7 +10,23 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 const EmailSheet = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
     const refRBSheet = useRef();
     const screenHeight = Dimensions.get('window').height;
+    const [formValues, setFormValues] = useState(EmailField)
     //  local state
+
+    useEffect(() => {
+        if (isUpdated) {
+            // Set new form values here when updated
+            setFormValues({
+                Email: 'newemail@example.com',
+                EmailBody: 'Updated body content',
+                EmailSubject: 'Updated subject heloo'
+            });
+        }
+    }, [isUpdated]);
+
+
+
+
 
     useImperativeHandle(ref, () => ({
         open: () => {
@@ -31,10 +47,11 @@ const cancelbtn =()=>{
 }
     return (       
         <Formik
-        initialValues={EmailField}
+        initialValues={formValues}
         validationSchema={EmailShema}
-        onSubmit={handleSubmit}>
-        {({ values, errors, touched, setFieldTouched, handleChange, handleSubmit }) => (
+enableReinitialize={true}
+onSubmit={handleSubmit}>
+        {({ values, errors, touched, setFieldTouched, handleChange, handleSubmit,setFieldValue }) => (
         <RBSheet
             ref={refRBSheet}
             closeOnDragDown={true}

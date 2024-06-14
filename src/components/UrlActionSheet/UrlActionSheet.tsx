@@ -1,4 +1,4 @@
-import React, { useRef, forwardRef, useImperativeHandle, useState } from 'react';
+import React, { useRef, forwardRef, useImperativeHandle, useState,useEffect } from 'react';
 import { View, Text, StyleSheet, Image,TouchableOpacity } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { HP, UrlTextInput, WP, appRadius, colors, family, size } from '../../exporter';
@@ -12,6 +12,7 @@ const UrlActionSheet = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
 
     //  local state
 
+    const [formValues, setFormValues] = useState(UrlFields)
 
     useImperativeHandle(ref, () => ({
         open: () => {
@@ -29,16 +30,24 @@ const cancelbtn =()=>{
     refRBSheet.current.close();
 
 }
+useEffect(() => {
+    if (isUpdated) {
+        // Set new form values here when updated
+        setFormValues({
+            UrlText: 'Updated url', 
+        });
+    }
+}, [isUpdated]);
     return (
         <KeyboardAwareScrollView>
 
        
         <Formik
-        initialValues={UrlFields}
+        initialValues={formValues}
         validationSchema={Urlschema}
         onSubmit={handleSubmit}
     >
-        {({ values, errors, touched, setFieldTouched, handleChange, handleSubmit }) => (
+        {({ values, errors, touched, setFieldTouched, handleChange, handleSubmit,setFormValue }) => (
         <RBSheet
             ref={refRBSheet}
             closeOnDragDown={true}
