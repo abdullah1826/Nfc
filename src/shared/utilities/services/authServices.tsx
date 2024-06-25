@@ -1,10 +1,22 @@
-import {ENDPOINTS, HTTP_CLIENT, BASE_URL} from "../../../exporter";
+import {ENDPOINTS, HTTP_CLIENT} from "../../../exporter";
+import { BASE_URL } from "../../../exporter";
 //Authentication Requests
 export const registerUser = (params:any) => {
   return HTTP_CLIENT.post(ENDPOINTS.REGISTER, params);
 };
 export const loginUser = (params:any) => {
   return HTTP_CLIENT.post(ENDPOINTS.LOGIN, params);
+};
+export const ResetNewPassword = (params:any) => {
+  return HTTP_CLIENT.post(ENDPOINTS.ResetPassword, params);
+};
+
+export const ConfirmNewPassword = (params:any) => {
+  return HTTP_CLIENT.post(ENDPOINTS.ConfirmPaaword, params);
+};
+
+export const deleteCurrentUser = () => {
+  return HTTP_CLIENT.delete(ENDPOINTS.DELETEUSER);
 };
 // export const socialLogin = (logintype, params) => {
 //   return HTTP_CLIENT.post(

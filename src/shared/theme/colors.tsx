@@ -10,6 +10,8 @@ export const colors = {
     White: '#FFFFFF',
     normalgreen: '#8BBC52',
     solidgray: '#E8E7E2',
+    dulllightgray:"#A7A6A9",
+    lightgray:"#F3F3F3",
     Black: '#121212',
     line: '#E0E0E0',
     orange: '#FB7A41',

@@ -4,22 +4,22 @@ import style from './style'
 import CustomButton from '../../../components/customButton/CustomButton'
 import CustomTextInput from '../../../components/customTextInput/CustomTextInput'
 import { Formik } from 'formik'
-import { loginFormFields, loginSchema } from '../../../shared/utilities/validation'
+import { NewPasswordSchema,newPasswordformfield } from '../../../shared/utilities/validation'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { useDispatch } from 'react-redux'
-import { setAuthenticated, setUserData } from '../../../redux/Slices/UserSlice'
+import { useDispatch, useSelector } from 'react-redux'
 import {useNetworkStatus ,colors,applogos, MyStatusBar} from '../../../exporter'
 import { AppLoader } from '../../../components/AppLoader'
-import { loginUser } from '../../../shared/utilities/services/authServices'
-import { getPlatform, showErrorToast, showSuccessToast } from '../../../shared/utilities/Helper'
+import { ConfirmNewPassword, } from '../../../shared/utilities/services/authServices'
+import {showErrorToast, showSuccessToast } from '../../../shared/utilities/Helper'
 
 
-const Login = ({ navigation }: any) => {
-
-    // redux stuff
+const newPassword = ({ navigation, route }: any) => {
+    const { otp } = route.params;
+    // redux stuffee
     const dispatch = useDispatch();
-    const isuserPlatform = getPlatform()
+    const {userotpEmail} = useSelector((state:any)=>state?.user) 
 
+// local states
      const [isLoading, setIsLoading] = useState(false)
 
     // inteernet checking
@@ -34,29 +34,21 @@ const Login = ({ navigation }: any) => {
         try {
             setIsLoading(true)
             const params = {
-             email:values?.email,
+             email:userotpEmail,
              password:values?.password,
-             platform:isuserPlatform,
-             fcm_token:"",
-             login_with:"email"
+             otp:otp
          }
-        loginUser(params).then((res:any)=>{
-            dispatch(setUserData(res?.data?.data))
-            showSuccessToast('Login Success', 'User Login successfully');
+         ConfirmNewPassword(params).then((res:any)=>{
+            showSuccessToast('Paaaword Changes', 'Please Login with new password');
             setIsLoading(false)
-            dispatch(setAuthenticated(true))
-            navigation.replace('HomeStack', { Screen: 'Home' });
-        
+      navigation.navigate("Login")  
             resetForm()
         }).catch((error)=>{
-
-            showErrorToast('Registration Failed', error?.response?.data?.message || 'An error occurred');
+            showErrorToast('Failed', error?.response?.data?.message || 'An error occurred');
             setIsLoading(false)
         }).finally(()=>{
-setIsLoading(false)
+        setIsLoading(false)
         })
- 
-
         } catch (error: any) {
             console.log("error",error)
             setIsLoading(false)
@@ -69,10 +61,10 @@ setIsLoading(false)
     return (
         <KeyboardAwareScrollView
             showsVerticalScrollIndicator={false}
-            style={{ flex: 1, backgroundColor: colors.bg1 }}>
+            style={{ flex: 1, backgroundColor: colors.bg1,  }}>
             <Formik
-                initialValues={loginFormFields}
-                validationSchema={loginSchema}
+                initialValues={newPasswordformfield}
+                validationSchema={NewPasswordSchema}
                 onSubmit={handleSubmit}
             >
                 {({ values, errors, touched, setFieldTouched, handleChange, handleSubmit }) => (
@@ -80,40 +72,38 @@ setIsLoading(false)
                     <MyStatusBar/>
                     <AppLoader loading={isLoading}/>
                         <Image source={applogos.AppLogo} style={style.logo} />
-                        <Text style={style.headingTxt}>Login</Text>
-                        <Text style={style.descTxt}>Lorem ipsum dolor sit amet consectetur. Erat hendrerit arcu rhoncus sed.</Text>
+                        <Text style={style.headingTxt}>Set Password</Text>
+                        <Text style={style.descTxt}>Please Enter New password </Text>
 
                         <View style={style.inputsBox}>
                             <CustomTextInput
-                                placeholder={'Email'}
-                                value={values?.email}
-                                onChangeText={handleChange('email')}
-                                onBlur={() => setFieldTouched('email')}
-                                error={errors.email}
-                            />
-                            {touched.email && errors.email && (<Text style={style.errorMsg}>{errors.email}</Text>)}
-                            <CustomTextInput
-                                placeholder={'Password'}
+                                placeholder={'New Password'}
                                 value={values?.password}
                                 onChangeText={handleChange('password')}
                                 onBlur={() => setFieldTouched('password')}
                                 error={errors.password}
                             />
                             {touched.password && errors.password && (<Text style={style.errorMsg}>{errors.password}</Text>)}
+
+                            <CustomTextInput
+                                placeholder={'Confirm Password'}
+                                value={values?.confirmPassword}
+                                onChangeText={handleChange('confirmPassword')}
+                                onBlur={() => setFieldTouched('confirmPassword')}
+                                error={errors.password}
+                            />
+                            {touched.confirmPassword && errors.confirmPassword && (<Text style={style.errorMsg}>{errors.confirmPassword}</Text>)}
+
                         </View>
-<TouchableOpacity style={style.viewforget}
-onPress={()=>navigation.navigate("resetPassword")}
->
-    <Text style={style.txtforget}>Forgot Password?</Text>
-</TouchableOpacity>
+
                         <CustomButton
-                            title={'Login'}
+                            title={'Reset'}
                             onClick={handleSubmit}
                         />
 
-                        <Text style={style.alredyAccountTxt}>Don’t have an account? <Text style={style.signInTxt}
-                            onPress={() => navigation.navigate('Signup')}
-                        >Sign Up</Text></Text>
+                        <Text style={style.alredyAccountTxt}>Go Back to Login <Text style={style.signInTxt}
+                            onPress={() => navigation.navigate('Login')}
+                        >Login</Text></Text>
                     </View>
                 )}
             </Formik>
@@ -121,4 +111,4 @@ onPress={()=>navigation.navigate("resetPassword")}
     )
 }
 
-export default Login
+export default newPassword

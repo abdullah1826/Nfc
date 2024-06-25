@@ -27,7 +27,7 @@ export default CustomButton
 const styles = StyleSheet.create({
     container: {
         height: HP(8),
-        width: WP(90),
+        width: WP(85),
         borderRadius: appRadius.boxRadius,
         marginTop: HP(2),
         alignSelf: 'center',

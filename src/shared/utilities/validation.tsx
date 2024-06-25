@@ -15,7 +15,14 @@ export const loginFormFields = {
     password: ''
 };
 
+export const ResetFormField = {
+    email: '',
 
+};
+export const newPasswordformfield = {
+    password: '',
+confirmPassword:""
+};
 export const TextUrlFields = {
     TextAction: '',
 };
@@ -51,7 +58,7 @@ export const SocialLinkFields = {
 export const Textschema = yup.object().shape({
     TextAction: yup
         .string()
-        .required('AddText is Required')
+        .required('Text is Required')
         .min(10, 'Text must be at least 10 characters')
 
 });
@@ -126,4 +133,22 @@ export const signupSchema = yup.object().shape({
         .min(6, 'Password must be at least 6 characters')
         .required('Password is Required')
 });
+
+export const ResetPasswordSchema = yup.object().shape({
+    email: yup
+        .string()
+        .required('Email is Required')
+        .email('Please provide a valid email address'),
+});
+
+export const NewPasswordSchema = yup.object().shape({
+    password: yup.string()
+    .min(6, 'Password too short - should be 6 chars minimum.')
+    .required('Password is required'),
+  confirmPassword: yup.string()
+    .oneOf([yup.ref('password'), null],"Passwords don't match")
+    .required('Confirm Password is required'),
+});
+
+
 

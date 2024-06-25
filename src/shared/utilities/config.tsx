@@ -6,19 +6,25 @@ const HTTP_CLIENT = axios.create({
   baseURL: BASE_URL,
 });
 
+
 const initialConfig = () => {
   setupAxios();
 };
+
 const setupAxios = () => {
   HTTP_CLIENT.interceptors.request.use(
     config => {
-      const {userData} = store.getState().user;
-      if (userData?.token) {
-        config.headers.Authorization = `Bearer ${userData?.token}`;
+      const { userData } = store.getState().user;
+
+      if (userData && userData.token && config.headers) {
+        config.headers.Authorization = `Bearer ${userData.token}`;
+      } else {
       }
       return config;
     },
-    err => Promise.reject(err),
+    err => {
+      return Promise.reject(err);
+    }
   );
 };
 

@@ -28,6 +28,11 @@ const [QrData , setQrData] = useState("")
     };
 
     requestCameraPermission();
+    const timer = setTimeout(() => {
+      setOpenCamera(true);
+    }, 30000); // 20 seconds
+
+    return () => clearTimeout(timer);
   }, []);
 
 

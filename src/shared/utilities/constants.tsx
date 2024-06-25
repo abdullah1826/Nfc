@@ -44,6 +44,33 @@ export const writeTagScreenCardData = [
 ];
 
 
+
+
+export const getIconForTitle = (title: string) => {
+    switch (title) {
+      case 'Text':
+        return appImages.Text;
+      case 'URL':
+        return appImages.Url;
+      case 'PhoneCall':
+        return appImages.PhoneCall;
+      case 'Contact':
+        return appImages.PhoneBook;
+      case 'Email':
+        return appImages.Email;
+      case 'Location':
+        return appImages.Map;
+      case 'QR Code':
+        return appImages.QrScan;
+      case 'Socail Links':
+        return appImages.SocialLinks;
+      default:
+        return null;
+    }
+  };
+
+
+
 // export const settingScreenData = [
 //     {
 //         key: 1,

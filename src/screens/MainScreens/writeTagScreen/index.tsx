@@ -31,6 +31,7 @@ const refLocationsheet = useRef();
 
 
 const handleOnclicked=(item:any)=>{
+  // console.log("itemmmm", item)
     setSelectedData(item);
     switch (item.title) {
       case 'Text':
@@ -51,8 +52,8 @@ const handleOnclicked=(item:any)=>{
       case 'Location':
         refLocationsheet.current.open();
         break;
-      case 'Social Links':
-        navigation.navigate('SocialLinksScreen');
+      case 'Socail Links':
+        navigation.navigate('SocailLinksScreen');
         break;
       case 'QR Code':
         navigation.navigate('QRCodeScreen');
@@ -104,6 +105,9 @@ const handleOnclicked=(item:any)=>{
 ref={refTextSheet}
 textdata={selectedData}
 />
+
+
+
 <UrlActionSheet
 ref={refUrlSheet}
 textdata={selectedData}
