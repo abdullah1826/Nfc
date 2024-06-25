@@ -27,7 +27,7 @@ const CustomTextInput: React.FC<Props> = ({ placeholder, value, error, onChangeT
                 onBlur={() => onBlur()}
                 secureTextEntry={secureText}
             />
-            {placeholder == 'Password' &&
+            {placeholder == 'Password'  &&
                 < TouchableOpacity onPress={() => setSecureText(secure => !secure)}>
                     <Image source={secureText ? appIcons.EyeOff : appIcons.Eye} style={styles.icon} />
                 </TouchableOpacity>}
@@ -40,7 +40,7 @@ export default CustomTextInput
 const styles = StyleSheet.create({
     inputContainer: {
         flexDirection: 'row',
-        width: WP(90),
+        width: WP(85),
         height: HP(8),
         backgroundColor: colors.bg1,
         shadowColor: colors.b1,

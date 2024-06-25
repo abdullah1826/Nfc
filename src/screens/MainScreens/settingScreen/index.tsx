@@ -1,18 +1,26 @@
 import { View, Text, FlatList,Linking } from 'react-native'
-import React from 'react'
+import React,{useState} from 'react'
 import style from './style'
 import ScreenHeader from '../../../components/screenHeader/ScreenHeader'
 import SettingScreenCard from '../../../components/settingScreenCard/SettingScreenCard'
 import { appIcons } from '../../../shared/theme/assets'
 import { HP } from '../../../shared/theme/PixelResponsive'
-import { UseDispatch, useDispatch } from 'react-redux'
+import {useDispatch } from 'react-redux'
 import { signOut } from '../../../redux/Slices/UserSlice'
+import { useNetworkStatus } from '../../../exporter'
+import { deleteCurrentUser } from '../../../shared/utilities/services/authServices'
+import { showErrorToast, showSuccessToast } from '../../../shared/utilities/Helper'
+import { AppLoader } from '../../../components/AppLoader'
 
 
 const Setting = ({ navigation }: any) => {
 
     // redux staff
     const dispatch=useDispatch()
+    // local states
+    const [isLoading, setIsLoading] = useState(false)
+        // inteernet checking
+        const isConnected = useNetworkStatus()
 
     const openPlayStoreForRating = () => {
         // Replace 'your-app-package-name' with the actual package name of your app
@@ -64,7 +72,7 @@ const Setting = ({ navigation }: any) => {
             key: 7,
             label: 'Delete Account',
             icon: appIcons.DeleteAccount,
-            onClick: () => { }
+            onClick: () => {handledeleteAccount()}
         },
         {
             key: 8,
@@ -77,12 +85,38 @@ const Setting = ({ navigation }: any) => {
         },
     ];
 
+    const handledeleteAccount=()=>{
+        if (!isConnected) {
+            Alert.alert('No Internet Connection', 'Please check your internet connection and try again.');
+            return;
+          }
+        try {
+setIsLoading(true)
+deleteCurrentUser().then((res)=>{
+showSuccessToast("Alert" ,"Account deleted successfully")
+setIsLoading(false)
+navigation.navigate("Login")
+}).catch((error)=>{
+    showErrorToast('Failed', error?.response?.data?.message || 'An error occurred');
+    setIsLoading(false)
+c
+}).finally(()=>{
+    setIsLoading(false)
+})
+        } catch (error: any) {
+            console.log("error",error)
+            setIsLoading(false)
+         
+        }
+    }
+
     return (
         <View style={style.container}>
             <ScreenHeader
                 heading={'Settings'}
                 onClick={() => navigation.goBack()}
             />
+            <AppLoader loading={isLoading}/>
             <View style={{ marginTop: HP(3) }}>
                 <FlatList
                     data={settingScreenData}

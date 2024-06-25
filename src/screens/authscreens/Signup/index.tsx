@@ -8,51 +8,54 @@ import { Formik } from 'formik'
 import { signupFormFields, signupSchema } from '../../../shared/utilities/validation'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { colors } from '../../../shared/theme/colors'
-import auth from '@react-native-firebase/auth';
-import database from '@react-native-firebase/database';
+import { getPlatform } from '../../../shared/utilities/Helper'
 import { MyStatusBar, useNetworkStatus } from '../../../exporter'
 import { AppLoader } from '../../../components/AppLoader'
+import { registerUser } from '../../../shared/utilities/services/authServices'
+import { showErrorToast, showSuccessToast } from '../../../shared/utilities/Helper'
 
 const Signup = ({ navigation }: any) => {
 // internet checking
-const Innternet = useNetworkStatus()
+const Internet = useNetworkStatus()
 
+ const isuserPlatform = getPlatform()
     // local states
 const [isLoading, setIsLoading] = useState(false)
 
 
 // functions
-    const handleSubmit = async (values: any, { resetForm }: any) => {
+const handleSubmit = async (values: any, { resetForm }: any) => {
+    if (!Internet) {
+        Alert.alert('No Internet Connection', 'Please check your internet connection and try again.');
+        return;
+      }
+    try {
         setIsLoading(true)
-        if (!Innternet) {
-            Alert.alert('No Internet Connection', 'Please check your internet connection and try again.');
-            setIsLoading(false)
-            return;
-           
-          }
-        try {
+  const params = {
+name: values?.username,
+email:values?.email,
+password:values?.password,
+platform:isuserPlatform,
+fcm_token:""
+}
+ registerUser(params).then((res:any)=>{
 
-            const userCredentials = await auth().createUserWithEmailAndPassword(values.email, values.password);
-            const user = userCredentials?.user;
-            await database().ref(`/users/${user?.uid}`).set({
-                username: values?.username || "",
-                email: values?.email || "",
-                password: values?.password || "" ,
-                fcmToken: '',
-            });
-            setIsLoading(false)
-            navigation.navigate('Login');
-        } catch (error: any) {
-            if (error.code === 'auth/email-already-in-use') {
-                // console.log('Email already exists');
-                Alert.alert('Email already exists');
-                setIsLoading(false)
-            } else {
-                
-                setIsLoading(false)
-            }
-        }
-    };
+    showSuccessToast('Registration Success', 'User registered successfully');
+ setIsLoading(false)
+ resetForm()
+ navigation.navigate('Login');
+ }).catch((error:any)=>{
+    showErrorToast('Registration Failed', error?.response?.data?.message || 'An error occurred');
+    setIsLoading(false)
+ }).finally(()=>{
+    setIsLoading(false)
+ })
+     
+    } catch (error: any) {
+        setIsLoading(false)
+    }
+};
+
 
     return (
         <KeyboardAwareScrollView style={{ backgroundColor: colors.bg1 }}>
@@ -98,7 +101,7 @@ const [isLoading, setIsLoading] = useState(false)
                             onClick={() => { handleSubmit() }}
                         />
 
-                        <Text style={style.alredyAccountTxt}>Already have an account? <Text style={style.signInTxt}
+                        <Text style={style.alredyAccountTxt}>Already have an account <Text style={style.signInTxt}
                             onPress={() => { navigation.navigate('Login') }}
                         >Sign In</Text></Text>
                     </View>

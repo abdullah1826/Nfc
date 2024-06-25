@@ -1,10 +1,14 @@
 
 
-const BASE_URL = 'http://18.212.50.13/api/v1/';
+const BASE_URL = 'https://nfc-toolkit.kameti.pk';
 
 const ENDPOINTS = {
-  REGISTER: 'signup',
-  LOGIN: 'signin',
+  REGISTER: '/api/user/signup',
+  LOGIN: '/api/user/signin',
+  ResetPassword:"/api/user/forgot-password",
+  ConfirmPaaword:"/api/user/reset-password",
+  DELETEUSER:"/api/user/delete-account",
+ getUserAllTags:"/api/tags",
   GOOGLE_SIGN_IN: 'google_login',
   APPLE_SIGN_IN: 'apple_login',
 };

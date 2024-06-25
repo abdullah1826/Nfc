@@ -11,8 +11,9 @@ import ReadTagBottomSheetModal from '../../../components/BottomSheetReadTag/Read
 import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { useSelector } from 'react-redux'
 import { MyAppHeader, MyStatusBar } from '../../../exporter'
-import NfcManager, { NfcTech, Ndef } from 'react-native-nfc-manager';
+import NfcManager, { NfcTech, Ndef, nfcManager } from 'react-native-nfc-manager';
 import { checkNfcSupport } from '../../../shared/utilities/Helper'
+import { getAllTags } from '../../../shared/utilities/services/mainServices'
 
 const HomeScreen = ({ navigation }: any) => {
 
@@ -35,12 +36,21 @@ const HomeScreen = ({ navigation }: any) => {
 
 
         const readNdef = async () => {
-                     if (!checkNfcSupport()) return;
+            const nfcSupported = await checkNfcSupport();
+            if (!nfcSupported) return
                      try {
-                         await NfcManager.requestTechnology(NfcTech.Ndef);
+                        NfcManager.registerTagEvent()
+                        .then(() => console.log('NFC reading started.'))
+                        .catch(error => console.warn('Error starting NFC reading:', error));
                         const tag = await NfcManager.getTag();
-                         
+                        if(tag){
+                            // const message= await nfcManager.ndefHandler.getNdefMessage();
+                            //  const status = await nfcManager.ndefHandler.getNdefStatus();
+                            //  console.log("status++++", message)
+                            //  console.log("status___________", status)
+                        } 
                      } catch (ex) {
+                        console.log("tagsssss++++++", ex)
                          if (ex instanceof Error) {
                              if (ex.message.includes('NFC tag is not connected')) {
                                  Alert.alert('Error', 'NFC tag is not connected. Please try again.');
@@ -87,6 +97,19 @@ const HomeScreen = ({ navigation }: any) => {
                 //      }
                 //  }
 
+useEffect(()=>{
+    getTags()
+},[])
+
+const getTags =()=>{
+getAllTags().then((res)=>{
+console.log("respomseeeee", res?.data)
+}).catch((error)=>{
+console.log("errrrrr", error.response.data)
+}).finally(()=>{
+
+})
+}
 
 
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
@@ -135,33 +158,35 @@ const HomeScreen = ({ navigation }: any) => {
                         >See All</Text>
                     </View>
 
+<View style={{flex:1, backgroundColor:"red"}}>
+    <Text>helooo</Text>
+</View>
+
+
                     {/* Recent Record Cards */}
 
-                    <RecentRecordsCard
+                    {/* <RecentRecordsCard
                         Icon={appImages.Email}
                         title={'Email'}
                         Desc={'2343weewabc1234@gmail.com'}
-                    />
-                    <RecentRecordsCard
+                    /> */}
+                    {/* <RecentRecordsCard
                         Icon={appImages.Map}
                         title={'Location'}
                         Desc={'23232, St lowrence, Dhaka, Bangladesh'}
-                    />
-                    <RecentRecordsCard
+                    /> */}
+                    {/* <RecentRecordsCard
                         Icon={appImages.QrScan}
                         title={'QR Code'}
                         Desc={'Lorem Ipsum doler zebta roakl locki grnjdw'}
-                    />
-                    <RecentRecordsCard
+                    /> */}
+                    {/* <RecentRecordsCard
                         Icon={appImages.Url}
                         title={'URL'}
                         Desc={'www.konsasosssdnasnskmks.com'}
-                    />
+                    /> */}
 
-                    <ReadTagBottomSheetModal
-                        ref={bottomSheetModalRef}
-                        onChange={handleSheetChanges}
-                    />
+                
 
                 </View>
             </BottomSheetModalProvider>

@@ -9,6 +9,7 @@ const authReducer = createSlice({
     name: 'users',
     initialState: {
         userData: null,
+        userotpEmail:"",
         isAuthenticated:false
         
     },
@@ -19,6 +20,9 @@ const authReducer = createSlice({
         setAuthenticated: (state, action) => {
             state.isAuthenticated = action.payload;
           },
+          setuserotpEmail: (state, action) => {
+            state.userotpEmail = action.payload;
+        },
           signOut: state => {
             state.userData = null;
             state.isAuthenticated = false;
@@ -26,6 +30,6 @@ const authReducer = createSlice({
     },
 });
 
-export const { setUserData,setAuthenticated,signOut } = authReducer.actions;
+export const { setUserData,setAuthenticated,signOut,setuserotpEmail} = authReducer.actions;
 
 export default authReducer.reducer;

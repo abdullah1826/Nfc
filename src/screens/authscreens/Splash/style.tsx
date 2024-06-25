@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { HP, WP } from "../../../shared/theme/PixelResponsive";
+import { WP, HP } from "../../../exporter";
 
 
 
@@ -11,7 +11,7 @@ const style = StyleSheet.create({
         backgroundColor:"#FFFFFF"
     },
     logo: {
-        width: WP(70),
+        width:WP(70),
         height: HP(12),
         resizeMode:"contain"
     },

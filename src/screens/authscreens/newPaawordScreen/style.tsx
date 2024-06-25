@@ -10,20 +10,22 @@ const style = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: colors.bg1,
-        padding: HP(5)
+        marginHorizontal:WP("5"),
+        justifyContent:"center",
+        alignItems:"center"
     },
     logo: {
         width: WP(45),
         height: HP(7),
         alignSelf: 'center',
-        marginTop: HP(8),
+        marginTop: HP(25),
         resizeMode:"contain"
     },
     headingTxt: {
         color: colors.green,
         fontSize: size.h5,
         fontFamily: family.InterSemiBold,
-        marginTop: HP(8),
+        marginTop: HP(3),
         alignSelf: 'center'
     },
     descTxt: {
@@ -54,19 +56,7 @@ const style = StyleSheet.create({
         fontWeight: '400',
         marginTop: HP(1)
     },
-    viewforget:{
-        justifyContent:"flex-end",
-        alignItems:"flex-end",
-        flex:1,
-        marginTop:WP("3")
-    },
-    txtforget:{
-        color:"#4DCB2E",
-        fontSize:size.xsmall,
-        fontFamily:family.InterRegular,
-        fontWeight:"600",
-        
-    }
+ 
 });
 
 export default style;
