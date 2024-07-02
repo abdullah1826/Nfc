@@ -5,42 +5,108 @@ import ScreenHeader from '../../../components/screenHeader/ScreenHeader'
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import { HP, WP, colors } from '../../../exporter';
-
-const QRCodeScreen = ({ navigation }: any) => {
+import NfcManager, { NfcTech, Ndef } from 'react-native-nfc-manager';
+import { showErrorToast, showSuccessToast } from '../../../shared/utilities/Helper';
+import { addTag } from '../../../redux/Slices/MainSlice';
+import { useDispatch } from 'react-redux';
+import { AppLoader } from '../../../components/AppLoader';
+import { createTags } from '../../../shared/utilities/services/mainServices';
+const QRCodeScreen = ({ navigation, route }: any) => {
 // local staffs
-const [openCmera , setOpenCamera] = useState(true)
+const [cameraReady, setCameraReady] = useState(false);
 const [QrData , setQrData] = useState("")
+const [isLoading, setIsLoading] = useState(false)
+const textdata = route?.params?.selected
+
   useEffect(() => {
-    const requestCameraPermission = async () => {
-      if (Platform.OS === 'ios') {
-        const result = await check(PERMISSIONS.IOS.CAMERA);
-        if (result !== RESULTS.GRANTED) {
-          await request(PERMISSIONS.IOS.CAMERA);
-        }
-      } else if (Platform.OS === 'android') {
-        const result = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.CAMERA,
-        );
-        if (result !== PermissionsAndroid.RESULTS.GRANTED) {
-          Alert.alert('Camera Permission Denied');
-        }
-      }
-    };
-
-    requestCameraPermission();
-    const timer = setTimeout(() => {
-      setOpenCamera(true);
-    }, 30000); // 20 seconds
-
-    return () => clearTimeout(timer);
+    camerapermission()
+    initializeScanner();
   }, []);
+  const initializeScanner = () => {
+    setCameraReady(true);
+  };
 
+  const dispatch=useDispatch()
 
-   const onSuccess = ({data, rawData, type, bounds, target}:any) => {
-    // setQrData(JSON.stringify({ data, rawData, type, bounds, target }));
-    setOpenCamera(false)
-    console.log("QR Code Data:", { data, rawData, type, bounds, target });
+const camerapermission =()=>{
+  const requestCameraPermission = async () => {
+    if (Platform.OS === 'ios') {
+      const result = await check(PERMISSIONS.IOS.CAMERA);
+      if (result !== RESULTS.GRANTED) {
+        await request(PERMISSIONS.IOS.CAMERA);
+      }
+    } else if (Platform.OS === 'android') {
+      const result = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+      );
+      if (result !== PermissionsAndroid.RESULTS.GRANTED) {
+        Alert.alert('Camera Permission Denied');
+      }
+    }
+  };
+}
+
+   const onSuccess = async(e:any) => {
+    try {
+      const qrCodeData = JSON.stringify(e.data);
+      setQrData(qrCodeData);
+      await writeToNfcTag(qrCodeData);
+    } catch (error) {
+      
+    }
+
       };
+      
+      const writeToNfcTag = async (data) => {
+        try {
+          await NfcManager.start(); // Start NFC manager
+          showSuccessToast("Alert Ready for scan","Please Scan the tag")
+          await NfcManager.requestTechnology(NfcTech.Ndef); // Request NDEF technology
+    
+          // Prepare NDEF records (example: text record with QR code data)
+          const record = Ndef.uriRecord(data);
+          const bytes = Ndef.encodeMessage([record]);
+          if (bytes) {
+            await NfcManager.ndefHandler.writeNdefMessage(bytes); // Write NDEF message to NFC tag
+            HandleApidata(data)
+          }
+        } catch (error) {
+          showErrorToast("Tag Write Failed", "Unable to encode message.");
+        } finally {
+          NfcManager.cancelTechnologyRequest(); // Cancel NFC technology request
+        }
+      };
+
+
+      const HandleApidata =(value:any)=>{
+          try {
+              setIsLoading(true)
+              const params = {
+            type:textdata?.iconName || "",
+            linkName:textdata?.iconName ||"",
+               value:value || "",
+           }
+           console.log("params+___++",params)
+          createTags(params).then((res:any)=>{
+              dispatch(addTag(res?.data?.data))
+              showSuccessToast("Tag Successfully Writte","Scan to access")
+              setIsLoading(false)
+              setQrData("")
+              navigation.goBack()
+          }).catch((error)=>{
+              showErrorToast('Tags Failed', error?.response?.data?.message || 'An error occurred');
+              setIsLoading(false)
+          }).finally(()=>{
+        setIsLoading(false)
+          })
+        
+        
+          } catch (error: any) {
+              console.log("error",error)
+              setIsLoading(false)
+          }
+        }
+
 
     return (
         <View style={style.container}>
@@ -48,27 +114,24 @@ const [QrData , setQrData] = useState("")
                 heading={'Scan QR'}
                 onClick={() => navigation.goBack()}
             />
-{openCmera &&
-
-<QRCodeScanner
-        onRead={onSuccess}
-        // flashMode={RNCamera.Constants}
-        cameraStyle={style.camerastyle}
-        reactivate={false}
-        // reactivateTimeout={3000}
-        containerStyle={style.scanQRBox}
-        topViewStyle={{backgroundColor:"white"}}
-        showMarker={true}
-        markerStyle={{width:WP("70"), height:HP("40"), borderWidth:1, borderColor:colors.green}}
-        // buttonPositive='okey'
-         topContent={
-           <Text style={style.centerText}>
-        {QrData}
-        <Text> Scanning QR Code...</Text>
-           </Text>
-         }
-      />
-        }
+            <AppLoader loading={isLoading}/>
+            {QrData === "" ||QrData === null ||QrData === undefined ?
+        <QRCodeScanner
+      onRead={onSuccess}
+      reactivate={false}
+      // reactivateTimeout={2000}
+      cameraStyle={style.camerastyle}
+      containerStyle={style.scanQRBox}
+      topViewStyle={{backgroundColor:"white"}}
+      showMarker={true}
+      markerStyle={{width:WP("70"), height:HP("40"), borderWidth:1, borderColor:colors.green}}
+      topContent={
+        <Text style={{ flex: 1, textAlign: 'center', marginTop: 20 }}>
+          {cameraReady ? 'Scanning QR Code...' : 'Camera loading...'}
+        </Text>
+      }
+    />
+:null}
         </View>
     )
 }
@@ -76,3 +139,7 @@ const [QrData , setQrData] = useState("")
 export default QRCodeScreen
 
 const styles = StyleSheet.create({})
+
+function showAlert(data: any) {
+  throw new Error('Function not implemented.');
+}

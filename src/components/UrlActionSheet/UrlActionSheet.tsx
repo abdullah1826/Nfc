@@ -6,13 +6,21 @@ import { Formik } from 'formik'
 import {UrlFields, Urlschema } from '../../shared/utilities/validation';
 import LinearGradient from 'react-native-linear-gradient';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
+import NfcManager, { NfcTech, Ndef, } from 'react-native-nfc-manager';
+import { checkNfcSupport, showErrorToast, showSuccessToast } from '../../shared/utilities/Helper';
+import { createTags } from '../../shared/utilities/services/mainServices';
+import { addTag } from '../../redux/Slices/MainSlice';
+import { AppLoader } from '../AppLoader';
+import { useDispatch } from 'react-redux';
 const UrlActionSheet = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
     const refRBSheet = useRef();
+
+    const dispatch = useDispatch()
 
     //  local state
 
     const [formValues, setFormValues] = useState(UrlFields)
+    const [isLoading, setIsLoading] = useState(false)
 
     useImperativeHandle(ref, () => ({
         open: () => {
@@ -22,9 +30,55 @@ const UrlActionSheet = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
             refRBSheet.current.close();
         },
     }));
-const handleSubmit = ()=>{
-    refRBSheet.current.close();
+const handleSubmit =async (values: any, { resetForm }: any)=>{
+    const nfcSupported = await checkNfcSupport();
+    if (!nfcSupported) return
+    await NfcManager.start();
+    await NfcManager.requestTechnology(NfcTech.Ndef);
+    try {
+        const bytes = Ndef.encodeMessage([Ndef.uriRecord(values.UrlText)])
+        if (bytes) {
+          await NfcManager.ndefHandler
+            .writeNdefMessage(bytes);
+            HandleApidata(values.UrlText)
+          resetForm()
+        }
+      } catch (error) {
+
+        showErrorToast("Tag Write Failed", "Unable to encode message.");
+      } finally {
+        NfcManager.cancelTechnologyRequest();
+      }
 }
+
+const HandleApidata =(value:any)=>{ 
+    try {
+       setIsLoading(true)
+       const params = {
+      type:textdata?.iconName || "",
+      linkName:textdata?.iconName ||"",
+        value:value || "",
+     }
+    createTags(params).then((res:any)=>{
+       dispatch(addTag(res?.data?.data))
+showSuccessToast("Tag Successfully Writte","Scan to access")
+    refRBSheet.current.close();
+    }).catch((error)=>{
+        showErrorToast('Tags Failed', error?.response?.data?.message || 'An error occurred');
+       setIsLoading(false)
+    }).finally(()=>{
+setIsLoading(false)
+   })
+   } catch (error: any) {
+       console.log("error",error)
+        setIsLoading(false)
+    }
+}
+
+
+
+
+
 
 const cancelbtn =()=>{
     refRBSheet.current.close();
@@ -40,8 +94,6 @@ useEffect(() => {
 }, [isUpdated]);
     return (
         <KeyboardAwareScrollView>
-
-       
         <Formik
         initialValues={formValues}
         validationSchema={Urlschema}
@@ -53,7 +105,6 @@ useEffect(() => {
             closeOnDragDown={true}
           closeOnPressMask={true}
           animationType="slide"
-          
             customStyles={{
                 wrapper: {
                     flex:1,
@@ -72,14 +123,15 @@ useEffect(() => {
             }}>
             <View style={styles.content}>
                 <View style={styles.viewsecond}>
+                    <AppLoader loading={isLoading}/>
            <Image 
        source={textdata?.icon || ""}
         style={styles.img}
             /> 
-             <Text style={styles.txt}>{textdata?.title || ""}</Text>
+             <Text style={styles.txt}>{textdata?.iconName || ""}</Text>
 
 <UrlTextInput
- placeholder={`Add ${textdata?.title || "" }`}
+ placeholder={`Add ${textdata?.iconName || "" }`}
  placeholderTextColor="gray"
 value={values.UrlText}
 onChangeText={handleChange("UrlText")}

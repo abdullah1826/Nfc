@@ -22,6 +22,9 @@ target 'NFC_READER' do
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
+  pod 'Firebase/Auth'
+    # For local path handling of FirebaseSharedSwift if needed
+    # pod 'FirebaseSharedSwift', :path => '~/firebase-ios-sdk/FirebaseSharedSwift'
 
   target 'NFC_READERTests' do
     inherit! :complete

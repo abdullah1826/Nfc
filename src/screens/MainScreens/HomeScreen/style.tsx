@@ -5,6 +5,11 @@ import { family, size } from "../../../shared/theme/sizes";
 
 
 const style = StyleSheet.create({
+    container:{
+        flex: 1,
+        backgroundColor: colors.bg1
+    },
+
     rootContainer: {
         flex: 1,
         backgroundColor: colors.bg1,
@@ -47,7 +52,23 @@ const style = StyleSheet.create({
         color: colors.g1,
         fontSize: size.xsmall,
         marginTop: HP(6)
-    }
+    },
+    viewflatlist:{
+        justifyContent:"center", 
+        alignItems:"center",
+        marginBottom:WP("2")
+    },
+    emptyContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding:WP("5"),
+        backgroundColor: colors.bg1,
+      },
+      emptyText: {
+        fontSize:size.large,
+        color:colors.Graylight,
+      },
 
 });
 

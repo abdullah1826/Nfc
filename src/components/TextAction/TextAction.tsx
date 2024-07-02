@@ -7,11 +7,19 @@ import { TextUrlFields, Textschema } from '../../shared/utilities/validation';
 import LinearGradient from 'react-native-linear-gradient';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import NfcManager, { NfcTech, Ndef, } from 'react-native-nfc-manager';
+import { checkNfcSupport, showErrorToast, showSuccessToast } from '../../shared/utilities/Helper';
+import { useDispatch } from 'react-redux';
+import { addTag } from '../../redux/Slices/MainSlice';
+import { createTags } from '../../shared/utilities/services/mainServices';
+import { AppLoader } from '../AppLoader';
 const TextAction = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
     const refRBSheet = useRef();
 
     //  local state
     const [isNfcReady, setIsNfcReady] = useState(false);
+    const [isLoading, setIsLoading] = useState(false)
+
+const dispatch = useDispatch()
 
     useImperativeHandle(ref, () => ({
         open: () => {
@@ -22,80 +30,51 @@ const TextAction = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
         },
     }));
 
-    useEffect(() => {
-        const initializeNfc = async () => {
-          try {
-            await NfcManager.start();
-          } catch (ex) {
-            console.warn('NFC initialization error', ex);
-          }
-        };
-    
-        initializeNfc();
-    
-        return () => {
-          NfcManager.setEventListener(NfcTech.Ndef,null);
-          NfcManager.unregisterTagEvent();
-          NfcManager.close();
-        };
-      }, []);
-      const handleNfcDiscover = async () => {
-        console.log("heloooo+++++++")
-        const message = [Ndef.textRecord('Hello NFC')];
-        try {
-            let bytes = Ndef.encodeMessage(message);
-            let result = await NfcManager.writeNdefMessage(bytes);
-            console.log('Write success', result);
-          Alert.alert('NFC Tag Written', 'Message written to NFC tag successfully!');
-        } catch (ex) {
-          console.warn('Write failed', ex);
-          Alert.alert('NFC Write Error', 'Failed to write message to NFC tag.');
-        }
-      };
-
-
-
-
-const handleSubmit =async ()=>{
-    const message = [Ndef.textRecord('Hello NFC')];
-    const bytes = Ndef.encodeMessage(message);
-      try {
-        await NfcManager.cancelTechnologyRequest();
-
-        // Request NFC technology
-        await NfcManager.requestTechnology(NfcTech.Ndef);
-        // const ndefHandler = await NfcManager.ndefHandler();
-
-  
-        // Write the message to the NFC tag
-        // await NfcManager.transceive(bytes);
-        // console.log('Write success');
-        // Alert.alert('NFC Tag Written', 'Message written to NFC tag successfully!');
-
-        // const tag = await NfcManager.getTag();
-        // if (!tag) {
-        //     Alert.alert('No tag found');
-        //   }
-        //   if (!tag?.ndefMessage) {
-        //     Alert.alert('Tag does not support NDEF');
-        //   }
-        // if (tag) {
-        //     await NfcManager.transceive(bytes);
-        //     console.log('Write success');
-        //     Alert.alert('NFC Tag Written', 'Message written to NFC tag successfully!');
-        //   }
-  
-  
-      } catch (ex) {
-        console.warn('Request NFC permission failed', ex);
-        Alert.alert('NFC Request Error', 'Failed to request NFC permission.');
-      }
-      finally {
-        // Ensure that NFC technology is released after the operation
-        NfcManager.setEventListener(NfcTech.Ndef, null);
+const handleSubmit =async (values: any, { resetForm }: any)=>{
+     const nfcSupported = await checkNfcSupport();
+    if (!nfcSupported) return
+     await NfcManager.start();
+     await NfcManager.requestTechnology(NfcTech.Ndef);
+    try {
+       const bytes = Ndef.encodeMessage([Ndef.textRecord(values.TextAction)])
+         if (bytes) {
+           await NfcManager.ndefHandler
+             .writeNdefMessage(bytes);
+            HandleApidata(values.TextAction)
+          resetForm()
+         }
+       } catch (error) {
+        showErrorToast("Tag Write Failed", "Unable to encode message.");
+       } finally {
         NfcManager.cancelTechnologyRequest();
       }
+
 }
+
+ const HandleApidata =(values:any)=>{
+     try {
+        setIsLoading(true)
+        const params = {
+       type:textdata?.iconName || "",
+       linkName:textdata?.iconName ||"",
+         value:values || "",
+      }
+     createTags(params).then((res:any)=>{
+        dispatch(addTag(res?.data?.data))
+showSuccessToast("Tag Successfully Writte","Scan to access")
+refRBSheet.current.close();
+     }).catch((error)=>{
+        console.log("error+++",error)
+         showErrorToast('Tags Failed', error?.response?.data?.message || 'An error occurred');
+        setIsLoading(false)
+     }).finally(()=>{
+ setIsLoading(false)
+    })
+    } catch (error: any) {
+        console.log("error",error)
+         setIsLoading(false)
+     }
+ }
 
 const cancelbtn =()=>{
     refRBSheet.current.close();
@@ -136,14 +115,15 @@ const cancelbtn =()=>{
             <View style={styles.content}>
                 <MyStatusBar backgroundColor={"white"}/>
                 <View style={styles.viewsecond}>
+                <AppLoader loading={isLoading}/>
            <Image 
        source={textdata?.icon || ""}
         style={styles.img}
             /> 
-             <Text style={styles.txt}>{textdata?.title || ""}</Text>
+             <Text style={styles.txt}>{textdata?.iconName || ""}</Text>
 
 <UrlTextInput
- placeholder={`Add ${textdata?.title || "" }`}
+ placeholder={`Add ${textdata?.iconName || "" }`}
  placeholderTextColor="gray"
 value={values.TextAction}
 onChangeText={handleChange("TextAction")}

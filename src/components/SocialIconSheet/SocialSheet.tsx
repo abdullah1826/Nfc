@@ -6,12 +6,23 @@ import { Formik } from 'formik'
 import {UrlFields, Urlschema } from '../../shared/utilities/validation';
 import LinearGradient from 'react-native-linear-gradient';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import NfcManager, { NfcTech, Ndef, } from 'react-native-nfc-manager';
+import { checkNfcSupport, showErrorToast, showSuccessToast, useNetworkStatus } from '../../shared/utilities/Helper';
+import { createTags } from '../../shared/utilities/services/mainServices';
+import { Alert } from 'react-native';
+import { AppLoader } from '../AppLoader';
+import { addTag, setTagsAllRecord } from '../../redux/Slices/MainSlice';
+import { useDispatch } from 'react-redux';
 
 const SocialSheet = forwardRef(({textdata}, ref) => {
-    console.log("helooooo",textdata)
-    const refRBSheet = useRef();
+   
 
+    const dispatch = useDispatch()
+    const refRBSheet = useRef();
     //  local state
+    const [isLoading, setIsLoading] = useState(false)
+    // inteernet checking
+    const isConnected = useNetworkStatus()
 
     useImperativeHandle(ref, () => ({
         open: () => {
@@ -21,8 +32,57 @@ const SocialSheet = forwardRef(({textdata}, ref) => {
             refRBSheet.current.close();
         },
     }));
-const handleSubmit = ()=>{
-    refRBSheet.current.close();
+const handleSubmit = async(values: any, { resetForm }: any)=>{
+    if (!isConnected) {
+        Alert.alert('No Internet Connection', 'Please check your internet connection and try again.');
+        return;
+      }
+    const nfcSupported = await checkNfcSupport();
+    if (!nfcSupported) return
+    await NfcManager.start();
+    await NfcManager.requestTechnology(NfcTech.Ndef);
+    try {
+        const bytes = Ndef.encodeMessage([Ndef.uriRecord(values.UrlText)])
+        if (bytes) {
+          await NfcManager.ndefHandler
+            .writeNdefMessage(bytes);
+            HandleApidata(values.UrlText)
+          resetForm()
+        }
+      } catch (error) {
+
+        showErrorToast("Tag Write Failed", "Unable to encode message.");
+      } finally {
+        NfcManager.cancelTechnologyRequest();
+      }
+}
+
+
+const HandleApidata =(value:any)=>{
+    try {
+        setIsLoading(true)
+        const params = {
+      type:textdata?.iconName || "",
+      linkName:textdata?.iconName ||"",
+         value:value || "",
+     }
+    createTags(params).then((res:any)=>{
+        dispatch(addTag(res?.data?.data))
+        showSuccessToast("Tag Successfully Writte","Scan to access")
+        setIsLoading(false)
+        refRBSheet.current.close();
+    }).catch((error)=>{
+        showErrorToast('Tags Failed', error?.response?.data?.message || 'An error occurred');
+        setIsLoading(false)
+    }).finally(()=>{
+setIsLoading(false)
+    })
+
+
+    } catch (error: any) {
+        console.log("error",error)
+        setIsLoading(false)
+    }
 }
 
 const cancelbtn =()=>{
@@ -61,11 +121,12 @@ const cancelbtn =()=>{
                     marginVertical: 10,
                 },
             }}>
+                <AppLoader loading={isLoading}/>
             <View style={styles.content}>
                 <View style={styles.viewsecond}>
            <Image 
-       source={textdata?.icon || ""}
-        style={styles.img}
+          source={textdata?.icon || ""}
+           style={styles.img}
             /> 
              <Text style={styles.txt}>{textdata?.iconName || ""}</Text>
 

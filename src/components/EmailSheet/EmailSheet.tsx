@@ -6,12 +6,22 @@ import { Formik } from 'formik'
 import {EmailField, EmailShema,} from '../../shared/utilities/validation';
 import LinearGradient from 'react-native-linear-gradient';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
+import { checkNfcSupport, showErrorToast, showSuccessToast } from '../../shared/utilities/Helper';
+import NfcManager, { NfcTech, Ndef, } from 'react-native-nfc-manager';
+import { createTags } from '../../shared/utilities/services/mainServices';
+import { setTagsAllRecord } from '../../redux/Slices/MainSlice';
+import { addTag } from '../../redux/Slices/MainSlice';
+import { useDispatch } from 'react-redux';
+import { AppLoader } from '../AppLoader';
 const EmailSheet = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
     const refRBSheet = useRef();
     const screenHeight = Dimensions.get('window').height;
     const [formValues, setFormValues] = useState(EmailField)
-    //  local state
+
+    // local states
+    const [isLoading, setIsLoading] = useState(false)
+
+const dispatch = useDispatch()
 
     useEffect(() => {
         if (isUpdated) {
@@ -36,10 +46,59 @@ const EmailSheet = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
             refRBSheet.current.close();
         },
     }));
-const handleSubmit = ()=>{
-    refRBSheet.current.close();
-    setIsUpdated(false)
+const handleSubmit = async(values: any, { resetForm }: any)=>{
+    const nfcSupported = await checkNfcSupport();
+    if (!nfcSupported) return
+    await NfcManager.start();
+    await NfcManager.requestTechnology(NfcTech.Ndef);
+    const { Email,EmailBody,EmailSubject,} = values;
+    const combinedText = `Email: ${Email}\nEmail Body: ${EmailBody}\nEmail Subject: ${EmailSubject}`;   
+    try {
+        const record = Ndef.textRecord(combinedText);
+      const bytes = Ndef.encodeMessage([record]);
+        if (bytes) {
+          await NfcManager.ndefHandler
+            .writeNdefMessage(bytes);
+            HandleApidata(EmailBody)
+          resetForm()
+
+        }
+      } catch (error) {
+        showErrorToast("Tag Write Failed", "Unable to encode message.");
+      } finally {
+        NfcManager.cancelTechnologyRequest();
+      }
 }
+
+
+const HandleApidata =(value:any)=>{
+    try {
+        setIsLoading(true)
+        const params = {
+      type:textdata?.iconName || "",
+      linkName:textdata?.iconName ||"",
+         value:value || "",
+     }
+    createTags(params).then((res:any)=>{
+        dispatch(addTag(res?.data?.data))
+        showSuccessToast("Tag Successfully Writte","Scan to access")
+        setIsLoading(false)
+        refRBSheet.current.close();
+    }).catch((error)=>{
+        showErrorToast('Tags Failed', error?.response?.data?.message || 'An error occurred');
+        setIsLoading(false)
+    }).finally(()=>{
+setIsLoading(false)
+    })
+
+    } catch (error: any) {
+        console.log("error",error)
+        setIsLoading(false)
+    }
+}
+
+
+
 
 const cancelbtn =()=>{
     refRBSheet.current.close();
@@ -67,8 +126,6 @@ onSubmit={handleSubmit}>
                         borderTopRightRadius: 30, // Rounded top-right corner
                         marginTop:WP("3")
                     },
-
-
                 draggableIcon: {
                     backgroundColor: '#000',
                 },
@@ -82,14 +139,15 @@ onSubmit={handleSubmit}>
           >
             <View style={styles.content}>
                 <View style={styles.viewsecond}>
+                    <AppLoader loading={isLoading}/>
            <Image 
        source={textdata?.icon || ""}
         style={styles.img}
             /> 
-             <Text style={styles.txt}>{textdata?.title || ""}</Text>
+             <Text style={styles.txt}>{textdata?.iconName || ""}</Text>
 
 <UrlTextInput
- placeholder={`Recpient ${textdata?.title || "" }`}
+ placeholder={`Recpient ${textdata?.iconName || "" }`}
  placeholderTextColor="gray"
 value={values.Email}
 onChangeText={handleChange("Email")}

@@ -32,9 +32,10 @@ const styles = StyleSheet.create({
         backgroundColor: colors.bg1,
         elevation: 5,
         shadowColor: colors.b1,
-        height: HP(15),
+        height: HP(13),
         alignItems: 'center',
-        marginTop: HP(2)
+        marginTop: HP(1),
+        width:WP("85")
     },
     cardIcon: {
         height: HP(8),

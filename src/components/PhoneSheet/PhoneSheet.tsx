@@ -3,15 +3,21 @@ import { View, Text, StyleSheet, Image,TouchableOpacity } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { HP, UrlTextInput, WP, appRadius, colors, family, size } from '../../exporter';
 import { Formik } from 'formik'
-import {PhoneFields, Phoneschema, UrlFields, Urlschema } from '../../shared/utilities/validation';
+import {PhoneFields, Phoneschema,} from '../../shared/utilities/validation';
 import LinearGradient from 'react-native-linear-gradient';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
+import { checkNfcSupport, showErrorToast, showSuccessToast } from '../../shared/utilities/Helper';
+import NfcManager, { NfcTech, Ndef, } from 'react-native-nfc-manager';
+import { createTags } from '../../shared/utilities/services/mainServices';
+import { addTag } from '../../redux/Slices/MainSlice';
+import { useDispatch } from 'react-redux';
 const PhoneSheet = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
     const refRBSheet = useRef();
 
-    //  local state
+    const dispatch = useDispatch()
 
+    //  local state
+    const [isLoading, setIsLoading] = useState(false)
 
     useImperativeHandle(ref, () => ({
         open: () => {
@@ -21,13 +27,59 @@ const PhoneSheet = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
             refRBSheet.current.close();
         },
     }));
-const handleSubmit = ()=>{
+
+    const handleSubmit = async(values: any, { resetForm }: any)=>{
+        const nfcSupported = await checkNfcSupport();
+        if (!nfcSupported) return
+        await NfcManager.start();
+        await NfcManager.requestTechnology(NfcTech.Ndef);
+        try {
+            const telUri = `tel:${values.PhoneText}`;
+            const bytes = Ndef.encodeMessage([Ndef.uriRecord(telUri)])
+            if (bytes) {
+              await NfcManager.ndefHandler
+                .writeNdefMessage(bytes);
+                HandleApidata(telUri)
+              resetForm()
+            }
+          } catch (error) {
+            showErrorToast("Tag Write Failed", "Unable to encode message.");
+          } finally {
+            NfcManager.cancelTechnologyRequest();
+          }
+    }
+
+
+
+    const HandleApidata =(values:any)=>{ 
+        try {
+           setIsLoading(true)
+           const params = {
+          type:textdata?.iconName || "",
+          linkName:textdata?.iconName ||"",
+            value:values || "",
+         }
+        createTags(params).then((res:any)=>{
+           dispatch(addTag(res?.data?.data))
+    showSuccessToast("Tag Successfully Writte","Scan to access")
     refRBSheet.current.close();
-}
+        }).catch((error)=>{
+            showErrorToast('Tags Failed', error?.response?.data?.message || 'An error occurred');
+           setIsLoading(false)
+        }).finally(()=>{
+    setIsLoading(false)
+       })
+       } catch (error: any) {
+           console.log("error",error)
+            setIsLoading(false)
+        }
+    }
+
+
+
 
 const cancelbtn =()=>{
     refRBSheet.current.close();
-
 }
     return (
         <KeyboardAwareScrollView>
@@ -41,8 +93,7 @@ const cancelbtn =()=>{
             ref={refRBSheet}
             closeOnDragDown={true}
           closeOnPressMask={true}
-          animationType="slide"
-          
+          animationType="slide" 
             customStyles={{
                 wrapper: {
                     flex:1,
@@ -65,10 +116,10 @@ const cancelbtn =()=>{
        source={textdata?.icon || ""}
         style={styles.img}
             /> 
-             <Text style={styles.txt}>{textdata?.title || ""}</Text>
+             <Text style={styles.txt}>{textdata?.iconName || ""}</Text>
 
 <UrlTextInput
- placeholder={`Add ${textdata?.title || "" }`}
+ placeholder={`Add ${textdata?.iconName || "" }`}
  placeholderTextColor="gray"
 value={values.PhoneText}
 onChangeText={handleChange("PhoneText")}
@@ -98,7 +149,6 @@ errorMessage={errors.PhoneText}
       </TouchableOpacity>
 
   </View>
-
             </View>
             </View>
         </RBSheet>
@@ -158,12 +208,11 @@ viewsecond:{
       fontFamily: family.InterSemiBold,
       fontSize: size.normal
     },
-
     img:{
         width:40,
          height:40, 
          resizeMode:"center"
     },
-});
 
+})
 export { PhoneSheet };

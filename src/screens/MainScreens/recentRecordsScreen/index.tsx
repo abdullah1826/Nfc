@@ -1,15 +1,23 @@
-import { Image,TextInput, View } from 'react-native'
+import { Image,ScrollView,TextInput, View } from 'react-native'
 import React, { useState,useRef } from 'react'
 import style from './style'
 import RecentRecordsScreenCard from '../../../components/RecentRecordsScreenCard/RecentRecordsScreenCard'
 import { appIcons, appImages } from '../../../shared/theme/assets'
 import ScreenHeader from '../../../components/screenHeader/ScreenHeader'
-import { HP } from '../../../shared/theme/PixelResponsive'
 import { colors } from '../../../shared/theme/colors'
 import { Contactsheet, EmailSheet, Locationsheet, PhoneSheet, TextAction, UrlActionSheet } from '../../../exporter'
+import { useDispatch, useSelector } from 'react-redux'
+import { getIconOfSocialLink } from '../../../shared/utilities/constants'
+import { deleteTags } from '../../../shared/utilities/services/mainServices'
+import { AppLoader } from '../../../components/AppLoader'
+import { setdeleteTags } from '../../../redux/Slices/MainSlice'
+import { showErrorToast, showSuccessToast } from '../../../shared/utilities/Helper'
 
 const RecentRecordsScreen = ({ navigation }: any) => {
 
+// redux stafs
+  const {TagsAllRecord} =useSelector<any>((state:any) => state.main);
+  const dispatch = useDispatch()
     // refs
     const refTextSheet = useRef();
 const refUrlSheet = useRef();
@@ -19,35 +27,25 @@ const refEmailShet = useRef();
 const refLocationsheet = useRef();
 
 
-    // Define your original data
-    const originalData = [
-        { id: 1, icon: appImages.Email, title: 'Email', Desc: '2343weewabc1234@gmail.com' },
-        { id: 2, icon: appImages.Map, title: 'Location', Desc: '23232, St low Dhaka, Bangladesh' },
-        { id: 3, icon: appImages.QrScan, title: 'QR Code', Desc: 'Lorem Ipsum doler zebta roakl locki' },
-        { id: 4, icon: appImages.Url, title: 'URL', Desc: 'www.konsasosssdnasnskmks.com' },
-    ];
-
-    // all local states staffs
+    // local states
+    const [isLoading, setIsLoading] = useState(false)
     const [searchQuery, setSearchQuery] = useState('');
-    const [filteredData, setFilteredData] = useState(originalData);
     const [selectedData, setSelectedData] = useState(null);
     const [isUpdated, setIsUpdated] = useState(false);
 
     // Function to handle search query changes
-    const handleSearch = (query: string) => {
-        setSearchQuery(query);
-        // Filter the original data based on the search query
-        const filtered = originalData.filter(item =>
-            item.title.toLowerCase().includes(query.toLowerCase())
-        );
-        // Update the filtered data state
-        setFilteredData(filtered);
-    };
+
+    const filteredData = TagsAllRecord?.filter((item:any) => {
+      // console.log("fiter dsataaaa",item.linkName)
+      const iconName = item.iconName ? item.iconName.toLowerCase() : '';
+      const query = searchQuery ? searchQuery.toLowerCase() : '';
+      return iconName.includes(query);
+    });
 
     const handleEditData = (item) => {
         setSelectedData(item);
         setIsUpdated(true); 
-        switch (item.title) {
+        switch (item.iconName) {
           case 'Text':
             refTextSheet.current.open();
             break;
@@ -78,8 +76,20 @@ const refLocationsheet = useRef();
       };
 
 
-const handleDeleteData =(item:any)=>{
-    console.log("deleetd dataaa",item)
+const handleDeleteData =(item:any)=>{;
+    setIsLoading(true)
+    deleteTags(item?.id).then((res)=>{
+dispatch(setdeleteTags(item?.id))
+showSuccessToast("Tag Successfully deleted")
+setIsLoading(false)
+    }).catch((error)=>{
+console.log("error", error)
+showErrorToast('Tags Failed', error?.response?.data?.message || 'An error occurred');
+setIsLoading(false)
+    }).finally(()=>{
+      setIsLoading(false)
+
+    })
 }
 
     return (
@@ -88,28 +98,30 @@ const handleDeleteData =(item:any)=>{
                 heading={'Recent Records'}
                 onClick={() => { navigation.goBack() }}
             />
+            <AppLoader loading={isLoading}/>
             <View style={style.searchBox}>
                 <Image source={appIcons.Search} style={style.searchIcon} />
                 <TextInput
                     placeholder='Search'
                     placeholderTextColor={colors.g21}
                     style={style.input}
-                    onChangeText={handleSearch}
+                    onChangeText={text => setSearchQuery(text)}
                     value={searchQuery}
                 />
             </View>
-            <View>
-                {filteredData.map(item => (
+            <ScrollView showsVerticalScrollIndicator={false}>
+                {filteredData.map((item:any) => (
                     <RecentRecordsScreenCard
                         key={item.id}
-                        Icon={item.icon}
-                        title={item.title}
-                        Desc={item.Desc}
+                        Icon={getIconOfSocialLink(item?.linkName)}
+                        title={item?.linkName}
+                        Desc={item.value}
                         editpress={()=>handleEditData(item)}
                         deletepress={()=>handleDeleteData(item)}
+                        showDeleteButton={item}
                     />
                 ))}
-            </View>
+            </ScrollView>
 <TextAction 
 ref={refTextSheet}
 textdata={selectedData}

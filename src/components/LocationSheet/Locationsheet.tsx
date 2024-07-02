@@ -1,18 +1,23 @@
 import React, { useRef, forwardRef, useImperativeHandle, useState } from 'react';
-import { View, Text, StyleSheet, Image,TouchableOpacity, Dimensions,PermissionsAndroid, Platform, Alert, } from 'react-native';
+import { View, Text, StyleSheet, Image,TouchableOpacity, Dimensions,PermissionsAndroid, Alert, } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { HP, WP, appRadius, colors, family, size } from '../../exporter';
-import { Formik } from 'formik'
-import {EmailField, EmailShema,} from '../../shared/utilities/validation';
 import LinearGradient from 'react-native-linear-gradient';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import NfcManager, { NfcTech, Ndef, } from 'react-native-nfc-manager';
+import { checkNfcSupport, showErrorToast, showSuccessToast } from '../../shared/utilities/Helper';
+import { createTags } from '../../shared/utilities/services/mainServices';
+import { useDispatch } from 'react-redux';
+import { AppLoader } from '../AppLoader';
+import { addTag } from '../../redux/Slices/MainSlice';
 const Locationsheet = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
 
     // locaal states
     const [location, setLocation] = useState(null);
+    const dispatch = useDispatch()
     const mapRef = useRef(null);
     const requestLocationPermission = async () => {
         try {
@@ -41,8 +46,8 @@ const Locationsheet = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
 
     const refRBSheet = useRef();
     const screenHeight = Dimensions.get('window').height;
-    //  local state
-
+    // local states
+    const [isLoading, setIsLoading] = useState(false)
 
     useImperativeHandle(ref, () => ({
         open: () => {
@@ -52,14 +57,64 @@ const Locationsheet = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
             refRBSheet.current.close();
         },
     }));
-const handleSubmit = ()=>{
-  console.log("heloo")
-  if (location === "" || location === undefined || location === null) {
-    Alert.alert("Warning!", "Please select a location.");
-    return; // Prevent further execution
+const handleSubmit = async()=>{
+  try {
+    if (!location || !location.latitude || !location.longitude) {
+      Alert.alert("Warning!", "Please select a location.");
+      return;
+    }
+    const nfcSupported = await checkNfcSupport();
+    if (!nfcSupported) return
+    await NfcManager.start();
+    await NfcManager.requestTechnology(NfcTech.Ndef);
+    const geoUri = `geo:${location.latitude},${location.longitude}`;
+    const record = Ndef.uriRecord(geoUri);
+    const bytes = Ndef.encodeMessage([record]);
+    if (bytes) {
+      await NfcManager.ndefHandler.writeNdefMessage(bytes);
+      showSuccessToast("Tag Successfully Writte","Scan to access")
+      HandleApidata(geoUri)
+    } else {
+      showErrorToast("Tag Write Failed", "Unable to encode message.");
+    }
+  } catch (error) {
+    showErrorToast("Tag Scanned Failed", "Kindly Tag the scan properly");
+
+  } finally {
+    NfcManager.cancelTechnologyRequest();
+  }
 }
-refRBSheet.current.close();
+
+
+const HandleApidata =(value:any)=>{
+  try {
+      setIsLoading(true)
+      const params = {
+    type:textdata?.iconName || "",
+    linkName:textdata?.iconName ||"",
+       value:value || "",
+   }
+  createTags(params).then((res:any)=>{
+      dispatch(addTag(res?.data?.data))
+      showSuccessToast("Tag Successfully Writte","Scan to access")
+      setIsLoading(false)
+      refRBSheet.current.close();
+      setLocation(null)
+  }).catch((error)=>{
+      showErrorToast('Tags Failed', error?.response?.data?.message || 'An error occurred');
+      setIsLoading(false)
+  }).finally(()=>{
+setIsLoading(false)
+  })
+  } catch (error: any) {
+      console.log("error",error)
+      setIsLoading(false)
+  }
 }
+
+
+
+
 
 const getLocation = () => {
    try {
@@ -163,11 +218,12 @@ const handlePress = (data, details = null) => {
           >
             <View style={styles.content}>
                 <View style={styles.viewsecond}>
+                  <AppLoader loading={isLoading}/>
            <Image 
        source={textdata?.icon || ""}
         style={styles.img}
             /> 
-             <Text style={styles.txt}>{textdata?.title || ""}</Text>
+             <Text style={styles.txt}>{textdata?.iconName || ""}</Text>
 
              <GooglePlacesAutocomplete
         placeholder='Enter Location'
@@ -225,14 +281,7 @@ const handlePress = (data, details = null) => {
 
 
 
-{/* <UrlTextInput
- placeholder={`Recpient ${textdata?.title || "" }`}
- placeholderTextColor="gray"
-value={values.Email}
-onChangeText={handleChange("Email")}
-touched={errors.Email}
-errorMessage={errors.Email}
-/> */}
+
 <View style={{width:WP("80"),height:HP("30"), justifyContent:"center", alignItems:"center",}}>
 
 <MapView

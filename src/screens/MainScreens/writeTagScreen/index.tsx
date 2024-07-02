@@ -26,14 +26,14 @@ const refLocationsheet = useRef();
 
     // refs
     const filteredData = writeTagScreenCardData?.filter(item =>
-        item?.title.toLowerCase().includes(search.toLowerCase())
+        item?.iconName.toLowerCase().includes(search.toLowerCase())
       );
 
 
 const handleOnclicked=(item:any)=>{
   // console.log("itemmmm", item)
     setSelectedData(item);
-    switch (item.title) {
+    switch (item.iconName) {
       case 'Text':
         refTextSheet.current.open();
         break;
@@ -56,15 +56,12 @@ const handleOnclicked=(item:any)=>{
         navigation.navigate('SocailLinksScreen');
         break;
       case 'QR Code':
-        navigation.navigate('QRCodeScreen');
+        navigation.navigate('QRCodeScreen',{selected:selectedData});
         break;
       default:
         break;
     }
-
-
 }
-
 
     return (
             <View style={style.container}>
@@ -82,7 +79,6 @@ const handleOnclicked=(item:any)=>{
                         value={search}
                     />
                 </View>
-
                 <View>
                     <FlatList
                         contentContainerStyle={{ marginHorizontal: WP(1), height: HP(80) }}
@@ -93,7 +89,7 @@ const handleOnclicked=(item:any)=>{
                         renderItem={({ item, index }) => (
                             
                             <WriteTagScreenCard
-                                title={item?.title}
+                                title={item?.iconName}
                                 icon={item?.icon}
                                 onClick={() => handleOnclicked(item)}
                             />
