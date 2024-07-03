@@ -8,31 +8,32 @@ import LinearGradient from 'react-native-linear-gradient';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { checkNfcSupport, showErrorToast, showSuccessToast } from '../../shared/utilities/Helper';
 import NfcManager, { NfcTech, Ndef, } from 'react-native-nfc-manager';
-import { createTags } from '../../shared/utilities/services/mainServices';
-import { setTagsAllRecord } from '../../redux/Slices/MainSlice';
+import { createTags, upadteTags } from '../../shared/utilities/services/mainServices';
+import { setTagsAllRecord, updateTagAction } from '../../redux/Slices/MainSlice';
 import { addTag } from '../../redux/Slices/MainSlice';
 import { useDispatch } from 'react-redux';
 import { AppLoader } from '../AppLoader';
+import { getIconOfSocialLink } from '../../shared/utilities/constants';
 const EmailSheet = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
     const refRBSheet = useRef();
     const screenHeight = Dimensions.get('window').height;
-    const [formValues, setFormValues] = useState(EmailField)
+    const [formValues, setFormValues] = useState("")
 
     // local states
     const [isLoading, setIsLoading] = useState(false)
 
 const dispatch = useDispatch()
 
-    useEffect(() => {
-        if (isUpdated) {
-            // Set new form values here when updated
-            setFormValues({
-                Email: 'newemail@example.com',
-                EmailBody: 'Updated body content',
-                EmailSubject: 'Updated subject heloo'
-            });
-        }
-    }, [isUpdated]);
+    // useEffect(() => {
+    //     if (isUpdated) {
+    //         // Set new form values here when updated
+    //         setFormValues({
+    //             Email: '',
+    //             EmailBody: '',
+    //             EmailSubject: ''
+    //         });
+    //     }
+    // }, [isUpdated]);
 
 
 
@@ -52,16 +53,19 @@ const handleSubmit = async(values: any, { resetForm }: any)=>{
     await NfcManager.start();
     await NfcManager.requestTechnology(NfcTech.Ndef);
     const { Email,EmailBody,EmailSubject,} = values;
-    const combinedText = `Email: ${Email}\nEmail Body: ${EmailBody}\nEmail Subject: ${EmailSubject}`;   
+    const combinedText = `Email: ${Email}\nEmail Body: ${EmailBody}\nEmail Subject: ${EmailSubject}`;
     try {
         const record = Ndef.textRecord(combinedText);
       const bytes = Ndef.encodeMessage([record]);
         if (bytes) {
           await NfcManager.ndefHandler
             .writeNdefMessage(bytes);
-            HandleApidata(EmailBody)
+            {isUpdated ===true ?
+                handleupdate(EmailBody):
+                HandleApidata(EmailBody)
+                         }
+                       
           resetForm()
-
         }
       } catch (error) {
         showErrorToast("Tag Write Failed", "Unable to encode message.");
@@ -98,6 +102,29 @@ setIsLoading(false)
 }
 
 
+const handleupdate=(value)=>{
+    try {
+        setIsLoading(true)
+        const params = {
+       type:textdata?.linkName || "",
+       linkName:textdata?.linkName ||"",
+         value:value || "",
+      }
+     upadteTags(textdata?.id, params).then((res:any)=>{
+        dispatch(updateTagAction(res?.data?.data))
+       showSuccessToast("Tag Successfully updated","Scan to access")
+      refRBSheet.current.close();
+     }).catch((error)=>{
+         showErrorToast('Tags Failed', error?.response?.data?.message || 'An error occurred');
+        setIsLoading(false)
+     }).finally(()=>{
+ setIsLoading(false)
+    })
+    } catch (error: any) {
+        console.log("error",error)
+         setIsLoading(false)
+     }
+}
 
 
 const cancelbtn =()=>{
@@ -106,7 +133,7 @@ const cancelbtn =()=>{
 }
     return (       
         <Formik
-        initialValues={formValues}
+        initialValues={EmailField}
         validationSchema={EmailShema}
 enableReinitialize={true}
 onSubmit={handleSubmit}>
@@ -140,14 +167,22 @@ onSubmit={handleSubmit}>
             <View style={styles.content}>
                 <View style={styles.viewsecond}>
                     <AppLoader loading={isLoading}/>
+                    {isUpdated  ?
+                 <Image 
+              source={getIconOfSocialLink(textdata?.linkName) || ""}
+            style={styles.img}
+                /> :
            <Image 
-       source={textdata?.icon || ""}
-        style={styles.img}
-            /> 
+           source={ textdata?.icon || ""}
+            style={styles.img}
+            /> }
+                {isUpdated ?
+               <Text style={styles.txt}>{textdata?.linkName || ""}</Text>:
              <Text style={styles.txt}>{textdata?.iconName || ""}</Text>
+                }
 
 <UrlTextInput
- placeholder={`Recpient ${textdata?.iconName || "" }`}
+placeholder={ isUpdated?`Add ${textdata?.linkName || "" }`:`Add ${textdata?.iconName || "" }`}
  placeholderTextColor="gray"
 value={values.Email}
 onChangeText={handleChange("Email")}

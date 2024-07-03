@@ -11,6 +11,7 @@ const ENDPOINTS = {
  getUserAllTags:"/api/tags",
 CreateTag:"/api/tag/create",
 DeleteTag:"/api/tag/",
+UpdateTad:"/api/tag/"
 };
 
 export {BASE_URL, ENDPOINTS};

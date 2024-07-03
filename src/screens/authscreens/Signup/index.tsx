@@ -1,4 +1,4 @@
-import { View, Text, Image, Alert } from 'react-native'
+import { View, Text, Image, Alert,TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import style from './style'
 import { applogos } from '../../../shared/theme/assets'
@@ -100,10 +100,36 @@ fcm_token:""
                             title={'Create Account'}
                             onClick={() => { handleSubmit() }}
                         />
-
-                        <Text style={style.alredyAccountTxt}>Already have an account <Text style={style.signInTxt}
+                       <View style={style.lastsignuptex}>
+                        <Text style={style.alredyAccountTxt}>Already have an account </Text>
+                        <Text style={style.signInTxt}
                             onPress={() => { navigation.navigate('Login') }}
-                        >Sign In</Text></Text>
+                        >Sign In</Text>
+                       </View>
+<View style={style.viewlast}>
+<View style={style.viewsecondline}>
+  <View style={style.viewfirstline} />
+  <View>
+    <Text style={style.tetxmiddle}>Continue via Social Networks</Text>
+  </View>
+  <View style={style.viewfirstline} />
+</View>
+
+<View style={style.viewsocialicon}>
+<TouchableOpacity>
+<Image 
+source={applogos.Googlelogo}
+style={style.socialicon}
+/>
+</TouchableOpacity>
+<TouchableOpacity>
+<Image 
+source={applogos.Facebooklogo}
+style={style.socialicon}
+/>
+</TouchableOpacity>
+</View>
+</View>
                     </View>
                 )}
             </Formik>

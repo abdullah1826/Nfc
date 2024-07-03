@@ -8,7 +8,7 @@ import { loginFormFields, loginSchema } from '../../../shared/utilities/validati
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { useDispatch } from 'react-redux'
 import { setAuthenticated, setUserData } from '../../../redux/Slices/UserSlice'
-import {useNetworkStatus ,colors,applogos, MyStatusBar} from '../../../exporter'
+import {useNetworkStatus ,colors,applogos, MyStatusBar, WP, size, appIcons} from '../../../exporter'
 import { AppLoader } from '../../../components/AppLoader'
 import { loginUser } from '../../../shared/utilities/services/authServices'
 import { getPlatform, showErrorToast, showSuccessToast } from '../../../shared/utilities/Helper'
@@ -111,9 +111,38 @@ onPress={()=>navigation.navigate("resetPassword")}
                             onClick={handleSubmit}
                         />
 
-                        <Text style={style.alredyAccountTxt}>Don’t have an account? <Text style={style.signInTxt}
+               <View style={style.lastsignuptex}>
+                     <Text style={style.alredyAccountTxt}>Don’t have an account?</Text>
+                        <Text style={style.signInTxt}
                             onPress={() => navigation.navigate('Signup')}
-                        >Sign Up</Text></Text>
+                        >Sign Up</Text>
+</View>
+                       
+<View style={style.viewlast}>
+<View style={style.viewsecondline}>
+  <View style={style.viewfirstline} />
+  <View>
+    <Text style={style.tetxmiddle}>Continue via Social Networks</Text>
+  </View>
+  <View style={style.viewfirstline} />
+</View>
+
+<View style={style.viewsocialicon}>
+<TouchableOpacity>
+<Image 
+source={applogos.Googlelogo}
+style={style.socialicon}
+/>
+</TouchableOpacity>
+<TouchableOpacity>
+<Image 
+source={applogos.Facebooklogo}
+style={style.socialicon}
+/>
+</TouchableOpacity>
+</View>
+</View>
+
                     </View>
                 )}
             </Formik>

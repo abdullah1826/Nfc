@@ -1,5 +1,7 @@
 import { appIcons, appImages } from "../theme/assets";
 
+
+
 export const writeTagScreenCardData = [
     {
         key: 1,
@@ -206,5 +208,33 @@ export const SocialLinksScreenData = [
 ];
 
 
+
+export const handleupdate=(value)=>{
+    console.log("heloooo upadteee",values)
+    try {
+        setIsLoading(true)
+        const params = {
+       type:textdata?.linkName || "",
+       linkName:textdata?.linkName ||"",
+         value:value || "",
+      }
+      console.log("paramssss_+++", params)
+     upadteTags(textdata?.id, params).then((res:any)=>{
+        console.log("helooo updateee",res?.data?.data)
+        dispatch(updateTagAc(res?.data?.data))
+showSuccessToast("Tag Successfully updated","Scan to access")
+refRBSheet.current.close();
+     }).catch((error)=>{
+        console.log("error+++",error)
+         showErrorToast('Tags Failed', error?.response?.data?.message || 'An error occurred');
+        setIsLoading(false)
+     }).finally(()=>{
+ setIsLoading(false)
+    })
+    } catch (error: any) {
+        console.log("error",error)
+         setIsLoading(false)
+     }
+}
 
 

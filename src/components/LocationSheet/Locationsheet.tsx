@@ -9,11 +9,14 @@ import Geolocation from 'react-native-geolocation-service';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import NfcManager, { NfcTech, Ndef, } from 'react-native-nfc-manager';
 import { checkNfcSupport, showErrorToast, showSuccessToast } from '../../shared/utilities/Helper';
-import { createTags } from '../../shared/utilities/services/mainServices';
+import { createTags, upadteTags } from '../../shared/utilities/services/mainServices';
 import { useDispatch } from 'react-redux';
 import { AppLoader } from '../AppLoader';
-import { addTag } from '../../redux/Slices/MainSlice';
+import { addTag, updateTagAction } from '../../redux/Slices/MainSlice';
+import { getIconOfSocialLink } from '../../shared/utilities/constants';
 const Locationsheet = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
+
+
 
     // locaal states
     const [location, setLocation] = useState(null);
@@ -73,7 +76,10 @@ const handleSubmit = async()=>{
     if (bytes) {
       await NfcManager.ndefHandler.writeNdefMessage(bytes);
       showSuccessToast("Tag Successfully Writte","Scan to access")
-      HandleApidata(geoUri)
+      {isUpdated ===true ?
+        handleupdate(geoUri):
+        HandleApidata(geoUri)
+                 }
     } else {
       showErrorToast("Tag Write Failed", "Unable to encode message.");
     }
@@ -111,7 +117,30 @@ setIsLoading(false)
       setIsLoading(false)
   }
 }
-
+const handleupdate=(value)=>{
+  try {
+      setIsLoading(true)
+      const params = {
+     type:textdata?.linkName || "",
+     linkName:textdata?.linkName ||"",
+       value:value || "",
+    }
+   upadteTags(textdata?.id, params).then((res:any)=>{
+      dispatch(updateTagAction(res?.data?.data))
+     showSuccessToast("Tag Successfully updated","Scan to access")
+    refRBSheet.current.close();
+    setLocation(null)
+   }).catch((error)=>{
+       showErrorToast('Tags Failed', error?.response?.data?.message || 'An error occurred');
+      setIsLoading(false)
+   }).finally(()=>{
+setIsLoading(false)
+  })
+  } catch (error: any) {
+      console.log("error",error)
+       setIsLoading(false)
+   }
+}
 
 
 
@@ -165,7 +194,6 @@ const getLocation = () => {
         
     }
   };
-
 const cancelbtn =()=>{
     refRBSheet.current.close();
 }
@@ -219,11 +247,19 @@ const handlePress = (data, details = null) => {
             <View style={styles.content}>
                 <View style={styles.viewsecond}>
                   <AppLoader loading={isLoading}/>
+                  {isUpdated  ?
+                 <Image 
+              source={getIconOfSocialLink(textdata?.linkName) || ""}
+            style={styles.img}
+                /> :
            <Image 
-       source={textdata?.icon || ""}
-        style={styles.img}
-            /> 
+           source={ textdata?.icon || ""}
+            style={styles.img}
+            /> }
+                {isUpdated ?
+               <Text style={styles.txt}>{textdata?.linkName || ""}</Text>:
              <Text style={styles.txt}>{textdata?.iconName || ""}</Text>
+                }
 
              <GooglePlacesAutocomplete
         placeholder='Enter Location'

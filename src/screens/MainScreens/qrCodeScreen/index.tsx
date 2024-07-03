@@ -7,16 +7,17 @@ import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import { HP, WP, colors } from '../../../exporter';
 import NfcManager, { NfcTech, Ndef } from 'react-native-nfc-manager';
 import { showErrorToast, showSuccessToast } from '../../../shared/utilities/Helper';
-import { addTag } from '../../../redux/Slices/MainSlice';
+import { addTag, updateTagAction } from '../../../redux/Slices/MainSlice';
 import { useDispatch } from 'react-redux';
 import { AppLoader } from '../../../components/AppLoader';
-import { createTags } from '../../../shared/utilities/services/mainServices';
+import { createTags, upadteTags } from '../../../shared/utilities/services/mainServices';
 const QRCodeScreen = ({ navigation, route }: any) => {
 // local staffs
 const [cameraReady, setCameraReady] = useState(false);
 const [QrData , setQrData] = useState("")
 const [isLoading, setIsLoading] = useState(false)
 const textdata = route?.params?.selected
+const isUpdated = route?.params?.textupdate
 
   useEffect(() => {
     camerapermission()
@@ -62,13 +63,15 @@ const camerapermission =()=>{
           await NfcManager.start(); // Start NFC manager
           showSuccessToast("Alert Ready for scan","Please Scan the tag")
           await NfcManager.requestTechnology(NfcTech.Ndef); // Request NDEF technology
-    
           // Prepare NDEF records (example: text record with QR code data)
           const record = Ndef.uriRecord(data);
           const bytes = Ndef.encodeMessage([record]);
           if (bytes) {
             await NfcManager.ndefHandler.writeNdefMessage(bytes); // Write NDEF message to NFC tag
-            HandleApidata(data)
+            {isUpdated ===true ?
+              handleupdate(data):
+              HandleApidata(data)
+              }
           }
         } catch (error) {
           showErrorToast("Tag Write Failed", "Unable to encode message.");
@@ -82,12 +85,11 @@ const camerapermission =()=>{
           try {
               setIsLoading(true)
               const params = {
-            type:textdata?.iconName || "",
-            linkName:textdata?.iconName ||"",
-               value:value || "",
-           }
-           console.log("params+___++",params)
-          createTags(params).then((res:any)=>{
+              type:textdata.iconName,
+              linkName:textdata.iconName,
+               value:value,
+                 }
+              createTags(params).then((res:any)=>{
               dispatch(addTag(res?.data?.data))
               showSuccessToast("Tag Successfully Writte","Scan to access")
               setIsLoading(false)
@@ -105,6 +107,30 @@ const camerapermission =()=>{
               console.log("error",error)
               setIsLoading(false)
           }
+        }
+        const handleupdate=(value:any)=>{
+          try {
+              setIsLoading(true)
+              const params = {
+             type:textdata?.linkName,
+             linkName:textdata?.linkName,
+               value:value,
+            }
+           upadteTags(textdata?.id, params).then((res:any)=>{
+              dispatch(updateTagAction(res?.data?.data))
+             showSuccessToast("Tag Successfully updated","Scan to access")
+             setQrData("")
+             navigation.goBack()
+           }).catch((error)=>{
+               showErrorToast('Tags Failed', error?.response?.data?.message || 'An error occurred');
+              setIsLoading(false)
+           }).finally(()=>{
+        setIsLoading(false)
+          })
+          } catch (error: any) {
+              console.log("error",error)
+               setIsLoading(false)
+           }
         }
 
 

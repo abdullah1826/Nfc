@@ -9,15 +9,17 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import NfcManager, { NfcTech, Ndef, } from 'react-native-nfc-manager';
 import { checkNfcSupport, showErrorToast, showSuccessToast } from '../../shared/utilities/Helper';
 import { useDispatch } from 'react-redux';
-import { addTag } from '../../redux/Slices/MainSlice';
-import { createTags } from '../../shared/utilities/services/mainServices';
+import { addTag, updateTagAction } from '../../redux/Slices/MainSlice';
+import { createTags, upadteTags } from '../../shared/utilities/services/mainServices';
 import { AppLoader } from '../AppLoader';
+import { getIconOfSocialLink } from '../../shared/utilities/constants';
 const TextAction = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
     const refRBSheet = useRef();
 
     //  local state
     const [isNfcReady, setIsNfcReady] = useState(false);
     const [isLoading, setIsLoading] = useState(false)
+    const [formValues, setFormValues] = useState("")
 
 const dispatch = useDispatch()
 
@@ -30,6 +32,16 @@ const dispatch = useDispatch()
         },
     }));
 
+    // update methed values chanage function
+
+    // useEffect(() => {
+    //     if (isUpdated) {
+    //         setFormValues({
+    //             TextAction: 'Updated urllllllll', 
+    //         });
+    //     }
+    // }, [isUpdated]);
+
 const handleSubmit =async (values: any, { resetForm }: any)=>{
      const nfcSupported = await checkNfcSupport();
     if (!nfcSupported) return
@@ -40,7 +52,10 @@ const handleSubmit =async (values: any, { resetForm }: any)=>{
          if (bytes) {
            await NfcManager.ndefHandler
              .writeNdefMessage(bytes);
-            HandleApidata(values.TextAction)
+             {isUpdated ===true ?
+                handleupdate(values.TextAction):
+                HandleApidata(values.TextAction)
+                         }
           resetForm()
          }
        } catch (error) {
@@ -61,10 +76,9 @@ const handleSubmit =async (values: any, { resetForm }: any)=>{
       }
      createTags(params).then((res:any)=>{
         dispatch(addTag(res?.data?.data))
-showSuccessToast("Tag Successfully Writte","Scan to access")
+showSuccessToast("Tag Successfully Written","Scan to access")
 refRBSheet.current.close();
      }).catch((error)=>{
-        console.log("error+++",error)
          showErrorToast('Tags Failed', error?.response?.data?.message || 'An error occurred');
         setIsLoading(false)
      }).finally(()=>{
@@ -75,6 +89,33 @@ refRBSheet.current.close();
          setIsLoading(false)
      }
  }
+
+
+const handleupdate=(values)=>{
+    try {
+        setIsLoading(true)
+        const params = {
+       type:textdata?.linkName || "",
+       linkName:textdata?.linkName ||"",
+         value:values || "",
+      }
+     upadteTags(textdata?.id, params).then((res:any)=>{
+        dispatch(updateTagAction(res?.data?.data))
+       showSuccessToast("Tag Successfully updated","Scan to access")
+      refRBSheet.current.close();
+     }).catch((error)=>{
+         showErrorToast('Tags Failed', error?.response?.data?.message || 'An error occurred');
+        setIsLoading(false)
+     }).finally(()=>{
+ setIsLoading(false)
+    })
+    } catch (error: any) {
+        console.log("error",error)
+         setIsLoading(false)
+     }
+}
+
+
 
 const cancelbtn =()=>{
     refRBSheet.current.close();
@@ -93,8 +134,6 @@ const cancelbtn =()=>{
             closeOnDragDown={true}
           closeOnPressMask={true}
           animationType="slide"
-          
-          
             customStyles={{
                 wrapper: {
                     flex:1,
@@ -116,14 +155,23 @@ const cancelbtn =()=>{
                 <MyStatusBar backgroundColor={"white"}/>
                 <View style={styles.viewsecond}>
                 <AppLoader loading={isLoading}/>
+                {isUpdated  ?
+                 <Image 
+              source={getIconOfSocialLink(textdata?.linkName) || ""}
+            style={styles.img}
+                /> :
            <Image 
-       source={textdata?.icon || ""}
-        style={styles.img}
+           source={ textdata?.icon || ""}
+            style={styles.img}
             /> 
+                }
+                {isUpdated ?
+               <Text style={styles.txt}>{textdata?.linkName || ""}</Text>:
              <Text style={styles.txt}>{textdata?.iconName || ""}</Text>
+                }
 
 <UrlTextInput
- placeholder={`Add ${textdata?.iconName || "" }`}
+ placeholder={ isUpdated?`Add ${textdata?.linkName || "" }`:`Add ${textdata?.iconName || "" }`}
  placeholderTextColor="gray"
 value={values.TextAction}
 onChangeText={handleChange("TextAction")}

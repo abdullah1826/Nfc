@@ -39,7 +39,6 @@ const style = StyleSheet.create({
     alredyAccountTxt: {
         color: colors.g21,
         alignSelf: 'center',
-        marginTop: HP(4),
         fontSize: size.xsmall
     },
     signInTxt: {
@@ -53,6 +52,47 @@ const style = StyleSheet.create({
         fontSize: size.tiny,
         fontWeight: '400',
         marginTop: HP(1)
+    },
+    lastsignuptex:{
+        flexDirection:"row",
+        alignItems:"center",
+        alignSelf:"center",
+        justifyContent:"center",
+      marginTop: HP(4),
+    },
+    viewlast:{
+        flex:1,
+        justifyContent:'center',
+        alignItems:"center",
+        marginTop: HP(4),
+    },
+    viewsecondline:{
+        flexDirection: 'row', 
+        alignItems: 'center',
+         alignSelf:'center'
+    },
+    viewfirstline:{
+        flex: 1,
+         height: 1,
+          backgroundColor: '#DADADA'
+    },
+    tetxmiddle:{
+        width: WP("50"),
+         textAlign: 'center',
+          color:"#BCBCBC",
+           fontSize:size.tiny
+    },
+    viewsocialicon:{
+        flexDirection:'row', 
+        justifyContent:'center',
+        marginTop:WP("4"),
+    },
+    socialicon:{
+        width:WP("10"),
+         height:HP("5"),
+         resizeMode:'contain',
+         marginHorizontal:WP("3")
+         
     }
 });
 

@@ -8,15 +8,14 @@ import LinearGradient from 'react-native-linear-gradient';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import NfcManager, { NfcTech, Ndef, } from 'react-native-nfc-manager';
 import { checkNfcSupport, showErrorToast, showSuccessToast, useNetworkStatus } from '../../shared/utilities/Helper';
-import { createTags } from '../../shared/utilities/services/mainServices';
+import { createTags, upadteTags } from '../../shared/utilities/services/mainServices';
 import { Alert } from 'react-native';
 import { AppLoader } from '../AppLoader';
-import { addTag, setTagsAllRecord } from '../../redux/Slices/MainSlice';
+import { addTag, setTagsAllRecord, updateTagAction } from '../../redux/Slices/MainSlice';
 import { useDispatch } from 'react-redux';
+import { getIconOfSocialLink } from '../../shared/utilities/constants';
 
-const SocialSheet = forwardRef(({textdata}, ref) => {
-   
-
+const SocialSheet = forwardRef(({textdata,isUpdated}, ref) => {
     const dispatch = useDispatch()
     const refRBSheet = useRef();
     //  local state
@@ -46,7 +45,10 @@ const handleSubmit = async(values: any, { resetForm }: any)=>{
         if (bytes) {
           await NfcManager.ndefHandler
             .writeNdefMessage(bytes);
-            HandleApidata(values.UrlText)
+            {isUpdated ===true ?
+                handleupdate(values.UrlText):
+                HandleApidata(values.UrlText)
+                         }
           resetForm()
         }
       } catch (error) {
@@ -77,13 +79,38 @@ const HandleApidata =(value:any)=>{
     }).finally(()=>{
 setIsLoading(false)
     })
-
-
     } catch (error: any) {
         console.log("error",error)
         setIsLoading(false)
     }
 }
+
+const handleupdate=(values)=>{
+    try {
+        setIsLoading(true)
+        const params = {
+       type:textdata?.linkName || "",
+       linkName:textdata?.linkName ||"",
+         value:values || "",
+      }
+     upadteTags(textdata?.id, params).then((res:any)=>{
+        dispatch(updateTagAction(res?.data?.data))
+showSuccessToast("Tag Successfully updated","Scan to access")
+refRBSheet.current.close();
+     }).catch((error)=>{
+         showErrorToast('Tags Failed', error?.response?.data?.message || 'An error occurred');
+        setIsLoading(false)
+     }).finally(()=>{
+ setIsLoading(false)
+    })
+    } catch (error: any) {
+        console.log("error",error)
+         setIsLoading(false)
+     }
+}
+
+
+
 
 const cancelbtn =()=>{
     refRBSheet.current.close();
@@ -124,14 +151,23 @@ const cancelbtn =()=>{
                 <AppLoader loading={isLoading}/>
             <View style={styles.content}>
                 <View style={styles.viewsecond}>
+                {isUpdated  ?
+                 <Image 
+              source={getIconOfSocialLink(textdata?.linkName) || ""}
+            style={styles.img}
+                /> :
            <Image 
-          source={textdata?.icon || ""}
-           style={styles.img}
-            /> 
+           source={ textdata?.icon || ""}
+            style={styles.img}
+            /> }
+                {isUpdated ?
+               <Text style={styles.txt}>{textdata?.linkName || ""}</Text>:
              <Text style={styles.txt}>{textdata?.iconName || ""}</Text>
+                }
+
 
 <UrlTextInput
- placeholder={`Add ${textdata?.iconName || "" }`}
+placeholder={ isUpdated?`Add ${textdata?.linkName || "" }`:`Add ${textdata?.iconName || "" }`}
  placeholderTextColor="gray"
 value={values.UrlText}
 onChangeText={handleChange("UrlText")}
@@ -156,7 +192,7 @@ errorMessage={errors.UrlText}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
           >
-              <Text style={styles.btnTxt}>Save</Text>
+              <Text style={styles.btnTxt}>{isUpdated? "Update":"Save"}</Text>
           </LinearGradient>
       </TouchableOpacity>
 

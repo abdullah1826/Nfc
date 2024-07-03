@@ -1,8 +1,9 @@
 export const applogos = {
     logo: require('../../assets/logos/logoGreen.png'),
-    AppLogo:require("../../assets/logos/AppLogo.png")
+    AppLogo:require("../../assets/logos/AppLogo.png"),
+    Googlelogo:require("../../assets/icons/google.png"),
+    Facebooklogo:require("../../assets/icons/facebook.png")
 };
-
 export const appImages = {
     Discored: require('../../assets/images/Discord.png'),
     Email: require('../../assets/images/Email.png'),
@@ -63,6 +64,5 @@ export const appIcons = {
     AboutBlue: require('../../assets/icons/AboutBlue.png'),
     Dot: require('../../assets/icons/Dot.png'),
     EyeOff: require('../../assets/icons/Eye-Off.png')
-
 }
 

@@ -20,23 +20,19 @@ const RecentRecordsScreenCard: React.FC<props> = ({ Icon, title, Desc,deletepres
             <Image source={Icon} style={styles.cardIcon} />
             <View style={styles.innerContainer}>
                 <Text style={styles.cardTitle}>{title}</Text>
-                <Text style={styles.cardDesc}>{Desc}</Text>
+                <Text numberOfLines={1} ellipsizeMode='tail' style={styles.cardDesc}>{Desc}</Text>
             </View>
-
-{showDeleteButton.status===0 && 
             <TouchableOpacity
             onPress={editpress}
             >
                 <Image source={appIcons.Edit} style={[styles.icon, { marginLeft: WP(.5) }]} />
             </TouchableOpacity>
-}
-        {showDeleteButton.status===0 &&
             <TouchableOpacity
             onPress={deletepress}
             >
                 <Image source={appIcons.Delete} style={styles.icon} />
             </TouchableOpacity>
-}
+
         </View>
     )
 }
@@ -72,7 +68,6 @@ const styles = StyleSheet.create({
     cardDesc: {
         color: colors.b1,
         fontSize: size.tiny,
-        // backgroundColor: 'red',
         marginTop: HP(.1),
         width: WP(43),
     },

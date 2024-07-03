@@ -22,10 +22,20 @@ const mainReducer = createSlice({
               state.TagsAllRecord = newTagsAllRecord;
               state.deleteTag = action.payload;
         },
+        updateTagAction: (state, action) => {
+console.log("Action.payload", action.payload)
+
+            const index = state.TagsAllRecord.findIndex(tag => tag.id === action.payload.id);
+            console.log("indexxxxx",index)
+            if (index !== -1) {
+              state.TagsAllRecord[index] = action.payload;
+            }
+          },
+      
 
     },
 });
 
-export const {setTagsAllRecord,setdeleteTags,addTag} = mainReducer.actions;
+export const {setTagsAllRecord,setdeleteTags,addTag,updateTagAction} = mainReducer.actions;
 
 export default mainReducer.reducer;

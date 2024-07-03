@@ -8,10 +8,11 @@ import LinearGradient from 'react-native-linear-gradient';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import NfcManager, { NfcTech, Ndef, } from 'react-native-nfc-manager';
 import { checkNfcSupport, showErrorToast, showSuccessToast } from '../../shared/utilities/Helper';
-import { createTags } from '../../shared/utilities/services/mainServices';
-import { addTag } from '../../redux/Slices/MainSlice';
+import { createTags, upadteTags } from '../../shared/utilities/services/mainServices';
+import { addTag, updateTagAction } from '../../redux/Slices/MainSlice';
 import { AppLoader } from '../AppLoader';
 import { useDispatch } from 'react-redux';
+import { getIconOfSocialLink } from '../../shared/utilities/constants';
 const UrlActionSheet = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
     const refRBSheet = useRef();
 
@@ -19,7 +20,7 @@ const UrlActionSheet = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
 
     //  local state
 
-    const [formValues, setFormValues] = useState(UrlFields)
+    const [formValues, setFormValues] = useState()
     const [isLoading, setIsLoading] = useState(false)
 
     useImperativeHandle(ref, () => ({
@@ -40,7 +41,10 @@ const handleSubmit =async (values: any, { resetForm }: any)=>{
         if (bytes) {
           await NfcManager.ndefHandler
             .writeNdefMessage(bytes);
-            HandleApidata(values.UrlText)
+            {isUpdated ===true ?
+                handleupdate(values.UrlText):
+                HandleApidata(values.UrlText)
+                         }
           resetForm()
         }
       } catch (error) {
@@ -76,7 +80,29 @@ setIsLoading(false)
 }
 
 
-
+const handleupdate=(value)=>{
+    try {
+        setIsLoading(true)
+        const params = {
+       type:textdata?.linkName || "",
+       linkName:textdata?.linkName ||"",
+         value:value || "",
+      }
+     upadteTags(textdata?.id, params).then((res:any)=>{
+        dispatch(updateTagAction(res?.data?.data))
+showSuccessToast("Tag Successfully updated","Scan to access")
+refRBSheet.current.close();
+     }).catch((error)=>{
+         showErrorToast('Tags Failed', error?.response?.data?.message || 'An error occurred');
+        setIsLoading(false)
+     }).finally(()=>{
+ setIsLoading(false)
+    })
+    } catch (error: any) {
+        console.log("error",error)
+         setIsLoading(false)
+     }
+}
 
 
 
@@ -84,18 +110,18 @@ const cancelbtn =()=>{
     refRBSheet.current.close();
 
 }
-useEffect(() => {
-    if (isUpdated) {
-        // Set new form values here when updated
-        setFormValues({
-            UrlText: 'Updated url', 
-        });
-    }
-}, [isUpdated]);
+// useEffect(() => {
+//     if (isUpdated) {
+//         // Set new form values here when updated
+//         setFormValues({
+//             UrlText: 'Updated url', 
+//         });
+//     }
+// }, [isUpdated]);
     return (
         <KeyboardAwareScrollView>
         <Formik
-        initialValues={formValues}
+        initialValues={UrlFields}
         validationSchema={Urlschema}
         onSubmit={handleSubmit}
     >
@@ -124,14 +150,23 @@ useEffect(() => {
             <View style={styles.content}>
                 <View style={styles.viewsecond}>
                     <AppLoader loading={isLoading}/>
+                    {isUpdated  ?
+                 <Image 
+              source={getIconOfSocialLink(textdata?.linkName) || ""}
+            style={styles.img}
+                /> :
            <Image 
-       source={textdata?.icon || ""}
-        style={styles.img}
+           source={ textdata?.icon || ""}
+            style={styles.img}
             /> 
+                }
+                {isUpdated ?
+               <Text style={styles.txt}>{textdata?.linkName || ""}</Text>:
              <Text style={styles.txt}>{textdata?.iconName || ""}</Text>
+                }
 
 <UrlTextInput
- placeholder={`Add ${textdata?.iconName || "" }`}
+placeholder={ isUpdated?`Add ${textdata?.linkName || "" }`:`Add ${textdata?.iconName || "" }`}
  placeholderTextColor="gray"
 value={values.UrlText}
 onChangeText={handleChange("UrlText")}

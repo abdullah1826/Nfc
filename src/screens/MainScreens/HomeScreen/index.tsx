@@ -2,7 +2,6 @@
 import { View, Text, Alert, FlatList, Platform, SafeAreaView } from 'react-native'
 import React, { useCallback, useEffect, useRef,useState } from 'react'
 import style from './style'
-
 import ActionCard from '../../../components/card/ActionCard'
 import { appIcons,} from '../../../shared/theme/assets'
 import RecentRecordsCard from '../../../components/RecentRecordsCard/RecentRecordsCard'
@@ -16,6 +15,7 @@ import { getAllTags } from '../../../shared/utilities/services/mainServices'
 import { setTagsAllRecord } from '../../../redux/Slices/MainSlice'
 import { AppLoader } from '../../../components/AppLoader'
 import { getIconOfSocialLink } from '../../../shared/utilities/constants'
+import { TouchableOpacity } from 'react-native'
 
 const HomeScreen = ({ navigation }: any) => {
 
@@ -35,12 +35,11 @@ const dispatch = useDispatch()
         const isConnected = useNetworkStatus()
 
         const readNdef = async () => {
-            await NfcManager.start();
-      console.log('NFC Manager started successfully!')
+            try {
             const nfcSupported = await checkNfcSupport();
             if (!nfcSupported) return
-                     try {
-                             // Start NFC Reading
+                
+      await NfcManager.start();
       await NfcManager.requestTechnology(NfcTech.Ndef);
       NfcManager.setEventListener(NfcTech.Ndef, (tag) => {
         console.log('NFC Tag:', tag);
@@ -95,8 +94,7 @@ try {
     setIsLoading(false)
 }).finally(()=>{
     setIsLoading(false)
-})
-    
+})  
 } catch (error) {
     
 }
@@ -163,12 +161,15 @@ try {
                             onClick={() => { }}
                         />
                     </View>
-
                     <View style={style.RecordsHeadingBox}>
                         <Text style={style.RecordsHeading}>Recent Records</Text>
+                        <TouchableOpacity
+                        disabled={tagdata.length===0 }
+                      onPress={() => { navigation.navigate('RecentRecordsScreen') }}
+                        >
                         <Text style={style.seeAllTxt}
-                            onPress={() => { navigation.navigate('RecentRecordsScreen') }}
                         >See All</Text>
+                         </TouchableOpacity>
                     </View>
 
                 </View>

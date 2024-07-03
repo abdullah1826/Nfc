@@ -8,11 +8,12 @@ import LinearGradient from 'react-native-linear-gradient';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import NfcManager, { NfcTech, Ndef, } from 'react-native-nfc-manager';
 import { checkNfcSupport, showErrorToast, showSuccessToast } from '../../shared/utilities/Helper';
-import { setTagsAllRecord } from '../../redux/Slices/MainSlice';
-import { createTags } from '../../shared/utilities/services/mainServices';
+import { setTagsAllRecord, updateTagAction } from '../../redux/Slices/MainSlice';
+import { createTags, upadteTags } from '../../shared/utilities/services/mainServices';
 import { addTag } from '../../redux/Slices/MainSlice';
 import { useDispatch } from 'react-redux';
 import { AppLoader } from '../AppLoader';
+import { getIconOfSocialLink } from '../../shared/utilities/constants';
 const Contactsheet = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
     const refRBSheet = useRef();
     const screenHeight = Dimensions.get('window').height;
@@ -42,9 +43,11 @@ const handleSubmit =async (values: any, { resetForm }: any)=>{
         if (bytes) {
           await NfcManager.ndefHandler
             .writeNdefMessage(bytes);
-          HandleApidata(combinedText)
+          {isUpdated ===true ?
+            handleupdate(combinedText):
+            HandleApidata(combinedText)
+                     }
           resetForm()
-          refRBSheet.current.close();
         }
       } catch (error) {
         showErrorToast("Tag Write Failed", "Unable to encode message.");
@@ -79,6 +82,33 @@ setIsLoading(false)
         setIsLoading(false)
     }
 }
+
+const handleupdate=(value)=>{
+    try {
+        setIsLoading(true)
+        const params = {
+       type:textdata?.linkName || "",
+       linkName:textdata?.linkName ||"",
+         value:value || "",
+      }
+     upadteTags(textdata?.id, params).then((res:any)=>{
+        dispatch(updateTagAction(res?.data?.data))
+       showSuccessToast("Tag Successfully updated","Scan to access")
+      refRBSheet.current.close();
+     }).catch((error)=>{
+         showErrorToast('Tags Failed', error?.response?.data?.message || 'An error occurred');
+        setIsLoading(false)
+     }).finally(()=>{
+ setIsLoading(false)
+    })
+    } catch (error: any) {
+        console.log("error",error)
+         setIsLoading(false)
+     }
+}
+
+
+
 
 
 const cancelbtn =()=>{
@@ -121,14 +151,21 @@ const cancelbtn =()=>{
             <View style={styles.content}>
                 <View style={styles.viewsecond}>
                     <AppLoader loading={isLoading}/>
+                    {isUpdated  ?
+                 <Image 
+              source={getIconOfSocialLink(textdata?.linkName) || ""}
+            style={styles.img}
+                /> :
            <Image 
-       source={textdata?.icon || ""}
-        style={styles.img}
-            /> 
+           source={ textdata?.icon || ""}
+            style={styles.img}
+            /> }
+                {isUpdated ?
+               <Text style={styles.txt}>{textdata?.linkName || ""}</Text>:
              <Text style={styles.txt}>{textdata?.iconName || ""}</Text>
-
+                }
 <UrlTextInput
- placeholder={`Add ${textdata?.iconName || "" }`}
+placeholder={ isUpdated?`Add ${textdata?.linkName || "" }`:`Add ${textdata?.iconName || "" }`}
  placeholderTextColor="gray"
 value={values.ContectName}
 onChangeText={handleChange("ContectName")}

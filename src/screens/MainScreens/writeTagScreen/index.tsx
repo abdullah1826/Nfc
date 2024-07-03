@@ -31,7 +31,6 @@ const refLocationsheet = useRef();
 
 
 const handleOnclicked=(item:any)=>{
-  // console.log("itemmmm", item)
     setSelectedData(item);
     switch (item.iconName) {
       case 'Text':
@@ -56,7 +55,7 @@ const handleOnclicked=(item:any)=>{
         navigation.navigate('SocailLinksScreen');
         break;
       case 'QR Code':
-        navigation.navigate('QRCodeScreen',{selected:selectedData});
+        navigation.navigate('QRCodeScreen',{selected:item});
         break;
       default:
         break;

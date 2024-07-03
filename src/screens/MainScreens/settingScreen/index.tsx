@@ -11,7 +11,7 @@ import { useNetworkStatus } from '../../../exporter'
 import { deleteCurrentUser } from '../../../shared/utilities/services/authServices'
 import { showErrorToast, showSuccessToast } from '../../../shared/utilities/Helper'
 import { AppLoader } from '../../../components/AppLoader'
-
+import Share from 'react-native-share';
 
 const Setting = ({ navigation }: any) => {
 
@@ -54,7 +54,7 @@ const Setting = ({ navigation }: any) => {
             key: 4,
             label: 'Share this app',
             icon: appIcons.Share,
-            onClick: () => { }
+            onClick: () => {handleshareapp()}
         },
         {
             key: 5,
@@ -110,6 +110,16 @@ c
         }
     }
 
+
+    const handleshareapp=()=>{
+        Share.open(options)
+  .then((res) => {
+    console.log(res);
+  })
+  .catch((err) => {
+    err && console.log(err);
+  });
+    }
     return (
         <View style={style.container}>
             <ScreenHeader

@@ -2,10 +2,10 @@ import { Image,ScrollView,TextInput, View } from 'react-native'
 import React, { useState,useRef } from 'react'
 import style from './style'
 import RecentRecordsScreenCard from '../../../components/RecentRecordsScreenCard/RecentRecordsScreenCard'
-import { appIcons, appImages } from '../../../shared/theme/assets'
+import { appIcons, } from '../../../shared/theme/assets'
 import ScreenHeader from '../../../components/screenHeader/ScreenHeader'
 import { colors } from '../../../shared/theme/colors'
-import { Contactsheet, EmailSheet, Locationsheet, PhoneSheet, TextAction, UrlActionSheet } from '../../../exporter'
+import { Contactsheet, EmailSheet, Locationsheet, PhoneSheet, SocialSheet, TextAction, UrlActionSheet } from '../../../exporter'
 import { useDispatch, useSelector } from 'react-redux'
 import { getIconOfSocialLink } from '../../../shared/utilities/constants'
 import { deleteTags } from '../../../shared/utilities/services/mainServices'
@@ -25,6 +25,7 @@ const refPhoneSheet = useRef();
 const refContectSheet = useRef();
 const refEmailShet = useRef();
 const refLocationsheet = useRef();
+const refRBSheet = useRef();
 
 
     // local states
@@ -36,16 +37,15 @@ const refLocationsheet = useRef();
     // Function to handle search query changes
 
     const filteredData = TagsAllRecord?.filter((item:any) => {
-      // console.log("fiter dsataaaa",item.linkName)
-      const iconName = item.iconName ? item.iconName.toLowerCase() : '';
+      const linkName = item.linkName ? item.linkName.toLowerCase() : '';
       const query = searchQuery ? searchQuery.toLowerCase() : '';
-      return iconName.includes(query);
+      return linkName.includes(query);
     });
 
     const handleEditData = (item) => {
         setSelectedData(item);
         setIsUpdated(true); 
-        switch (item.iconName) {
+        switch (item.linkName) {
           case 'Text':
             refTextSheet.current.open();
             break;
@@ -64,11 +64,47 @@ const refLocationsheet = useRef();
           case 'Location':
             refLocationsheet.current.open();
             break;
+            case 'Youtube':
+              refRBSheet.current.open();
+              break;
+              case 'Tiktok':
+                refRBSheet.current.open();
+                break;
+                case 'Instagram':
+                  refRBSheet.current.open();
+                  break;
+                  case 'Facebook':
+                    refRBSheet.current.open();
+                    break;
+                    case 'SnapChat':
+                      refRBSheet.current.open();
+                      break;
+                      case 'LinkedIn':
+                        refRBSheet.current.open();
+                        break;
+                        case 'Spotify':
+                          refRBSheet.current.open();
+                          break;
+                          case 'Discored':
+                            refRBSheet.current.open();
+                            break;
+                            case 'Reddit':
+                              refRBSheet.current.open();
+                              break;
+                              case 'Pinterest':
+                                refRBSheet.current.open();
+                                break;
+                                case 'Twitter':
+                                  refRBSheet.current.open();
+                                  break;
+                                  case 'Github':
+                                    refRBSheet.current.open();
+                                    break;
           case 'Social Links':
             navigation.navigate('SocialLinksScreen');
             break;
           case 'QR Code':
-            navigation.navigate('QRCodeScreen');
+            navigation.navigate('QRCodeScreen',{textupdate:true, selected:item});
             break;
           default:
             break;
@@ -76,7 +112,7 @@ const refLocationsheet = useRef();
       };
 
 
-const handleDeleteData =(item:any)=>{;
+const handleDeleteData =(item:any)=>{
     setIsLoading(true)
     deleteTags(item?.id).then((res)=>{
 dispatch(setdeleteTags(item?.id))
@@ -161,6 +197,15 @@ textdata={selectedData}
 isUpdated={isUpdated}
 setIsUpdated={setIsUpdated}
 />
+
+<SocialSheet
+ref={refRBSheet}
+textdata={selectedData}
+isUpdated={isUpdated}
+setIsUpdated={setIsUpdated}
+/>
+
+
         </View>
     )
 }
