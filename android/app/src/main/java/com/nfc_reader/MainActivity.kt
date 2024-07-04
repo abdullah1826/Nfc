@@ -1,5 +1,4 @@
-package com.nfc_reader
-
+package com.nfc_Toolkit
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled

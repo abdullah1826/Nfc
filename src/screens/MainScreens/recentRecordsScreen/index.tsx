@@ -42,6 +42,8 @@ const refRBSheet = useRef();
       return linkName.includes(query);
     });
 
+
+    // handle Edit button data
     const handleEditData = (item) => {
         setSelectedData(item);
         setIsUpdated(true); 
@@ -111,8 +113,13 @@ const refRBSheet = useRef();
         }
       };
 
-
+// handle delete
 const handleDeleteData =(item:any)=>{
+  if(item.status ===1){
+    showErrorToast('Failed','Cannot deleted this tag because data store in Nfc tag ');
+    return
+  }
+  try {
     setIsLoading(true)
     deleteTags(item?.id).then((res)=>{
 dispatch(setdeleteTags(item?.id))
@@ -126,6 +133,9 @@ setIsLoading(false)
       setIsLoading(false)
 
     })
+  } catch (error) {
+    
+  }
 }
 
     return (

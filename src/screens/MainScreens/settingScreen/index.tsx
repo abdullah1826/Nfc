@@ -12,6 +12,7 @@ import { deleteCurrentUser } from '../../../shared/utilities/services/authServic
 import { showErrorToast, showSuccessToast } from '../../../shared/utilities/Helper'
 import { AppLoader } from '../../../components/AppLoader'
 import Share from 'react-native-share';
+import { GoogleSignin } from '@react-native-google-signin/google-signin'
 
 const Setting = ({ navigation }: any) => {
 
@@ -80,6 +81,7 @@ const Setting = ({ navigation }: any) => {
             icon: appIcons.Logout,
             onClick: () => { 
                 dispatch(signOut())
+                GoogleSignin.signOut()
                 navigation.replace('AuthStack', { Screen: 'Login' });
             }
         },
@@ -95,7 +97,9 @@ setIsLoading(true)
 deleteCurrentUser().then((res)=>{
 showSuccessToast("Alert" ,"Account deleted successfully")
 setIsLoading(false)
-navigation.navigate("Login")
+dispatch(signOut())
+GoogleSignin.signOut()
+navigation.replace('AuthStack', { Screen: 'Login' });
 }).catch((error)=>{
     showErrorToast('Failed', error?.response?.data?.message || 'An error occurred');
     setIsLoading(false)

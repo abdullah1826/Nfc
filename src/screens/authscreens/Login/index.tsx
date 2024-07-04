@@ -1,5 +1,5 @@
 import { View, Text, Image, Alert,TouchableOpacity } from 'react-native'
-import React,{useState} from 'react'
+import React,{useState,useEffect} from 'react'
 import style from './style'
 import CustomButton from '../../../components/customButton/CustomButton'
 import CustomTextInput from '../../../components/customTextInput/CustomTextInput'
@@ -12,7 +12,9 @@ import {useNetworkStatus ,colors,applogos, MyStatusBar, WP, size, appIcons} from
 import { AppLoader } from '../../../components/AppLoader'
 import { loginUser } from '../../../shared/utilities/services/authServices'
 import { getPlatform, showErrorToast, showSuccessToast } from '../../../shared/utilities/Helper'
-
+import { EMAIL_TYPE, GOOGLE_WEB_CLIENT_ID } from '../../../shared/utilities/constants'
+import { onFacebookLogin, onGoogleLogin } from '../../../shared/utilities/socialLogin'
+import { GoogleSignin } from '@react-native-google-signin/google-signin'
 
 const Login = ({ navigation }: any) => {
 
@@ -38,7 +40,7 @@ const Login = ({ navigation }: any) => {
              password:values?.password,
              platform:isuserPlatform,
              fcm_token:"",
-             login_with:"email"
+             login_with:EMAIL_TYPE
          }
         loginUser(params).then((res:any)=>{
             dispatch(setUserData(res?.data?.data))
@@ -63,6 +65,27 @@ setIsLoading(false)
         }
     };
 
+    useEffect(() => {
+       GoogleSignin.configure({
+        webClientId: GOOGLE_WEB_CLIENT_ID, 
+        offlineAccess: true,
+      });
+      }, []);
+      const handlelogin=()=>{
+        if (!isConnected) {
+            Alert.alert('No Internet Connection', 'Please check your internet connection and try again.');
+            return;
+          }
+        onGoogleLogin(dispatch, navigation, setIsLoading)
+    }
+
+    const handlefacebook=()=>{
+        if (!isConnected) {
+            Alert.alert('No Internet Connection', 'Please check your internet connection and try again.');
+            return;
+          }
+        onFacebookLogin(dispatch, navigation, setIsLoading)
+    }
 
 
 
@@ -128,13 +151,18 @@ onPress={()=>navigation.navigate("resetPassword")}
 </View>
 
 <View style={style.viewsocialicon}>
-<TouchableOpacity>
+<TouchableOpacity
+onPress={()=>handlelogin()}
+>
 <Image 
 source={applogos.Googlelogo}
 style={style.socialicon}
 />
 </TouchableOpacity>
-<TouchableOpacity>
+<TouchableOpacity
+
+onPress={()=>handlefacebook()}
+>
 <Image 
 source={applogos.Facebooklogo}
 style={style.socialicon}
