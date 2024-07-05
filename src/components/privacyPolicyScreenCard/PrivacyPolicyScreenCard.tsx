@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         width: WP(90),
-        height: HP(18),
+        height: HP(25),
         backgroundColor: colors.bg1,
         borderRadius: appRadius.boxRadius + 5,
         shadowColor: colors.b1,

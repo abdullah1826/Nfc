@@ -74,7 +74,7 @@ const PhoneSheet = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
     setIsLoading(false)
        })
        } catch (error: any) {
-           console.log("error",error)
+        showErrorToast("Tag Scanned Failed", "Kindly Tag the scan properly");
             setIsLoading(false)
         }
     }

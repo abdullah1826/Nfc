@@ -57,7 +57,7 @@ export const style = StyleSheet.create({
         marginRight: WP(5)
     },
     aboutPrivacyBox: {
-        height: HP(25),
+        height: HP(21),
         width: WP(90),
         backgroundColor: colors.bg1,
         shadowColor: colors.b1,
@@ -66,12 +66,12 @@ export const style = StyleSheet.create({
         alignSelf: 'center',
         marginTop: HP(3),
         alignItems: 'center',
-        justifyContent: 'center'
+        // justifyContent: 'center'
     },
     aboutPrivacyDesc: {
         color: colors.b1,
         width: WP(84),
-        fontSize: size.tiny,
+        fontSize: size.xxsmall
         // backgroundColor: 'lightblue'
     }
 });

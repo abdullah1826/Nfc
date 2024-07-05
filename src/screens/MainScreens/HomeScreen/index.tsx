@@ -173,14 +173,14 @@ try {
                     </View>
 
                 </View>
-                <View style={{backgroundColor:"white"}}>
+                <View>
                 <FlatList
                 style={{flex:1,}}
                 contentContainerStyle={style.viewflatlist}
                   data={tagdata}
               renderItem={Recentrecord}
-           keyExtractor={(item, index) => index.toString()}
-           ListEmptyComponent={emptyrenderdata}
+               keyExtractor={(item, index) => index.toString()}
+               ListEmptyComponent={emptyrenderdata}
           />
                </View>
             </BottomSheetModalProvider>

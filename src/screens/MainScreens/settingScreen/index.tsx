@@ -43,7 +43,7 @@ const Setting = ({ navigation }: any) => {
             key: 2,
             label: 'Contact Us',
             icon: appIcons.ContactUs,
-            onClick: () => { navigation.navigate('ContactUs')}
+            onClick: () => {handleContect()}
         },
         {
             key: 3,
@@ -114,8 +114,19 @@ c
         }
     }
 
+const handleContect=()=>{
+    const email = 'mailto:waseemanjum899@gmail.com';
+    Linking.openURL(email).catch((err:any) => console.error('Error:', err));
+}
+
 
     const handleshareapp=()=>{
+        const options = {
+            title: 'Share App',
+            message: 'Share Nfc Toolkit App!',
+            // url: 'https://www.example.com', // replace with your app's URL
+          };
+      
         Share.open(options)
   .then((res) => {
     console.log(res);

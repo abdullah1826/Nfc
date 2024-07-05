@@ -74,7 +74,7 @@ const camerapermission =()=>{
               }
           }
         } catch (error) {
-          showErrorToast("Tag Write Failed", "Unable to encode message.");
+          showErrorToast("Tag Write Failed", "Please Close the Tag and scan properly");
         } finally {
           NfcManager.cancelTechnologyRequest(); // Cancel NFC technology request
         }

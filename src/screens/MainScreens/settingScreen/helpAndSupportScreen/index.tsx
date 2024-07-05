@@ -7,7 +7,6 @@ import { appIcons } from '../../../../shared/theme/assets'
 const HelpAndSupportScreen = ({ navigation }: any) => {
 
     const [isOpen, setISopen] = useState(false);
-    console.log(isOpen);
 
     return (
         <View style={style.container}>
@@ -51,7 +50,7 @@ const HelpAndSupportScreen = ({ navigation }: any) => {
                 isOpen &&
                 < View style={style.aboutPrivacyBox}>
                     <Text style={style.aboutPrivacyDesc}>
-                        Lorem ipsum dolor sit amet consectetur. Id mauris accumsan et diam nec pharetra sed tempus magna. Cursus porttitor porta lacus consectetur quis pharetra libero. Tellus vestibulum tempor dolor ligula dapibus at diam praesent. Et dictum placerat non mattis.Lorem ipsum dolor sit amet consectetur. Id mauris accumsan et diam nec pharetra sed tempus magna. Cursus porttitor porta lacus consectetur quis pharetra libero. Tellus vestibulum tempor dolor ligula dapibus at diam praesent. Et dictum placerat non mattis.
+                    When you visit the Site and app, we automatically collect certain information about your device, including information about your web browser, IP address, time zone, and some of the cookies that are installed on your device. Additionally, as you browse the Site and app, we collect information about the individual web pages or products that you view, what websites or search terms referred you to the Site, and information about how you interact with the Site. We refer to this automatically-collected information as “Device Information.”
                     </Text>
                 </View>
             }

@@ -14,7 +14,7 @@ import { createTags, upadteTags } from '../../shared/utilities/services/mainServ
 import { AppLoader } from '../AppLoader';
 import { getIconOfSocialLink } from '../../shared/utilities/constants';
 const TextAction = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
-    const refRBSheet = useRef();
+        const refRBSheet = useRef();
 
     //  local state
     const [isNfcReady, setIsNfcReady] = useState(false);
@@ -63,7 +63,6 @@ const handleSubmit =async (values: any, { resetForm }: any)=>{
        } finally {
         NfcManager.cancelTechnologyRequest();
       }
-
 }
 
  const HandleApidata =(values:any)=>{
@@ -85,7 +84,7 @@ refRBSheet.current.close();
  setIsLoading(false)
     })
     } catch (error: any) {
-        console.log("error",error)
+        showErrorToast("Tag Scanned Failed", "Kindly Tag the scan properly");
          setIsLoading(false)
      }
  }

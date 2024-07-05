@@ -22,12 +22,14 @@ export default MoreText
 
 const styles = StyleSheet.create({
     container: {
-        flexDirection: 'row', alignItems: 'center', marginLeft: WP(2),
-        marginTop: HP(2)
+        flexDirection: 'row',
+        marginTop: HP(2),
+        alignItems:"center"
     },
     txt: {
         fontSize: size.tiny,
         marginLeft: WP(2),
-        color: colors.b1
+        color: colors.b1,
+    
     }
 })

@@ -40,7 +40,7 @@ export const checkConnected = () => {
   export const checkNfcSupport = async () => {
              const supported = await NfcManager.isSupported();
              if (!supported) {
-                 showErrorToast('NFC Not Supported', 'Your device does not support NFC.')
+                 showErrorToast('NFC Not Supported', 'Your device does not support NFC Tags.')
                  return false;
            }
              const enabled = await NfcManager.isEnabled();
@@ -57,7 +57,7 @@ export const checkConnected = () => {
           text1: title,
           text2: message,
           topOffset: 60,
-          visibilityTime: 6000,
+          visibilityTime: 5000,
         });
       };
       

@@ -52,6 +52,7 @@ const styles = StyleSheet.create({
         width:WP("87"),
         alignItems: 'center',
         marginTop: HP(2),
+        
     },
     cardIcon: {
         height: HP(6.5),

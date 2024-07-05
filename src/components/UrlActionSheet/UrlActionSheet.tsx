@@ -74,7 +74,7 @@ showSuccessToast("Tag Successfully Writte","Scan to access")
 setIsLoading(false)
    })
    } catch (error: any) {
-       console.log("error",error)
+    showErrorToast("Tag Scanned Failed", "Kindly Tag the scan properly");
         setIsLoading(false)
     }
 }

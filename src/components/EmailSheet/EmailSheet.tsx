@@ -68,7 +68,7 @@ const handleSubmit = async(values: any, { resetForm }: any)=>{
           resetForm()
         }
       } catch (error) {
-        showErrorToast("Tag Write Failed", "Unable to encode message.");
+        showErrorToast("Tag Write Failed", "Please close the tag and scan propely.");
       } finally {
         NfcManager.cancelTechnologyRequest();
       }

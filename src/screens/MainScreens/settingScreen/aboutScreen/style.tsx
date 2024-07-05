@@ -66,7 +66,8 @@ const style = StyleSheet.create({
     },
     logo: {
         height: WP(10),
-        width: WP(15)
+        width: WP(30),
+        resizeMode:"contain"
     },
     aboutNfcTitle: {
         fontSize: size.xxsmall,
@@ -87,11 +88,13 @@ const style = StyleSheet.create({
     },
     aboutPrivacyDesc: {
         color: colors.b1,
-        width: WP(70),
-        fontSize: size.xxtiny,
+        width: WP(80),
+        fontSize: size.tiny,
         marginTop: HP(.3),
-        marginLeft: WP(1)
-        // alignSelf: 'center'
+        marginLeft: WP(1),
+        alignSelf: 'center',
+        justifyContent:"center",
+        alignItems:"center"
         // backgroundColor: 'lightblue'
     },
 

@@ -5,7 +5,7 @@ import RecentRecordsScreenCard from '../../../components/RecentRecordsScreenCard
 import { appIcons, } from '../../../shared/theme/assets'
 import ScreenHeader from '../../../components/screenHeader/ScreenHeader'
 import { colors } from '../../../shared/theme/colors'
-import { Contactsheet, EmailSheet, Locationsheet, PhoneSheet, SocialSheet, TextAction, UrlActionSheet } from '../../../exporter'
+import { Contactsheet, EmailSheet, Locationsheet, PhoneSheet, SocialSheet, TextAction, UrlActionSheet, WP } from '../../../exporter'
 import { useDispatch, useSelector } from 'react-redux'
 import { getIconOfSocialLink } from '../../../shared/utilities/constants'
 import { deleteTags } from '../../../shared/utilities/services/mainServices'
@@ -156,6 +156,7 @@ setIsLoading(false)
                 />
             </View>
             <ScrollView showsVerticalScrollIndicator={false}>
+              <View style={{flex:1,padding:WP("2"),justifyContent:"center", alignItems:"center",alignSelf:"center"}}>
                 {filteredData.map((item:any) => (
                     <RecentRecordsScreenCard
                         key={item.id}
@@ -167,6 +168,7 @@ setIsLoading(false)
                         showDeleteButton={item}
                     />
                 ))}
+                 </View>
             </ScrollView>
 <TextAction 
 ref={refTextSheet}

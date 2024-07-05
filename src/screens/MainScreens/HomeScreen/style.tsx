@@ -56,7 +56,8 @@ const style = StyleSheet.create({
     viewflatlist:{
         justifyContent:"center", 
         alignItems:"center",
-        marginBottom:WP("2")
+        marginBottom:WP("2"),
+        padding:5
     },
     emptyContainer: {
         flex: 1,
