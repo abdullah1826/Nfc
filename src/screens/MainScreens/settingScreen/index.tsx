@@ -1,4 +1,4 @@
-import { View, Text, FlatList,Linking } from 'react-native'
+import { View, Text, FlatList,Linking, SafeAreaView } from 'react-native'
 import React,{useState} from 'react'
 import style from './style'
 import ScreenHeader from '../../../components/screenHeader/ScreenHeader'
@@ -136,7 +136,8 @@ const handleContect=()=>{
   });
     }
     return (
-        <View style={style.container}>
+        <SafeAreaView style={style.container}>
+            <View style={style.secondcontainer}>
             <ScreenHeader
                 heading={'Settings'}
                 onClick={() => navigation.goBack()}
@@ -161,8 +162,8 @@ const handleContect=()=>{
             </View>
 
 
-
-        </View>
+            </View>
+        </SafeAreaView>
     )
 }
 

@@ -1,4 +1,4 @@
-import { View, Text, Image, TextInput, FlatList } from 'react-native'
+import { View, Text, Image, TextInput, FlatList, SafeAreaView } from 'react-native'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import style from './style'
 import ScreenHeader from '../../../components/screenHeader/ScreenHeader'
@@ -61,9 +61,9 @@ const handleOnclicked=(item:any)=>{
         break;
     }
 }
-
     return (
-            <View style={style.container}>
+            <SafeAreaView style={style.container}>
+              <View style={style.secondcontainer}>
                 <ScreenHeader
                     heading={'Write Tag'}
                     onClick={() => navigation.goBack()}
@@ -125,8 +125,8 @@ textdata={selectedData}
 ref={refLocationsheet}
 textdata={selectedData}
 />
-
-            </View>
+</View>
+            </SafeAreaView>
     )
 }
 

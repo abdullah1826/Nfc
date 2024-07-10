@@ -2,12 +2,19 @@ import { StyleSheet } from "react-native";
 import { colors } from "../../../../shared/theme/colors";
 import { HP, WP } from "../../../../shared/theme/PixelResponsive";
 import { appRadius, family, size } from "../../../../shared/theme/sizes";
+import { Platform } from "react-native";
 
 export const style = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: colors.bg1,
-        padding: HP(3)
+     
+    },
+    secondcontainer:{
+        flex: 1,
+        backgroundColor: colors.bg1,
+        marginHorizontal:WP("4"),
+        marginTop:Platform.OS==="android"?WP("5"):null,
     },
     iconBox: {
         width: WP(100),
@@ -43,7 +50,10 @@ export const style = StyleSheet.create({
         marginTop: HP(2),
         borderRadius: appRadius.boxRadius,
         alignItems: 'center',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        shadowOffset: { width: 1, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
     },
     aboutTxt: {
         color: colors.b1,
@@ -66,7 +76,10 @@ export const style = StyleSheet.create({
         alignSelf: 'center',
         marginTop: HP(3),
         alignItems: 'center',
-        // justifyContent: 'center'
+        // justifyContent: 'center',
+        shadowOffset: { width: 1, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
     },
     aboutPrivacyDesc: {
         color: colors.b1,

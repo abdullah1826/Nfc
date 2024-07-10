@@ -3,23 +3,23 @@ import React, { useState } from 'react'
 import style from './style'
 import ScreenHeader from '../../../../components/screenHeader/ScreenHeader'
 import { appIcons } from '../../../../shared/theme/assets'
+import { SafeAreaView } from 'react-native'
 
 const HelpAndSupportScreen = ({ navigation }: any) => {
 
     const [isOpen, setISopen] = useState(false);
 
     return (
-        <View style={style.container}>
+        <SafeAreaView style={style.container}>
+            <View style={style.secondcontaner}>
             <ScreenHeader
                 heading={'Settings'}
                 onClick={() => navigation.goBack()}
             />
-
             <View style={style.iconBox}>
                 <Image source={appIcons.Chatbot} style={style.helpIcon} />
                 <Text style={style.helpAndSupportTxt}>Help & Support</Text>
             </View>
-
             <TouchableOpacity style={style.reportBugBox}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Image source={appIcons.Bug} style={style.bugIcon} />
@@ -33,19 +33,13 @@ const HelpAndSupportScreen = ({ navigation }: any) => {
                     <Image source={appIcons.Tips} style={style.bugIcon} />
                     <Text style={style.reportBugTxt}>Tips & Suggestions</Text>
                 </View>
-
                 <Image source={appIcons.Next} style={style.nextIcon} />
-
             </TouchableOpacity>
-
             <TouchableOpacity style={style.reportBugBox}
-                onPress={() => setISopen(open => !open)}
-            >
+                onPress={() => setISopen(open => !open)}>
                 <Text style={style.reportBugTxt}>About This Privacy Policy</Text>
                 <Image source={isOpen ? appIcons.Up : appIcons.Down} style={style.aboutIcon} />
-
             </TouchableOpacity>
-
             {
                 isOpen &&
                 < View style={style.aboutPrivacyBox}>
@@ -54,9 +48,8 @@ const HelpAndSupportScreen = ({ navigation }: any) => {
                     </Text>
                 </View>
             }
-
-
-        </View>
+            </View>
+        </SafeAreaView>
     )
 }
 

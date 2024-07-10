@@ -4,6 +4,7 @@ import { appIcons } from '../../shared/theme/assets'
 import { HP, WP } from '../../shared/theme/PixelResponsive'
 import { colors } from '../../shared/theme/colors'
 import { family, size } from '../../shared/theme/sizes'
+import { Platform } from 'react-native'
 
 interface Props {
     heading: string,
@@ -28,11 +29,12 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginTop:WP("4")
+        marginTop:Platform.OS==="android"? WP("4"):WP("2")
     },
     icon: {
         height: HP(3),
-        width: WP(3.3)
+        width: WP(3.3),
+        resizeMode:"contain",
     },
     txt: {
         color: colors.b1,

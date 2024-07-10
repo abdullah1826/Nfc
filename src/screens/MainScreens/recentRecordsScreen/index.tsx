@@ -1,4 +1,4 @@
-import { Image,ScrollView,TextInput, View } from 'react-native'
+import { Image,SafeAreaView,ScrollView,TextInput, View } from 'react-native'
 import React, { useState,useRef } from 'react'
 import style from './style'
 import RecentRecordsScreenCard from '../../../components/RecentRecordsScreenCard/RecentRecordsScreenCard'
@@ -114,8 +114,8 @@ const refRBSheet = useRef();
       };
 
 // handle delete
-const handleDeleteData =(item:any)=>{
-  if(item.status ===1){
+const handleDeleteData =(item:any, index)=>{
+  if(index ===0){
     showErrorToast('Failed','Cannot deleted this tag because data store in Nfc tag ');
     return
   }
@@ -139,7 +139,8 @@ setIsLoading(false)
 }
 
     return (
-        <View style={style.container}>
+        <SafeAreaView style={style.container}>
+          <View style={style.secondconatiner}>
             <ScreenHeader
                 heading={'Recent Records'}
                 onClick={() => { navigation.goBack() }}
@@ -157,14 +158,14 @@ setIsLoading(false)
             </View>
             <ScrollView showsVerticalScrollIndicator={false}>
               <View style={{flex:1,padding:WP("2"),justifyContent:"center", alignItems:"center",alignSelf:"center"}}>
-                {filteredData.map((item:any) => (
+                {filteredData.map((item:any, index:any) => (
                     <RecentRecordsScreenCard
                         key={item.id}
                         Icon={getIconOfSocialLink(item?.linkName)}
                         title={item?.linkName}
                         Desc={item.value}
                         editpress={()=>handleEditData(item)}
-                        deletepress={()=>handleDeleteData(item)}
+                        deletepress={()=>handleDeleteData(item, index)}
                         showDeleteButton={item}
                     />
                 ))}
@@ -217,8 +218,8 @@ isUpdated={isUpdated}
 setIsUpdated={setIsUpdated}
 />
 
-
-        </View>
+</View>
+        </SafeAreaView>
     )
 }
 

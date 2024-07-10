@@ -4,7 +4,7 @@ import style from './style'
 import ScreenHeader from '../../../components/screenHeader/ScreenHeader'
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
-import { HP, WP, colors } from '../../../exporter';
+import { HP, NotAuthorized, WP, colors } from '../../../exporter';
 import NfcManager, { NfcTech, Ndef } from 'react-native-nfc-manager';
 import { showErrorToast, showSuccessToast } from '../../../shared/utilities/Helper';
 import { addTag, updateTagAction } from '../../../redux/Slices/MainSlice';
@@ -20,7 +20,7 @@ const textdata = route?.params?.selected
 const isUpdated = route?.params?.textupdate
 
   useEffect(() => {
-    camerapermission()
+    requestCameraPermission()
     initializeScanner();
   }, []);
   const initializeScanner = () => {
@@ -29,8 +29,8 @@ const isUpdated = route?.params?.textupdate
 
   const dispatch=useDispatch()
 
-const camerapermission =()=>{
   const requestCameraPermission = async () => {
+    try {
     if (Platform.OS === 'ios') {
       const result = await check(PERMISSIONS.IOS.CAMERA);
       if (result !== RESULTS.GRANTED) {
@@ -39,13 +39,23 @@ const camerapermission =()=>{
     } else if (Platform.OS === 'android') {
       const result = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.CAMERA,
+        {
+          title: 'Camera Permission',
+          message: 'App needs camera permission to scan QR codes',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
       );
       if (result !== PermissionsAndroid.RESULTS.GRANTED) {
         Alert.alert('Camera Permission Denied');
       }
     }
+  } catch (error) {
+      
+  }
   };
-}
+  
 
    const onSuccess = async(e:any) => {
     try {
@@ -150,14 +160,17 @@ const camerapermission =()=>{
       containerStyle={style.scanQRBox}
       topViewStyle={{backgroundColor:"white"}}
       showMarker={true}
+      notAuthorizedView={<NotAuthorized/>}
       markerStyle={{width:WP("70"), height:HP("40"), borderWidth:1, borderColor:colors.green}}
       topContent={
         <Text style={{ flex: 1, textAlign: 'center', marginTop: 20 }}>
           {cameraReady ? 'Scanning QR Code...' : 'Camera loading...'}
-        </Text>
+        </Text> 
       }
-    />
-:null}
+    />:
+<Text style={{ flex: 1, textAlign: 'center',justifyContent:"center", alignItems:'center' }}>
+   Please Scan the Nfc Tag 
+        </Text> }
         </View>
     )
 }

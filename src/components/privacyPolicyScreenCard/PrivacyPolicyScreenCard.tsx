@@ -37,7 +37,10 @@ const styles = StyleSheet.create({
         shadowColor: colors.b1,
         elevation: 5,
         alignSelf: 'center',
-        marginTop: HP(2)
+        marginTop: HP(2),
+        shadowOffset: { width: 1, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
     },
     icon: {
         width: WP(8.5),

@@ -35,7 +35,10 @@ const styles = StyleSheet.create({
         height: HP(13),
         alignItems: 'center',
         marginTop: HP(1),
-        width:WP("85")
+        width:WP("90"),
+        shadowOffset: { width: 1, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
     },
     cardIcon: {
         height: HP(8),

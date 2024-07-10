@@ -27,9 +27,7 @@ const mainReducer = createSlice({
             if (index !== -1) {
               state.TagsAllRecord[index] = action.payload;
             }
-          },
-      
-
+          }
     },
 });
 

@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity } from 'react-native'
+import { View, Text, Image, TouchableOpacity, SafeAreaView } from 'react-native'
 import React, { useState } from 'react'
 import { style } from './style'
 import ScreenHeader from '../../../../components/screenHeader/ScreenHeader'
@@ -14,25 +14,22 @@ const PrivacyPolicyScreen = ({ navigation }: any) => {
 
     return (
         <KeyboardAwareScrollView style={{ flex: 1, backgroundColor: colors.bg1 }}>
-            <View style={style.container}>
-
+            <SafeAreaView style={style.container}>
+<View style={style.secondcontainer}>
                 <ScreenHeader
                     heading={'Settings'}
                     onClick={() => navigation.goBack()}
                 />
-
                 <View style={style.iconBox}>
                     <Image source={appIcons.PrivacyPolicyIcon} style={style.privacyIcon} />
                     <Text style={style.privacyPolicyTxt}>Privacy Policy</Text>
                 </View>
-
                 <View style={style.cardsBox}>
                     <PrivacyPolicyScreenCard
                         icon={appIcons.Fire}
                         title={'No Surprises!'}
                         desc={'We share your Personal Information with third parties to help us use your Personal Information, as described above. For example, we use Shopify to power our online store--you can read more about how Shopify uses your Personal Information here:  https://www.shopify.com/legal/privacy.'}
                     />
-
                     <PrivacyPolicyScreenCard
                         icon={appIcons.Lock}
                         title={'Keeping Your Information Safe!'}
@@ -62,8 +59,8 @@ const PrivacyPolicyScreen = ({ navigation }: any) => {
                         </Text>
                     </View>
                 }
-
-            </View>
+</View>
+            </SafeAreaView>
         </KeyboardAwareScrollView >
     )
 }

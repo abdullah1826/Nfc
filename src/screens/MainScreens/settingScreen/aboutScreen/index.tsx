@@ -1,4 +1,4 @@
-import { View, Text, Image } from 'react-native'
+import { View, Text, Image, SafeAreaView } from 'react-native'
 import React, { useState } from 'react'
 import ScreenHeader from '../../../../components/screenHeader/ScreenHeader'
 import { appIcons, applogos } from '../../../../shared/theme/assets'
@@ -25,7 +25,8 @@ const handleabout=()=>{
 
     return (
         <KeyboardAwareScrollView showsVerticalScrollIndicator={false} style={{ flex: 1, backgroundColor: colors.bg1 }}>
-            <View style={style.container}>
+            <SafeAreaView style={style.container}>
+                <View style={style.secondcontaiiner}>
                 <ScreenHeader
                     heading={'Settings'}
                     onClick={() => navigation.goBack()}
@@ -75,28 +76,20 @@ const handleabout=()=>{
                 {
                     isVisionOpen &&
                     < View style={style.aboutPrivacyBox}>
-
                         <Text style={[style.aboutNfcTitle, { marginTop: HP(.5) }]}>Our Vision</Text>
-
                         <Text style={[style.aboutPrivacyDesc]}>
-                            Lorem ipsum dolor sit amet consectetur. Id mauris accumsan et diam nec pharetra sed tempus magna. Cursus porttitor porta lacus consectetur quis pharetra libero. Tellus vestibulum tempor dolor ligula dapibus at diam praesent.
+                        To empower users with seamless and secure NFC technology integration, revolutionizing how they interact with digital and physical environments.
                         </Text>
-
-
                         <Text style={[style.aboutNfcTitle]}>Our Mission</Text>
-
                         <Text style={[style.aboutPrivacyDesc, { marginTop: HP(1) }]}>
-                            Lorem ipsum dolor sit amet consectetur. Id mauris accumsan et diam nec pharetra sed tempus magna. Cursus porttitor porta lacus consectetur quis pharetra libero. Tellus vestibulum tempor dolor ligula dapibus at diam praesent.
+                        Our mission is to develop a user-friendly NFC toolkit reader app that simplifies the integration of NFC technology into everyday applications. By providing robust functionality and ensuring compatibility across platforms, we aim to enhance efficiency, security, and convenience for businesses and individuals alike. Through continuous innovation and user-centric design, we strive to set new standards in NFC technology, enabling limitless possibilities in connectivity and interaction.
                         </Text>
-
                     </View>
-
-
                 }
 
-
-            </View>
-        </KeyboardAwareScrollView>
+</View>
+      </SafeAreaView>
+      </KeyboardAwareScrollView>    
     )
 }
 

@@ -1,13 +1,19 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 import { colors } from "../../../shared/theme/colors";
-import { HP } from "../../../shared/theme/PixelResponsive";
+import { HP, WP } from "../../../shared/theme/PixelResponsive";
 import { family, size } from "../../../shared/theme/sizes";
 
 const style = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: colors.bg1,
-        padding: HP(3)
+
+    },
+    secondcontainer:{
+        flex: 1,
+        backgroundColor: colors.bg1,
+        marginHorizontal:WP("4"),
+marginTop:Platform.OS==="android"?WP("5"):null
     },
     versionTxt: {
         color: colors.b1,

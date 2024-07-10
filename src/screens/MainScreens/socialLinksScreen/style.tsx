@@ -36,7 +36,7 @@ export const style = StyleSheet.create({
     searchBox: {
         flexDirection: 'row',
         backgroundColor: colors.bg1,
-        width: WP(80),
+        width: WP(85),
         height: HP(6),
         shadowColor: colors.b1,
         elevation: 10,
@@ -44,6 +44,9 @@ export const style = StyleSheet.create({
         marginTop: HP(4),
         alignSelf: 'center',
         alignItems: 'center',
+        shadowOffset: { width: 1, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
     },
     searchIcon: {
         width: WP(5),

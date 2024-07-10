@@ -23,6 +23,7 @@ const Locationsheet = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
     const dispatch = useDispatch()
     const mapRef = useRef(null);
     const requestLocationPermission = async () => {
+      if (Platform.OS === 'android') {
         try {
           const granted = await PermissionsAndroid.request(
             PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
@@ -34,18 +35,34 @@ const Locationsheet = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
               buttonPositive: 'OK',
             },
           );
-         
-          if (granted === 'granted') {
-        
-            return true;
-          } else {
-         
-            return false;
-          }
+  
+          return granted === PermissionsAndroid.RESULTS.GRANTED;
         } catch (err) {
+          console.warn(err);
           return false;
         }
-      };
+      } else if (Platform.OS === 'ios') {
+        const status = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+  
+        switch (status) {
+          case RESULTS.UNAVAILABLE:
+            console.log('This feature is not available (on this device / in this context)');
+            return false;
+          case RESULTS.DENIED:
+            console.log('The permission has not been requested / is denied but requestable');
+            return false;
+          case RESULTS.LIMITED:
+            console.log('The permission is limited: some actions are possible');
+            return true;
+          case RESULTS.GRANTED:
+            console.log('The permission is granted');
+            return true;
+          case RESULTS.BLOCKED:
+            console.log('The permission is denied and not requestable anymore');
+            return false;
+        }
+      }
+    };
 
     const refRBSheet = useRef();
     const screenHeight = Dimensions.get('window').height;
@@ -319,17 +336,16 @@ const handlePress = (data, details = null) => {
 
 
 <View style={{width:WP("80"),height:HP("30"), justifyContent:"center", alignItems:"center",}}>
-
 <MapView
             style={styles.map}
             provider={PROVIDER_GOOGLE}
             ref={mapRef}
             region={location}
-        showsUserLocation={true}
-        onPress={handleMapPress}
+             showsUserLocation={true}
+           onPress={handleMapPress}
             zoomEnabled={true}
             showsUserLocation={true}>
-{location && (
+            {location && (
           <Marker coordinate={location} />
         )}
         </MapView>

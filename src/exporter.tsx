@@ -24,7 +24,7 @@ export * from './components/ContactSheet/Contactsheet'
 export * from './components/EmailSheet/EmailSheet'
 export * from './components/LocationSheet/Locationsheet'
 export * from './components/SocialIconSheet/SocialSheet'
-
+export * from './components/NotAuthorized/NotAuthorized'
 
 export {family,appRadius,size} from './shared/theme/sizes'
 export {BASE_URL, ENDPOINTS} from './shared/utilities/endPoint';
