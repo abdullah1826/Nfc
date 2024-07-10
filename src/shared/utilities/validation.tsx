@@ -97,7 +97,8 @@ export const Phoneschema = yup.object().shape({
   .matches(phoneRegExp, "Enter Valid phone number")
   .min(9, 'Text must be at least 9 Number')
   .max(15,'Text must be at least 15 Number'),
-    webSite: yup.string().url('Invalid URL format').required('Website URL is required'),
+    webSite:  yup.string()
+    .matches(URL, 'Enter a valid url')
   });
 
 

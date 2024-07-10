@@ -1,5 +1,5 @@
 import { View, Text, Image, Alert,TouchableOpacity } from 'react-native'
-import React,{useState} from 'react'
+import React,{useState,useEffect} from 'react'
 import style from './style'
 import CustomButton from '../../../components/customButton/CustomButton'
 import CustomTextInput from '../../../components/customTextInput/CustomTextInput'
@@ -8,11 +8,13 @@ import { loginFormFields, loginSchema } from '../../../shared/utilities/validati
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { useDispatch } from 'react-redux'
 import { setAuthenticated, setUserData } from '../../../redux/Slices/UserSlice'
-import {useNetworkStatus ,colors,applogos, MyStatusBar} from '../../../exporter'
+import {useNetworkStatus ,colors,applogos, MyStatusBar, WP, size, appIcons} from '../../../exporter'
 import { AppLoader } from '../../../components/AppLoader'
 import { loginUser } from '../../../shared/utilities/services/authServices'
 import { getPlatform, showErrorToast, showSuccessToast } from '../../../shared/utilities/Helper'
-
+import { EMAIL_TYPE, GOOGLE_WEB_CLIENT_ID } from '../../../shared/utilities/constants'
+import { onFacebookLogin, onGoogleLogin } from '../../../shared/utilities/socialLogin'
+import { GoogleSignin } from '@react-native-google-signin/google-signin'
 
 const Login = ({ navigation }: any) => {
 
@@ -38,7 +40,7 @@ const Login = ({ navigation }: any) => {
              password:values?.password,
              platform:isuserPlatform,
              fcm_token:"",
-             login_with:"email"
+             login_with:EMAIL_TYPE
          }
         loginUser(params).then((res:any)=>{
             dispatch(setUserData(res?.data?.data))
@@ -63,6 +65,27 @@ setIsLoading(false)
         }
     };
 
+    useEffect(() => {
+       GoogleSignin.configure({
+        webClientId: GOOGLE_WEB_CLIENT_ID, 
+        offlineAccess: true,
+      });
+      }, []);
+      const handlelogin=()=>{
+        if (!isConnected) {
+            Alert.alert('No Internet Connection', 'Please check your internet connection and try again.');
+            return;
+          }
+        onGoogleLogin(dispatch, navigation, setIsLoading)
+    }
+
+    const handlefacebook=()=>{
+        if (!isConnected) {
+            Alert.alert('No Internet Connection', 'Please check your internet connection and try again.');
+            return;
+          }
+        onFacebookLogin(dispatch, navigation, setIsLoading)
+    }
 
 
 
@@ -81,8 +104,7 @@ setIsLoading(false)
                     <AppLoader loading={isLoading}/>
                         <Image source={applogos.AppLogo} style={style.logo} />
                         <Text style={style.headingTxt}>Login</Text>
-                        <Text style={style.descTxt}>Lorem ipsum dolor sit amet consectetur. Erat hendrerit arcu rhoncus sed.</Text>
-
+                        <Text style={style.descTxt}>Welcome to NFC toolkit Login Page</Text>
                         <View style={style.inputsBox}>
                             <CustomTextInput
                                 placeholder={'Email'}
@@ -111,9 +133,43 @@ onPress={()=>navigation.navigate("resetPassword")}
                             onClick={handleSubmit}
                         />
 
-                        <Text style={style.alredyAccountTxt}>Don’t have an account? <Text style={style.signInTxt}
+               <View style={style.lastsignuptex}>
+                     <Text style={style.alredyAccountTxt}>Don’t have an account?</Text>
+                        <Text style={style.signInTxt}
                             onPress={() => navigation.navigate('Signup')}
-                        >Sign Up</Text></Text>
+                        >Sign Up</Text>
+</View>
+                       
+<View style={style.viewlast}>
+<View style={style.viewsecondline}>
+  <View style={style.viewfirstline} />
+  <View>
+    <Text style={style.tetxmiddle}>Continue via Social Networks</Text>
+  </View>
+  <View style={style.viewfirstline} />
+</View>
+
+<View style={style.viewsocialicon}>
+<TouchableOpacity
+onPress={()=>handlelogin()}
+>
+<Image 
+source={applogos.Googlelogo}
+style={style.socialicon}
+/>
+</TouchableOpacity>
+<TouchableOpacity
+
+onPress={()=>handlefacebook()}
+>
+<Image 
+source={applogos.Facebooklogo}
+style={style.socialicon}
+/>
+</TouchableOpacity>
+</View>
+</View>
+
                     </View>
                 )}
             </Formik>

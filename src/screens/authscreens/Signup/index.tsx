@@ -1,5 +1,5 @@
-import { View, Text, Image, Alert } from 'react-native'
-import React, { useState } from 'react'
+import { View, Text, Image, Alert,TouchableOpacity } from 'react-native'
+import React, { useState,useEffect } from 'react'
 import style from './style'
 import { applogos } from '../../../shared/theme/assets'
 import CustomTextInput from '../../../components/customTextInput/CustomTextInput'
@@ -13,7 +13,10 @@ import { MyStatusBar, useNetworkStatus } from '../../../exporter'
 import { AppLoader } from '../../../components/AppLoader'
 import { registerUser } from '../../../shared/utilities/services/authServices'
 import { showErrorToast, showSuccessToast } from '../../../shared/utilities/Helper'
-
+import { GOOGLE_WEB_CLIENT_ID } from '../../../shared/utilities/constants'
+import { GoogleSignin } from '@react-native-google-signin/google-signin'
+import { onFacebookLogin, onGoogleLogin } from '../../../shared/utilities/socialLogin'
+import { useDispatch } from 'react-redux'
 const Signup = ({ navigation }: any) => {
 // internet checking
 const Internet = useNetworkStatus()
@@ -22,6 +25,16 @@ const Internet = useNetworkStatus()
     // local states
 const [isLoading, setIsLoading] = useState(false)
 
+
+const dispatch =useDispatch()
+
+// useeffect
+useEffect(() => {
+   GoogleSignin.configure({
+    webClientId: GOOGLE_WEB_CLIENT_ID, 
+    offlineAccess: true,
+  });
+  }, []);
 
 // functions
 const handleSubmit = async (values: any, { resetForm }: any) => {
@@ -57,6 +70,22 @@ fcm_token:""
 };
 
 
+const handlelogin=()=>{
+    if (!Internet) {
+        Alert.alert('No Internet Connection', 'Please check your internet connection and try again.');
+        return;
+      }
+    onGoogleLogin(dispatch, navigation, setIsLoading)
+}
+
+const handlefacebook=()=>{
+    if (!Internet) {
+        Alert.alert('No Internet Connection', 'Please check your internet connection and try again.');
+        return;
+      }
+    onFacebookLogin(dispatch, navigation, setIsLoading)
+}
+
     return (
         <KeyboardAwareScrollView style={{ backgroundColor: colors.bg1 }}>
             <Formik
@@ -70,7 +99,7 @@ fcm_token:""
                         <AppLoader loading={isLoading}/>
                         <Image source={applogos.AppLogo} style={style.logo} />
                         <Text style={style.headingTxt}>Create Account</Text>
-                        <Text style={style.descTxt}>Lorem ipsum dolor sit amet consectetur. Erat hendrerit arcu rhoncus sed.</Text>
+                        <Text style={style.descTxt}>Welcome to NFC Toolkit Signup Page.</Text>
 
                         <View style={style.inputsBox}>
                             <CustomTextInput
@@ -100,10 +129,40 @@ fcm_token:""
                             title={'Create Account'}
                             onClick={() => { handleSubmit() }}
                         />
-
-                        <Text style={style.alredyAccountTxt}>Already have an account <Text style={style.signInTxt}
+                       <View style={style.lastsignuptex}>
+                        <Text style={style.alredyAccountTxt}>Already have an account </Text>
+                        <Text style={style.signInTxt}
                             onPress={() => { navigation.navigate('Login') }}
-                        >Sign In</Text></Text>
+                        >Sign In</Text>
+                       </View>
+<View style={style.viewlast}>
+<View style={style.viewsecondline}>
+  <View style={style.viewfirstline} />
+  <View>
+    <Text style={style.tetxmiddle}>Continue via Social Networks</Text>
+  </View>
+  <View style={style.viewfirstline} />
+</View>
+
+<View style={style.viewsocialicon}>
+<TouchableOpacity
+onPress={()=>handlelogin()}
+>
+<Image 
+source={applogos.Googlelogo}
+style={style.socialicon}
+/>
+</TouchableOpacity>
+<TouchableOpacity
+onPress={()=>handlefacebook()}
+>
+<Image 
+source={applogos.Facebooklogo}
+style={style.socialicon}
+/>
+</TouchableOpacity>
+</View>
+</View>
                     </View>
                 )}
             </Formik>

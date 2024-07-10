@@ -10,7 +10,7 @@ import {
 import {
     DotIndicator,
   } from 'react-native-indicators';
-import {WP, HP, colors, family, size} from '../../exporter';
+import {WP, HP, colors, family, size, MyStatusBar} from '../../exporter';
 
 export const AppLoader = ({loading, tagline = '', showTagLine = false}:any) => {
   return (
@@ -21,6 +21,7 @@ export const AppLoader = ({loading, tagline = '', showTagLine = false}:any) => {
       animationIn="fadeIn"
       animationOut="fadeOut"
       style={styles.container}>
+        <MyStatusBar backgroundColor={colors.white}/>
       <View style={showTagLine ? styles.alertWithTagline : styles.alert}>
         <DotIndicator
           size={10}

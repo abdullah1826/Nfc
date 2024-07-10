@@ -1,26 +1,44 @@
 {
   "project_info": {
-    "project_number": "458286722247",
-    "project_id": "clone-44aed",
-    "storage_bucket": "clone-44aed.appspot.com"
+    "project_number": "968317467983",
+    "project_id": "nfc-readerapp",
+    "storage_bucket": "nfc-readerapp.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:458286722247:android:760cae8c3e3142e094a2e2",
+        "mobilesdk_app_id": "1:968317467983:android:098920a3cc0004822d993a",
         "android_client_info": {
-          "package_name": "com.nfc_reader"
+          "package_name": "com.nfc_Toolkit"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "968317467983-4p3p1n5qtglk52vs7i3edc8rs1u36n7c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nfc_Toolkit",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "968317467983-kep8dtlk4bm9qdiivqje9tda579jc9rr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyDSJqVdXXsBoggVQQ7visCBYQbQGxiegE8"
+          "current_key": "AIzaSyBtYnNNpxH0SDcvsYx5iLNqOjOwF92Cy80"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "968317467983-kep8dtlk4bm9qdiivqje9tda579jc9rr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

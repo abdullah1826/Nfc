@@ -1,4 +1,6 @@
 #import "AppDelegate.h"
+#import <Firebase.h>
+#import <GoogleMaps/GoogleMaps.h>
 
 #import <React/RCTBundleURLProvider.h>
 
@@ -6,6 +8,8 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  [FIRApp configure];
+  [GMSServices provideAPIKey:@"AIzaSyCTlurrGV8SDK2kAONF8l_3KC7v4vIdu4g"];
   self.moduleName = @"NFC_READER";
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.

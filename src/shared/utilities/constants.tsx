@@ -1,44 +1,61 @@
 import { appIcons, appImages } from "../theme/assets";
 
+
+export const GOOGLE_WEB_CLIENT_ID =
+  '968317467983-kep8dtlk4bm9qdiivqje9tda579jc9rr.apps.googleusercontent.com'
+  
+
+export const EMAIL_TYPE = 'email';
+export const SOCIAL_TYPE = 'social';
+
+export const GOOGLE_SCOPES = [
+  'https://www.googleapis.com/auth/userinfo.profile',
+  'https://www.googleapis.com/auth/userinfo.email',
+];
+
+
+
+
+
 export const writeTagScreenCardData = [
     {
         key: 1,
-        title: 'Text',
+        iconName: 'Text',
         icon: appImages.Text
     },
     {
         key: 2,
-        title: 'URL',
+        iconName: 'URL',
         icon: appImages.Url
     },
     {
         key: 3,
-        title: 'PhoneCall',
+        iconName: 'PhoneCall',
         icon: appImages.PhoneCall
     },
     {
         key: 4,
-        title: 'Contact',
+        iconName: 'Contact',
         icon: appImages.PhoneBook
     },
     {
         key: 5,
-        title: 'Email',
+        iconName: 'Email',
         icon: appImages.Email
     },
     {
         key: 6,
-        title: 'Location',
+        iconName: 'Location',
         icon: appImages.Map
     },
     {
         key: 7,
-        title: 'QR Code',
+        iconName: 'QR Code',
         icon: appImages.QrScan
     },
     {
         key: 8,
-        title: 'Socail Links',
+        iconName: 'Socail Links',
         icon: appIcons.SocialLinks
     },
 ];
@@ -46,28 +63,55 @@ export const writeTagScreenCardData = [
 
 
 
-export const getIconForTitle = (title: string) => {
-    switch (title) {
-      case 'Text':
-        return appImages.Text;
-      case 'URL':
-        return appImages.Url;
-      case 'PhoneCall':
-        return appImages.PhoneCall;
-      case 'Contact':
-        return appImages.PhoneBook;
-      case 'Email':
-        return appImages.Email;
-      case 'Location':
-        return appImages.Map;
-      case 'QR Code':
-        return appImages.QrScan;
-      case 'Socail Links':
-        return appImages.SocialLinks;
-      default:
-        return null;
+
+
+
+  export const getIconOfSocialLink = (iconName) => {
+    switch (iconName) {
+        case 'Instagram':
+            return appImages.Instagram;
+        case 'Facebook':
+            return appImages.Facebook;
+        case 'SnapChat':
+            return appImages.SnapChat;
+        case 'LinkedIn':
+            return appImages.Linkedin;
+        case 'Spotify':
+            return appImages.Spotify;
+        case 'Discored':
+            return appImages.Discored;
+        case 'Reddit':
+            return appImages.Reddit;
+        case 'Youtube':
+            return appImages.Youtube;
+        case 'Tiktok':
+            return appImages.Tiktok;
+        case 'Pinterest':
+            return appImages.Pinterest;
+        case 'Twitter':
+            return appImages.Twitter;
+        case 'Github':
+            return appImages.Github;
+            case 'Text':
+                return appImages.Text;
+                case 'URL':
+                    return appImages.Url;
+                    case 'PhoneCall':
+                        return appImages.PhoneCall;
+                        case 'Contact':
+                            return appImages.PhoneBook;
+                            case 'Email':
+                                return appImages.Email;
+                                case 'Location':
+                                    return appImages.Map
+                                    case 'QR Code':
+                                        return appImages.QrScan
+                                        case 'Socail Links':
+                                            return appIcons.SocialLinks           
+        default:
+            return null; // or a default icon
     }
-  };
+};
 
 
 
@@ -179,5 +223,33 @@ export const SocialLinksScreenData = [
 ];
 
 
+
+// export const handleupdate=(value)=>{
+//     console.log("heloooo upadteee",values)
+//     try {
+//         setIsLoading(true)
+//         const params = {
+//        type:textdata?.linkName || "",
+//        linkName:textdata?.linkName ||"",
+//          value:value || "",
+//       }
+//       console.log("paramssss_+++", params)
+//      upadteTags(textdata?.id, params).then((res:any)=>{
+//         console.log("helooo updateee",res?.data?.data)
+//         dispatch(updateTagAc(res?.data?.data))
+// showSuccessToast("Tag Successfully updated","Scan to access")
+// refRBSheet.current.close();
+//      }).catch((error)=>{
+//         console.log("error+++",error)
+//          showErrorToast('Tags Failed', error?.response?.data?.message || 'An error occurred');
+//         setIsLoading(false)
+//      }).finally(()=>{
+//  setIsLoading(false)
+//     })
+//     } catch (error: any) {
+//         console.log("error",error)
+//          setIsLoading(false)
+//      }
+// }
 
 

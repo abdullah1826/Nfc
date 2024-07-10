@@ -6,12 +6,21 @@ import { Formik } from 'formik'
 import {ContectShema, ContextFiled,} from '../../shared/utilities/validation';
 import LinearGradient from 'react-native-linear-gradient';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
+import NfcManager, { NfcTech, Ndef, } from 'react-native-nfc-manager';
+import { checkNfcSupport, showErrorToast, showSuccessToast } from '../../shared/utilities/Helper';
+import { setTagsAllRecord, updateTagAction } from '../../redux/Slices/MainSlice';
+import { createTags, upadteTags } from '../../shared/utilities/services/mainServices';
+import { addTag } from '../../redux/Slices/MainSlice';
+import { useDispatch } from 'react-redux';
+import { AppLoader } from '../AppLoader';
+import { getIconOfSocialLink } from '../../shared/utilities/constants';
 const Contactsheet = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
     const refRBSheet = useRef();
     const screenHeight = Dimensions.get('window').height;
-    //  local state
+    // local states
+    const [isLoading, setIsLoading] = useState(false)
 
+    const dispatch = useDispatch()
 
     useImperativeHandle(ref, () => ({
         open: () => {
@@ -21,9 +30,86 @@ const Contactsheet = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
             refRBSheet.current.close();
         },
     }));
-const handleSubmit = ()=>{
-    refRBSheet.current.close();
+const handleSubmit =async (values: any, { resetForm }: any)=>{
+    const nfcSupported = await checkNfcSupport();
+    if (!nfcSupported) return
+    await NfcManager.start();
+    await NfcManager.requestTechnology(NfcTech.Ndef);
+    const { ContectName, Company, Address, phoneNumber, webSite } = values;
+    const combinedText = `Contact Name: ${ContectName}\nCompany: ${Company}\nAddress: ${Address}\nPhone Number: ${phoneNumber}\nWebsite: ${webSite}`;    
+    try {
+        const record = Ndef.uriRecord(combinedText);
+      const bytes = Ndef.encodeMessage([record]);
+        if (bytes) {
+          await NfcManager.ndefHandler
+            .writeNdefMessage(bytes);
+          {isUpdated ===true ?
+            handleupdate(combinedText):
+            HandleApidata(combinedText)
+                     }
+          resetForm()
+        }
+      } catch (error) {
+        showErrorToast("Tag Scanned Failed", "Kindly Tag the scan properly");
+      } finally {
+        NfcManager.cancelTechnologyRequest();
+      }
 }
+
+
+const HandleApidata =(value:any)=>{
+    try {
+        setIsLoading(true)
+        const params = {
+      type:textdata?.iconName || "",
+      linkName:textdata?.iconName ||"",
+         value:value || "",
+     }
+    createTags(params).then((res:any)=>{
+        dispatch(addTag(res?.data?.data))
+        showSuccessToast("Tag Successfully Writte","Scan to access")
+        setIsLoading(false)
+        refRBSheet.current.close();
+    }).catch((error)=>{
+        showErrorToast('Tags Failed', error?.response?.data?.message || 'An error occurred');
+        setIsLoading(false)
+    }).finally(()=>{
+setIsLoading(false)
+    })
+
+    } catch (error: any) {
+        console.log("error",error)
+        setIsLoading(false)
+    }
+}
+
+const handleupdate=(value)=>{
+    try {
+        setIsLoading(true)
+        const params = {
+       type:textdata?.linkName || "",
+       linkName:textdata?.linkName ||"",
+         value:value || "",
+      }
+     upadteTags(textdata?.id, params).then((res:any)=>{
+        dispatch(updateTagAction(res?.data?.data))
+       showSuccessToast("Tag Successfully updated","Scan to access")
+      refRBSheet.current.close();
+     }).catch((error)=>{
+         showErrorToast('Tags Failed', error?.response?.data?.message || 'An error occurred');
+        setIsLoading(false)
+     }).finally(()=>{
+ setIsLoading(false)
+    })
+    } catch (error: any) {
+        console.log("error",error)
+         setIsLoading(false)
+     }
+}
+
+
+
+
 
 const cancelbtn =()=>{
     refRBSheet.current.close();
@@ -39,7 +125,7 @@ const cancelbtn =()=>{
             closeOnDragDown={true}
           closeOnPressMask={true}
           animationType="slide"
-          height={screenHeight}
+          height={screenHeight-200}
             customStyles={{
                     wrapper: {
                         flex:1,
@@ -64,14 +150,22 @@ const cancelbtn =()=>{
           >
             <View style={styles.content}>
                 <View style={styles.viewsecond}>
+                    <AppLoader loading={isLoading}/>
+                    {isUpdated  ?
+                 <Image 
+              source={getIconOfSocialLink(textdata?.linkName) || ""}
+            style={styles.img}
+                /> :
            <Image 
-       source={textdata?.icon || ""}
-        style={styles.img}
-            /> 
-             <Text style={styles.txt}>{textdata?.title || ""}</Text>
-
+           source={ textdata?.icon || ""}
+            style={styles.img}
+            /> }
+                {isUpdated ?
+               <Text style={styles.txt}>{textdata?.linkName || ""}</Text>:
+             <Text style={styles.txt}>{textdata?.iconName || ""}</Text>
+                }
 <UrlTextInput
- placeholder={`Add ${textdata?.title || "" }`}
+placeholder={ isUpdated?`Add ${textdata?.linkName || "" }`:`Add ${textdata?.iconName || "" }`}
  placeholderTextColor="gray"
 value={values.ContectName}
 onChangeText={handleChange("ContectName")}

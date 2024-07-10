@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Button, TextInput, StyleSheet } from 'react-native';
+import { View, Text, Button, TextInput, StyleSheet, SafeAreaView } from 'react-native';
 
 const RatingScreen = () => {
   const [rating, setRating] = useState(0);
@@ -21,10 +21,8 @@ const RatingScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Rate This App</Text>
-
-      {/* Star Rating */}
       <View style={styles.ratingContainer}>
         {[1, 2, 3, 4, 5].map((index) => (
           <Button
@@ -47,7 +45,7 @@ const RatingScreen = () => {
 
       {/* Submit Button */}
       <Button title="Submit Rating" onPress={handleSubmitRating} disabled={rating === 0} />
-    </View>
+    </SafeAreaView>
   );
 };
 

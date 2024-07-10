@@ -1,15 +1,23 @@
-import { Image,TextInput, View } from 'react-native'
+import { Image,SafeAreaView,ScrollView,TextInput, View } from 'react-native'
 import React, { useState,useRef } from 'react'
 import style from './style'
 import RecentRecordsScreenCard from '../../../components/RecentRecordsScreenCard/RecentRecordsScreenCard'
-import { appIcons, appImages } from '../../../shared/theme/assets'
+import { appIcons, } from '../../../shared/theme/assets'
 import ScreenHeader from '../../../components/screenHeader/ScreenHeader'
-import { HP } from '../../../shared/theme/PixelResponsive'
 import { colors } from '../../../shared/theme/colors'
-import { Contactsheet, EmailSheet, Locationsheet, PhoneSheet, TextAction, UrlActionSheet } from '../../../exporter'
+import { Contactsheet, EmailSheet, Locationsheet, PhoneSheet, SocialSheet, TextAction, UrlActionSheet, WP } from '../../../exporter'
+import { useDispatch, useSelector } from 'react-redux'
+import { getIconOfSocialLink } from '../../../shared/utilities/constants'
+import { deleteTags } from '../../../shared/utilities/services/mainServices'
+import { AppLoader } from '../../../components/AppLoader'
+import { setdeleteTags } from '../../../redux/Slices/MainSlice'
+import { showErrorToast, showSuccessToast } from '../../../shared/utilities/Helper'
 
 const RecentRecordsScreen = ({ navigation }: any) => {
 
+// redux stafs
+  const {TagsAllRecord} =useSelector<any>((state:any) => state.main);
+  const dispatch = useDispatch()
     // refs
     const refTextSheet = useRef();
 const refUrlSheet = useRef();
@@ -17,37 +25,29 @@ const refPhoneSheet = useRef();
 const refContectSheet = useRef();
 const refEmailShet = useRef();
 const refLocationsheet = useRef();
+const refRBSheet = useRef();
 
 
-    // Define your original data
-    const originalData = [
-        { id: 1, icon: appImages.Email, title: 'Email', Desc: '2343weewabc1234@gmail.com' },
-        { id: 2, icon: appImages.Map, title: 'Location', Desc: '23232, St low Dhaka, Bangladesh' },
-        { id: 3, icon: appImages.QrScan, title: 'QR Code', Desc: 'Lorem Ipsum doler zebta roakl locki' },
-        { id: 4, icon: appImages.Url, title: 'URL', Desc: 'www.konsasosssdnasnskmks.com' },
-    ];
-
-    // all local states staffs
+    // local states
+    const [isLoading, setIsLoading] = useState(false)
     const [searchQuery, setSearchQuery] = useState('');
-    const [filteredData, setFilteredData] = useState(originalData);
     const [selectedData, setSelectedData] = useState(null);
     const [isUpdated, setIsUpdated] = useState(false);
 
     // Function to handle search query changes
-    const handleSearch = (query: string) => {
-        setSearchQuery(query);
-        // Filter the original data based on the search query
-        const filtered = originalData.filter(item =>
-            item.title.toLowerCase().includes(query.toLowerCase())
-        );
-        // Update the filtered data state
-        setFilteredData(filtered);
-    };
 
+    const filteredData = TagsAllRecord?.filter((item:any) => {
+      const linkName = item.linkName ? item.linkName.toLowerCase() : '';
+      const query = searchQuery ? searchQuery.toLowerCase() : '';
+      return linkName.includes(query);
+    });
+
+
+    // handle Edit button data
     const handleEditData = (item) => {
         setSelectedData(item);
         setIsUpdated(true); 
-        switch (item.title) {
+        switch (item.linkName) {
           case 'Text':
             refTextSheet.current.open();
             break;
@@ -66,50 +66,111 @@ const refLocationsheet = useRef();
           case 'Location':
             refLocationsheet.current.open();
             break;
+            case 'Youtube':
+              refRBSheet.current.open();
+              break;
+              case 'Tiktok':
+                refRBSheet.current.open();
+                break;
+                case 'Instagram':
+                  refRBSheet.current.open();
+                  break;
+                  case 'Facebook':
+                    refRBSheet.current.open();
+                    break;
+                    case 'SnapChat':
+                      refRBSheet.current.open();
+                      break;
+                      case 'LinkedIn':
+                        refRBSheet.current.open();
+                        break;
+                        case 'Spotify':
+                          refRBSheet.current.open();
+                          break;
+                          case 'Discored':
+                            refRBSheet.current.open();
+                            break;
+                            case 'Reddit':
+                              refRBSheet.current.open();
+                              break;
+                              case 'Pinterest':
+                                refRBSheet.current.open();
+                                break;
+                                case 'Twitter':
+                                  refRBSheet.current.open();
+                                  break;
+                                  case 'Github':
+                                    refRBSheet.current.open();
+                                    break;
           case 'Social Links':
             navigation.navigate('SocialLinksScreen');
             break;
           case 'QR Code':
-            navigation.navigate('QRCodeScreen');
+            navigation.navigate('QRCodeScreen',{textupdate:true, selected:item});
             break;
           default:
             break;
         }
       };
 
+// handle delete
+const handleDeleteData =(item:any, index)=>{
+  if(index ===0){
+    showErrorToast('Failed','Cannot deleted this tag because data store in Nfc tag ');
+    return
+  }
+  try {
+    setIsLoading(true)
+    deleteTags(item?.id).then((res)=>{
+dispatch(setdeleteTags(item?.id))
+showSuccessToast("Tag Successfully deleted")
+setIsLoading(false)
+    }).catch((error)=>{
+console.log("error", error)
+showErrorToast('Tags Failed', error?.response?.data?.message || 'An error occurred');
+setIsLoading(false)
+    }).finally(()=>{
+      setIsLoading(false)
 
-const handleDeleteData =(item:any)=>{
-    console.log("deleetd dataaa",item)
+    })
+  } catch (error) {
+    
+  }
 }
 
     return (
-        <View style={style.container}>
+        <SafeAreaView style={style.container}>
+          <View style={style.secondconatiner}>
             <ScreenHeader
                 heading={'Recent Records'}
                 onClick={() => { navigation.goBack() }}
             />
+            <AppLoader loading={isLoading}/>
             <View style={style.searchBox}>
                 <Image source={appIcons.Search} style={style.searchIcon} />
                 <TextInput
                     placeholder='Search'
                     placeholderTextColor={colors.g21}
                     style={style.input}
-                    onChangeText={handleSearch}
+                    onChangeText={text => setSearchQuery(text)}
                     value={searchQuery}
                 />
             </View>
-            <View>
-                {filteredData.map(item => (
+            <ScrollView showsVerticalScrollIndicator={false}>
+              <View style={{flex:1,padding:WP("2"),justifyContent:"center", alignItems:"center",alignSelf:"center"}}>
+                {filteredData.map((item:any, index:any) => (
                     <RecentRecordsScreenCard
                         key={item.id}
-                        Icon={item.icon}
-                        title={item.title}
-                        Desc={item.Desc}
+                        Icon={getIconOfSocialLink(item?.linkName)}
+                        title={item?.linkName}
+                        Desc={item.value}
                         editpress={()=>handleEditData(item)}
-                        deletepress={()=>handleDeleteData(item)}
+                        deletepress={()=>handleDeleteData(item, index)}
+                        showDeleteButton={item}
                     />
                 ))}
-            </View>
+                 </View>
+            </ScrollView>
 <TextAction 
 ref={refTextSheet}
 textdata={selectedData}
@@ -149,7 +210,16 @@ textdata={selectedData}
 isUpdated={isUpdated}
 setIsUpdated={setIsUpdated}
 />
-        </View>
+
+<SocialSheet
+ref={refRBSheet}
+textdata={selectedData}
+isUpdated={isUpdated}
+setIsUpdated={setIsUpdated}
+/>
+
+</View>
+        </SafeAreaView>
     )
 }
 

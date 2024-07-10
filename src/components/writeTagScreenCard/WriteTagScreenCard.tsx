@@ -33,7 +33,10 @@ const styles = StyleSheet.create({
         marginTop: HP(4),
         borderRadius: appRadius.boxRadius,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        shadowOffset: { width: 1, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
     },
     icon: {
         width: WP(6.8),

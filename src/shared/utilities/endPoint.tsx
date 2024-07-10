@@ -9,8 +9,9 @@ const ENDPOINTS = {
   ConfirmPaaword:"/api/user/reset-password",
   DELETEUSER:"/api/user/delete-account",
  getUserAllTags:"/api/tags",
-  GOOGLE_SIGN_IN: 'google_login',
-  APPLE_SIGN_IN: 'apple_login',
+CreateTag:"/api/tag/create",
+DeleteTag:"/api/tag/",
+UpdateTad:"/api/tag/"
 };
 
 export {BASE_URL, ENDPOINTS};

@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { HP, WP } from '../../shared/theme/PixelResponsive'
 import { appRadius, family, size } from '../../shared/theme/sizes'
@@ -40,15 +40,18 @@ const styles = StyleSheet.create({
         borderRadius: appRadius.boxRadius,
         padding: WP(3),
         shadowColor: colors.b1,
-        elevation: 8
+        elevation: 8,
+        shadowOffset: { width: 1, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
     },
     icon: {
-        width: WP(14),
-        height: HP(6),
+        width:Platform.OS==="android"? WP(14):WP("16"),
+        height:Platform.OS==="android"? HP(6):HP("8"),
         position: 'absolute',
         top: -20,
         left: 30,
-        // backgroundColor: 'blue'
+        resizeMode:'contain'
     },
     title: {
         color: colors.b1,

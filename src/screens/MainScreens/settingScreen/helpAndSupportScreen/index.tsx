@@ -3,24 +3,23 @@ import React, { useState } from 'react'
 import style from './style'
 import ScreenHeader from '../../../../components/screenHeader/ScreenHeader'
 import { appIcons } from '../../../../shared/theme/assets'
+import { SafeAreaView } from 'react-native'
 
 const HelpAndSupportScreen = ({ navigation }: any) => {
 
     const [isOpen, setISopen] = useState(false);
-    console.log(isOpen);
 
     return (
-        <View style={style.container}>
+        <SafeAreaView style={style.container}>
+            <View style={style.secondcontaner}>
             <ScreenHeader
                 heading={'Settings'}
                 onClick={() => navigation.goBack()}
             />
-
             <View style={style.iconBox}>
                 <Image source={appIcons.Chatbot} style={style.helpIcon} />
                 <Text style={style.helpAndSupportTxt}>Help & Support</Text>
             </View>
-
             <TouchableOpacity style={style.reportBugBox}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Image source={appIcons.Bug} style={style.bugIcon} />
@@ -34,30 +33,23 @@ const HelpAndSupportScreen = ({ navigation }: any) => {
                     <Image source={appIcons.Tips} style={style.bugIcon} />
                     <Text style={style.reportBugTxt}>Tips & Suggestions</Text>
                 </View>
-
                 <Image source={appIcons.Next} style={style.nextIcon} />
-
             </TouchableOpacity>
-
             <TouchableOpacity style={style.reportBugBox}
-                onPress={() => setISopen(open => !open)}
-            >
+                onPress={() => setISopen(open => !open)}>
                 <Text style={style.reportBugTxt}>About This Privacy Policy</Text>
                 <Image source={isOpen ? appIcons.Up : appIcons.Down} style={style.aboutIcon} />
-
             </TouchableOpacity>
-
             {
                 isOpen &&
                 < View style={style.aboutPrivacyBox}>
                     <Text style={style.aboutPrivacyDesc}>
-                        Lorem ipsum dolor sit amet consectetur. Id mauris accumsan et diam nec pharetra sed tempus magna. Cursus porttitor porta lacus consectetur quis pharetra libero. Tellus vestibulum tempor dolor ligula dapibus at diam praesent. Et dictum placerat non mattis.Lorem ipsum dolor sit amet consectetur. Id mauris accumsan et diam nec pharetra sed tempus magna. Cursus porttitor porta lacus consectetur quis pharetra libero. Tellus vestibulum tempor dolor ligula dapibus at diam praesent. Et dictum placerat non mattis.
+                    When you visit the Site and app, we automatically collect certain information about your device, including information about your web browser, IP address, time zone, and some of the cookies that are installed on your device. Additionally, as you browse the Site and app, we collect information about the individual web pages or products that you view, what websites or search terms referred you to the Site, and information about how you interact with the Site. We refer to this automatically-collected information as “Device Information.”
                     </Text>
                 </View>
             }
-
-
-        </View>
+            </View>
+        </SafeAreaView>
     )
 }
 

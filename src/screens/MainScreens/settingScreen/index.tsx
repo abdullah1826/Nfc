@@ -1,4 +1,4 @@
-import { View, Text, FlatList,Linking } from 'react-native'
+import { View, Text, FlatList,Linking, SafeAreaView } from 'react-native'
 import React,{useState} from 'react'
 import style from './style'
 import ScreenHeader from '../../../components/screenHeader/ScreenHeader'
@@ -11,7 +11,8 @@ import { useNetworkStatus } from '../../../exporter'
 import { deleteCurrentUser } from '../../../shared/utilities/services/authServices'
 import { showErrorToast, showSuccessToast } from '../../../shared/utilities/Helper'
 import { AppLoader } from '../../../components/AppLoader'
-
+import Share from 'react-native-share';
+import { GoogleSignin } from '@react-native-google-signin/google-signin'
 
 const Setting = ({ navigation }: any) => {
 
@@ -42,7 +43,7 @@ const Setting = ({ navigation }: any) => {
             key: 2,
             label: 'Contact Us',
             icon: appIcons.ContactUs,
-            onClick: () => { navigation.navigate('ContactUs')}
+            onClick: () => {handleContect()}
         },
         {
             key: 3,
@@ -54,7 +55,7 @@ const Setting = ({ navigation }: any) => {
             key: 4,
             label: 'Share this app',
             icon: appIcons.Share,
-            onClick: () => { }
+            onClick: () => {handleshareapp()}
         },
         {
             key: 5,
@@ -80,6 +81,7 @@ const Setting = ({ navigation }: any) => {
             icon: appIcons.Logout,
             onClick: () => { 
                 dispatch(signOut())
+                GoogleSignin.signOut()
                 navigation.replace('AuthStack', { Screen: 'Login' });
             }
         },
@@ -95,7 +97,9 @@ setIsLoading(true)
 deleteCurrentUser().then((res)=>{
 showSuccessToast("Alert" ,"Account deleted successfully")
 setIsLoading(false)
-navigation.navigate("Login")
+dispatch(signOut())
+GoogleSignin.signOut()
+navigation.replace('AuthStack', { Screen: 'Login' });
 }).catch((error)=>{
     showErrorToast('Failed', error?.response?.data?.message || 'An error occurred');
     setIsLoading(false)
@@ -110,8 +114,30 @@ c
         }
     }
 
+const handleContect=()=>{
+    const email = 'mailto:waseemanjum899@gmail.com';
+    Linking.openURL(email).catch((err:any) => console.error('Error:', err));
+}
+
+
+    const handleshareapp=()=>{
+        const options = {
+            title: 'Share App',
+            message: 'Share Nfc Toolkit App!',
+            // url: 'https://www.example.com', // replace with your app's URL
+          };
+      
+        Share.open(options)
+  .then((res) => {
+    console.log(res);
+  })
+  .catch((err) => {
+    err && console.log(err);
+  });
+    }
     return (
-        <View style={style.container}>
+        <SafeAreaView style={style.container}>
+            <View style={style.secondcontainer}>
             <ScreenHeader
                 heading={'Settings'}
                 onClick={() => navigation.goBack()}
@@ -136,8 +162,8 @@ c
             </View>
 
 
-
-        </View>
+            </View>
+        </SafeAreaView>
     )
 }
 

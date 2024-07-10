@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 import { colors } from "../../../shared/theme/colors";
 import { HP, WP } from "../../../shared/theme/PixelResponsive";
 import { appRadius, size } from "../../../shared/theme/sizes";
@@ -8,7 +8,13 @@ const style = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: colors.bg1,
-        padding: HP(3)
+    },
+    secondconatiner:{
+        flex: 1,
+        backgroundColor: colors.bg1,
+        marginHorizontal:WP("5"),
+        marginTop:Platform.OS==="android"?WP("7"):null,
+        
     },
     searchBox: {
         flexDirection: 'row',
@@ -21,15 +27,19 @@ const style = StyleSheet.create({
         marginTop: HP(6),
         alignSelf: 'center',
         alignItems: 'center',
+        shadowOffset: { width: 1, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
     },
     searchIcon: {
         width: WP(5),
         height: HP(2.5),
-        marginLeft: WP(6)
+        marginLeft: WP(6),
+        resizeMode:'contain'
     },
     input: {
         color: colors.b1,
-        marginLeft: WP(1),
+        marginLeft:Platform.OS==="android"? WP(1):WP("2"),
         fontSize: size.xsmall,
         flex: 1
     },

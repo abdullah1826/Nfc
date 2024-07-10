@@ -30,9 +30,8 @@ const refsociallink = useRef();
 
     const handleopen =(item:any)=>{
         setSelectedItem(item)
-refsociallink.current.open();
-    }
-
+      refsociallink.current.open();
+       }
     return (
             <View style={style.container}>
                 <MyStatusBar backgroundColor={"white"}/>
@@ -50,7 +49,6 @@ refsociallink.current.open();
                         value={search}
                     />
                 </View>
-
                 <View>
                     <FlatList
                         data={filteredData}

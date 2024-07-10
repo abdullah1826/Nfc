@@ -48,7 +48,10 @@ const styles = StyleSheet.create({
         borderRadius: appRadius.boxRadius - 2,
         alignSelf: 'center',
         alignItems: 'center',
-        marginTop: HP(2)
+        marginTop: HP(2),
+        shadowOffset: { width: 1, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
     },
     input: {
         color: colors.b1,

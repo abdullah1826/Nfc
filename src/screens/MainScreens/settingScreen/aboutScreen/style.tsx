@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 import { HP, WP } from "../../../../shared/theme/PixelResponsive";
 import { colors } from "../../../../shared/theme/colors";
 import { appRadius, family, size } from "../../../../shared/theme/sizes";
@@ -7,7 +7,12 @@ const style = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: colors.bg1,
-        padding: HP(3)
+    },
+    secondcontaiiner:{
+        flex: 1,
+        backgroundColor: colors.bg1,
+         marginHorizontal:WP("4"),
+         marginTop:Platform.OS==="android"?WP("5"):null
     },
     iconBox: {
         width: WP(100),
@@ -41,7 +46,10 @@ const style = StyleSheet.create({
         alignItems: 'center',
         borderRadius: appRadius.boxRadius,
         justifyContent: 'space-between',
-        paddingHorizontal: WP(4)
+        paddingHorizontal: WP(4),
+        shadowOffset: { width: 1, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
     },
     bugIcon: {
         width: WP(10),
@@ -66,7 +74,8 @@ const style = StyleSheet.create({
     },
     logo: {
         height: WP(10),
-        width: WP(15)
+        width: WP(30),
+        resizeMode:"contain"
     },
     aboutNfcTitle: {
         fontSize: size.xxsmall,
@@ -84,14 +93,19 @@ const style = StyleSheet.create({
         alignSelf: 'center',
         marginTop: HP(3),
         justifyContent: 'center',
+        shadowOffset: { width: 1, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
     },
     aboutPrivacyDesc: {
         color: colors.b1,
-        width: WP(70),
-        fontSize: size.xxtiny,
+        width: WP(80),
+        fontSize: size.tiny,
         marginTop: HP(.3),
-        marginLeft: WP(1)
-        // alignSelf: 'center'
+        marginLeft: WP(1),
+        alignSelf: 'center',
+        justifyContent:"center",
+        alignItems:"center"
         // backgroundColor: 'lightblue'
     },
 

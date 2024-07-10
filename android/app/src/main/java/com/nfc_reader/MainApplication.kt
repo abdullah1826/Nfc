@@ -1,4 +1,4 @@
-package com.nfc_reader
+package com.nfc_Toolkit
 
 import android.app.Application
 import com.facebook.react.PackageList

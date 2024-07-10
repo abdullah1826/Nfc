@@ -6,12 +6,22 @@ import { Formik } from 'formik'
 import {UrlFields, Urlschema } from '../../shared/utilities/validation';
 import LinearGradient from 'react-native-linear-gradient';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import NfcManager, { NfcTech, Ndef, } from 'react-native-nfc-manager';
+import { checkNfcSupport, showErrorToast, showSuccessToast, useNetworkStatus } from '../../shared/utilities/Helper';
+import { createTags, upadteTags } from '../../shared/utilities/services/mainServices';
+import { Alert } from 'react-native';
+import { AppLoader } from '../AppLoader';
+import { addTag, setTagsAllRecord, updateTagAction } from '../../redux/Slices/MainSlice';
+import { useDispatch } from 'react-redux';
+import { getIconOfSocialLink } from '../../shared/utilities/constants';
 
-const SocialSheet = forwardRef(({textdata}, ref) => {
-    console.log("helooooo",textdata)
+const SocialSheet = forwardRef(({textdata,isUpdated}, ref) => {
+    const dispatch = useDispatch()
     const refRBSheet = useRef();
-
     //  local state
+    const [isLoading, setIsLoading] = useState(false)
+    // inteernet checking
+    const isConnected = useNetworkStatus()
 
     useImperativeHandle(ref, () => ({
         open: () => {
@@ -21,9 +31,86 @@ const SocialSheet = forwardRef(({textdata}, ref) => {
             refRBSheet.current.close();
         },
     }));
-const handleSubmit = ()=>{
-    refRBSheet.current.close();
+const handleSubmit = async(values: any, { resetForm }: any)=>{
+    if (!isConnected) {
+        Alert.alert('No Internet Connection', 'Please check your internet connection and try again.');
+        return;
+      }
+    const nfcSupported = await checkNfcSupport();
+    if (!nfcSupported) return
+    await NfcManager.start();
+    await NfcManager.requestTechnology(NfcTech.Ndef);
+    try {
+        const bytes = Ndef.encodeMessage([Ndef.uriRecord(values.UrlText)])
+        if (bytes) {
+          await NfcManager.ndefHandler
+            .writeNdefMessage(bytes);
+            {isUpdated ===true ?
+                handleupdate(values.UrlText):
+                HandleApidata(values.UrlText)
+                         }
+          resetForm()
+        }
+      } catch (error) {
+
+        showErrorToast("Tag Write Failed", "Unable to encode message.");
+      } finally {
+        NfcManager.cancelTechnologyRequest();
+      }
 }
+
+
+const HandleApidata =(value:any)=>{
+    try {
+        setIsLoading(true)
+        const params = {
+      type:textdata?.iconName || "",
+      linkName:textdata?.iconName ||"",
+         value:value || "",
+     }
+    createTags(params).then((res:any)=>{
+        dispatch(addTag(res?.data?.data))
+        showSuccessToast("Tag Successfully Writte","Scan to access")
+        setIsLoading(false)
+        refRBSheet.current.close();
+    }).catch((error)=>{
+        showErrorToast('Tags Failed', error?.response?.data?.message || 'An error occurred');
+        setIsLoading(false)
+    }).finally(()=>{
+setIsLoading(false)
+    })
+    } catch (error: any) {
+        console.log("error",error)
+        setIsLoading(false)
+    }
+}
+
+const handleupdate=(values)=>{
+    try {
+        setIsLoading(true)
+        const params = {
+       type:textdata?.linkName || "",
+       linkName:textdata?.linkName ||"",
+         value:values || "",
+      }
+     upadteTags(textdata?.id, params).then((res:any)=>{
+        dispatch(updateTagAction(res?.data?.data))
+showSuccessToast("Tag Successfully updated","Scan to access")
+refRBSheet.current.close();
+     }).catch((error)=>{
+         showErrorToast('Tags Failed', error?.response?.data?.message || 'An error occurred');
+        setIsLoading(false)
+     }).finally(()=>{
+ setIsLoading(false)
+    })
+    } catch (error: any) {
+        console.log("error",error)
+         setIsLoading(false)
+     }
+}
+
+
+
 
 const cancelbtn =()=>{
     refRBSheet.current.close();
@@ -61,16 +148,26 @@ const cancelbtn =()=>{
                     marginVertical: 10,
                 },
             }}>
+                <AppLoader loading={isLoading}/>
             <View style={styles.content}>
                 <View style={styles.viewsecond}>
+                {isUpdated  ?
+                 <Image 
+              source={getIconOfSocialLink(textdata?.linkName) || ""}
+            style={styles.img}
+                /> :
            <Image 
-       source={textdata?.icon || ""}
-        style={styles.img}
-            /> 
+           source={ textdata?.icon || ""}
+            style={styles.img}
+            /> }
+                {isUpdated ?
+               <Text style={styles.txt}>{textdata?.linkName || ""}</Text>:
              <Text style={styles.txt}>{textdata?.iconName || ""}</Text>
+                }
+
 
 <UrlTextInput
- placeholder={`Add ${textdata?.iconName || "" }`}
+placeholder={ isUpdated?`Add ${textdata?.linkName || "" }`:`Add ${textdata?.iconName || "" }`}
  placeholderTextColor="gray"
 value={values.UrlText}
 onChangeText={handleChange("UrlText")}
@@ -95,7 +192,7 @@ errorMessage={errors.UrlText}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
           >
-              <Text style={styles.btnTxt}>Save</Text>
+              <Text style={styles.btnTxt}>{isUpdated? "Update":"Save"}</Text>
           </LinearGradient>
       </TouchableOpacity>
 

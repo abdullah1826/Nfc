@@ -3,7 +3,7 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import authReducer from './Slices/UserSlice';
 import { TypedUseSelectorHook, useSelector } from "react-redux";
 import { persistReducer, persistStore } from "redux-persist";
-
+import mainReducer from "./Slices/MainSlice";
 // declare var window: any;
 
 const persistConfig = {
@@ -14,6 +14,7 @@ const persistConfig = {
 
 const reducers = combineReducers({
     user: authReducer,
+    main:mainReducer
 });
 
 const persistedReducer = persistReducer(persistConfig, reducers);

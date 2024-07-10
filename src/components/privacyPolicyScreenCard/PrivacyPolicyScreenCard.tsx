@@ -31,13 +31,16 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         width: WP(90),
-        height: HP(18),
+        height: HP(25),
         backgroundColor: colors.bg1,
         borderRadius: appRadius.boxRadius + 5,
         shadowColor: colors.b1,
         elevation: 5,
         alignSelf: 'center',
-        marginTop: HP(2)
+        marginTop: HP(2),
+        shadowOffset: { width: 1, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
     },
     icon: {
         width: WP(8.5),

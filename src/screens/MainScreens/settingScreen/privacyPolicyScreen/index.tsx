@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity } from 'react-native'
+import { View, Text, Image, TouchableOpacity, SafeAreaView } from 'react-native'
 import React, { useState } from 'react'
 import { style } from './style'
 import ScreenHeader from '../../../../components/screenHeader/ScreenHeader'
@@ -14,35 +14,32 @@ const PrivacyPolicyScreen = ({ navigation }: any) => {
 
     return (
         <KeyboardAwareScrollView style={{ flex: 1, backgroundColor: colors.bg1 }}>
-            <View style={style.container}>
-
+            <SafeAreaView style={style.container}>
+<View style={style.secondcontainer}>
                 <ScreenHeader
                     heading={'Settings'}
                     onClick={() => navigation.goBack()}
                 />
-
                 <View style={style.iconBox}>
                     <Image source={appIcons.PrivacyPolicyIcon} style={style.privacyIcon} />
                     <Text style={style.privacyPolicyTxt}>Privacy Policy</Text>
                 </View>
-
                 <View style={style.cardsBox}>
                     <PrivacyPolicyScreenCard
                         icon={appIcons.Fire}
                         title={'No Surprises!'}
-                        desc={'Lorem ipsum dolor sit amet consectetur. Id mauris accumsan et diam nec pharetra sed tempus magna. Cursus porttitor porta lacus consectetur quis pharetra libero. Tellus vestibulum tempor dolor ligula dapibus at diam praesent. Et dictum placerat non mattis.'}
+                        desc={'We share your Personal Information with third parties to help us use your Personal Information, as described above. For example, we use Shopify to power our online store--you can read more about how Shopify uses your Personal Information here:  https://www.shopify.com/legal/privacy.'}
                     />
-
                     <PrivacyPolicyScreenCard
                         icon={appIcons.Lock}
                         title={'Keeping Your Information Safe!'}
-                        desc={'Lorem ipsum dolor sit amet consectetur. Id mauris accumsan et diam nec pharetra sed tempus magna. Cursus porttitor porta lacus consectetur quis pharetra libero. Tellus vestibulum tempor dolor ligula dapibus at diam praesent. Et dictum placerat non mattis.'}
+                        desc={'we use the Order Information that we collect generally to fulfill any orders placed through the Site (including processing your payment information, arranging for shipping, and providing you with invoices and/or order confirmations). Additionally, we use this Order Information to:'}
                     />
 
                     <PrivacyPolicyScreenCard
                         icon={appIcons.Protect}
                         title={'You’re Always in Control!'}
-                        desc={'Lorem ipsum dolor sit amet consectetur. Id mauris accumsan et diam nec pharetra sed tempus magna. Cursus porttitor porta lacus consectetur quis pharetra libero. Tellus vestibulum tempor dolor ligula dapibus at diam praesent. Et dictum placerat non mattis.'}
+                        desc={`When you visit the Site and app, we automatically collect certain information about your device, including information about your web browser, IP address, time zone, and some of the cookies that are installed on your device. Additionally, as you browse the Site and app, we collect information about the individual web pages or products that you view, what websites or search terms referred you to the Site, and information about how you interact with the Site. We refer to this automatically-collected information as “Device Information.”`}
                     />
                 </View>
 
@@ -58,12 +55,12 @@ const PrivacyPolicyScreen = ({ navigation }: any) => {
                     isOpen &&
                     < View style={style.aboutPrivacyBox}>
                         <Text style={style.aboutPrivacyDesc}>
-                            Lorem ipsum dolor sit amet consectetur. Id mauris accumsan et diam nec pharetra sed tempus magna. Cursus porttitor porta lacus consectetur quis pharetra libero. Tellus vestibulum tempor dolor ligula dapibus at diam praesent. Et dictum placerat non mattis.Lorem ipsum dolor sit amet consectetur. Id mauris accumsan et diam nec pharetra sed tempus magna. Cursus porttitor porta lacus consectetur quis pharetra libero. Tellus vestibulum tempor dolor ligula dapibus at diam praesent. Et dictum placerat non mattis.
+                        This Privacy Policy describes how your personal information is collected, used, and shared when you visit or make a purchase from our platform (the “Site”) the app, and the services related to them (collectively, together with the site, app, and the related services, our “Services”).
                         </Text>
                     </View>
                 }
-
-            </View>
+</View>
+            </SafeAreaView>
         </KeyboardAwareScrollView >
     )
 }

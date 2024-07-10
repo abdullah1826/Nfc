@@ -1,9 +1,7 @@
 import { StyleSheet } from "react-native";
 import { colors } from "../../../shared/theme/colors";
 import { HP, WP } from "../../../shared/theme/PixelResponsive";
-import { appRadius } from "../../../shared/theme/sizes";
 
-// QR Code
 
 export const style = StyleSheet.create({
     container: {
@@ -20,16 +18,11 @@ export const style = StyleSheet.create({
         alignItems:"center",
     },
     footerContainer: {
-        // flex:1,
         flexDirection: 'row',
         alignItems: 'center',
         marginTop: HP(1),
-        // paddingHorizontal: WP(5),
-        // backgroundColor: 'lightblue',
         justifyContent: 'space-between',
         alignSelf:"center",
-        // position:"absolute",
-    // bottom:5,
     },
     imagePicker: {
         width: WP(9),

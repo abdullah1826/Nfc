@@ -1,20 +1,29 @@
 import React, { useRef, forwardRef, useImperativeHandle, useState } from 'react';
-import { View, Text, StyleSheet, Image,TouchableOpacity, Dimensions,PermissionsAndroid, Platform, Alert, } from 'react-native';
+import { View, Text, StyleSheet, Image,TouchableOpacity, Dimensions,PermissionsAndroid, Alert, } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { HP, WP, appRadius, colors, family, size } from '../../exporter';
-import { Formik } from 'formik'
-import {EmailField, EmailShema,} from '../../shared/utilities/validation';
 import LinearGradient from 'react-native-linear-gradient';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import NfcManager, { NfcTech, Ndef, } from 'react-native-nfc-manager';
+import { checkNfcSupport, showErrorToast, showSuccessToast } from '../../shared/utilities/Helper';
+import { createTags, upadteTags } from '../../shared/utilities/services/mainServices';
+import { useDispatch } from 'react-redux';
+import { AppLoader } from '../AppLoader';
+import { addTag, updateTagAction } from '../../redux/Slices/MainSlice';
+import { getIconOfSocialLink } from '../../shared/utilities/constants';
 const Locationsheet = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
+
+
 
     // locaal states
     const [location, setLocation] = useState(null);
+    const dispatch = useDispatch()
     const mapRef = useRef(null);
     const requestLocationPermission = async () => {
+      if (Platform.OS === 'android') {
         try {
           const granted = await PermissionsAndroid.request(
             PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
@@ -26,23 +35,39 @@ const Locationsheet = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
               buttonPositive: 'OK',
             },
           );
-         
-          if (granted === 'granted') {
-        
-            return true;
-          } else {
-         
-            return false;
-          }
+  
+          return granted === PermissionsAndroid.RESULTS.GRANTED;
         } catch (err) {
+          console.warn(err);
           return false;
         }
-      };
+      } else if (Platform.OS === 'ios') {
+        const status = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+  
+        switch (status) {
+          case RESULTS.UNAVAILABLE:
+            console.log('This feature is not available (on this device / in this context)');
+            return false;
+          case RESULTS.DENIED:
+            console.log('The permission has not been requested / is denied but requestable');
+            return false;
+          case RESULTS.LIMITED:
+            console.log('The permission is limited: some actions are possible');
+            return true;
+          case RESULTS.GRANTED:
+            console.log('The permission is granted');
+            return true;
+          case RESULTS.BLOCKED:
+            console.log('The permission is denied and not requestable anymore');
+            return false;
+        }
+      }
+    };
 
     const refRBSheet = useRef();
     const screenHeight = Dimensions.get('window').height;
-    //  local state
-
+    // local states
+    const [isLoading, setIsLoading] = useState(false)
 
     useImperativeHandle(ref, () => ({
         open: () => {
@@ -52,14 +77,90 @@ const Locationsheet = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
             refRBSheet.current.close();
         },
     }));
-const handleSubmit = ()=>{
-  console.log("heloo")
-  if (location === "" || location === undefined || location === null) {
-    Alert.alert("Warning!", "Please select a location.");
-    return; // Prevent further execution
+const handleSubmit = async()=>{
+  try {
+    if (!location || !location.latitude || !location.longitude) {
+      Alert.alert("Warning!", "Please select a location.");
+      return;
+    }
+    const nfcSupported = await checkNfcSupport();
+    if (!nfcSupported) return
+    await NfcManager.start();
+    await NfcManager.requestTechnology(NfcTech.Ndef);
+    const geoUri = `geo:${location.latitude},${location.longitude}`;
+    const record = Ndef.uriRecord(geoUri);
+    const bytes = Ndef.encodeMessage([record]);
+    if (bytes) {
+      await NfcManager.ndefHandler.writeNdefMessage(bytes);
+      showSuccessToast("Tag Successfully Writte","Scan to access")
+      {isUpdated ===true ?
+        handleupdate(geoUri):
+        HandleApidata(geoUri)
+                 }
+    } else {
+      showErrorToast("Tag Write Failed", "Unable to encode message.");
+    }
+  } catch (error) {
+    showErrorToast("Tag Scanned Failed", "Kindly Tag the scan properly");
+
+  } finally {
+    NfcManager.cancelTechnologyRequest();
+  }
 }
-refRBSheet.current.close();
+
+
+const HandleApidata =(value:any)=>{
+  try {
+      setIsLoading(true)
+      const params = {
+    type:textdata?.iconName || "",
+    linkName:textdata?.iconName ||"",
+       value:value || "",
+   }
+  createTags(params).then((res:any)=>{
+      dispatch(addTag(res?.data?.data))
+      showSuccessToast("Tag Successfully Writte","Scan to access")
+      setIsLoading(false)
+      refRBSheet.current.close();
+      setLocation(null)
+  }).catch((error)=>{
+      showErrorToast('Tags Failed', error?.response?.data?.message || 'An error occurred');
+      setIsLoading(false)
+  }).finally(()=>{
+setIsLoading(false)
+  })
+  } catch (error: any) {
+      console.log("error",error)
+      setIsLoading(false)
+  }
 }
+const handleupdate=(value)=>{
+  try {
+      setIsLoading(true)
+      const params = {
+     type:textdata?.linkName || "",
+     linkName:textdata?.linkName ||"",
+       value:value || "",
+    }
+   upadteTags(textdata?.id, params).then((res:any)=>{
+      dispatch(updateTagAction(res?.data?.data))
+     showSuccessToast("Tag Successfully updated","Scan to access")
+    refRBSheet.current.close();
+    setLocation(null)
+   }).catch((error)=>{
+       showErrorToast('Tags Failed', error?.response?.data?.message || 'An error occurred');
+      setIsLoading(false)
+   }).finally(()=>{
+setIsLoading(false)
+  })
+  } catch (error: any) {
+      console.log("error",error)
+       setIsLoading(false)
+   }
+}
+
+
+
 
 const getLocation = () => {
    try {
@@ -110,7 +211,6 @@ const getLocation = () => {
         
     }
   };
-
 const cancelbtn =()=>{
     refRBSheet.current.close();
 }
@@ -163,11 +263,20 @@ const handlePress = (data, details = null) => {
           >
             <View style={styles.content}>
                 <View style={styles.viewsecond}>
+                  <AppLoader loading={isLoading}/>
+                  {isUpdated  ?
+                 <Image 
+              source={getIconOfSocialLink(textdata?.linkName) || ""}
+            style={styles.img}
+                /> :
            <Image 
-       source={textdata?.icon || ""}
-        style={styles.img}
-            /> 
-             <Text style={styles.txt}>{textdata?.title || ""}</Text>
+           source={ textdata?.icon || ""}
+            style={styles.img}
+            /> }
+                {isUpdated ?
+               <Text style={styles.txt}>{textdata?.linkName || ""}</Text>:
+             <Text style={styles.txt}>{textdata?.iconName || ""}</Text>
+                }
 
              <GooglePlacesAutocomplete
         placeholder='Enter Location'
@@ -225,26 +334,18 @@ const handlePress = (data, details = null) => {
 
 
 
-{/* <UrlTextInput
- placeholder={`Recpient ${textdata?.title || "" }`}
- placeholderTextColor="gray"
-value={values.Email}
-onChangeText={handleChange("Email")}
-touched={errors.Email}
-errorMessage={errors.Email}
-/> */}
-<View style={{width:WP("80"),height:HP("30"), justifyContent:"center", alignItems:"center",}}>
 
+<View style={{width:WP("80"),height:HP("30"), justifyContent:"center", alignItems:"center",}}>
 <MapView
             style={styles.map}
             provider={PROVIDER_GOOGLE}
             ref={mapRef}
             region={location}
-        showsUserLocation={true}
-        onPress={handleMapPress}
+             showsUserLocation={true}
+           onPress={handleMapPress}
             zoomEnabled={true}
             showsUserLocation={true}>
-{location && (
+            {location && (
           <Marker coordinate={location} />
         )}
         </MapView>
