@@ -37,7 +37,7 @@ const Setting = ({ navigation }: any) => {
             key: 1,
             label: 'Rate this app',
             icon: appIcons.Rate,
-            onClick: () => { navigation.navigate('Rating')}
+            onClick: () => {}
         },
         {
             key: 2,

@@ -24,7 +24,13 @@ const handleabout=()=>{
 }
 
     return (
-        <KeyboardAwareScrollView showsVerticalScrollIndicator={false} style={{ flex: 1, backgroundColor: colors.bg1 }}>
+        <KeyboardAwareScrollView showsVerticalScrollIndicator={false} 
+        contentContainerStyle={{ flexGrow: 1 }}
+        enableOnAndroid={true}
+        extraScrollHeight={20}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        >
             <SafeAreaView style={style.container}>
                 <View style={style.secondcontaiiner}>
                 <ScreenHeader

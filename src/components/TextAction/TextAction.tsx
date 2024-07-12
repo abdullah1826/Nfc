@@ -43,6 +43,7 @@ const dispatch = useDispatch()
     // }, [isUpdated]);
 
 const handleSubmit =async (values: any, { resetForm }: any)=>{
+    showErrorToast("Alert", "Please Keep the Tag close with back");
      const nfcSupported = await checkNfcSupport();
     if (!nfcSupported) return
      await NfcManager.start();

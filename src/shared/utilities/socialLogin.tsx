@@ -8,7 +8,7 @@ import auth from '@react-native-firebase/auth';
 import { SOCIAL_TYPE } from './constants';
 import { loginUser } from './services/authServices';
 import { setAuthenticated, setUserData } from '../../redux/Slices/UserSlice';
-import { LoginManager, LoginBehavior } from 'react-native-fbsdk-next';
+import { LoginManager, LoginBehavior, AccessToken } from 'react-native-fbsdk-next';
 
 
 const isuserPlatform = getPlatform()
@@ -124,18 +124,16 @@ export const onFacebookLogin = async (
     ]);
     if (result.grantedPermissions) {
       const token = await AccessToken.getCurrentAccessToken();
-
-         console.log("token++++++++++",token)
-         const issocialtype = "facebook"
-        //  handleSubmit(id, setIsLoading,dispatch,navigation,email,name,issocialtype)
-  
-
-      if (token) {
-        const facebookCredential = auth.FacebookAuthProvider.credential(
-          token?.accessToken);
-        // const response = await auth().signInWithCredential(facebookCredential);
-
-      }
+      console.log("token",token)
+      // if (token) {
+      //   const facebookCredential = auth.FacebookAuthProvider.credential(
+      //     token?.accessToken);
+      //   const response = await auth().signInWithCredential(facebookCredential);
+      //   const issocialtype = "facebook"
+      //   //  handleSubmit(id, setIsLoading,dispatch,navigation,email,name,issocialtype
+      //   console.log("response++++",response)
+      //   setLoading(false);
+      // }
     } else {
       Alert.alert('Error', 'Facebook login failed');
       setLoading(false);

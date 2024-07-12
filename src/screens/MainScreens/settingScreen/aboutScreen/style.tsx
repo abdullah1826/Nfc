@@ -50,6 +50,7 @@ const style = StyleSheet.create({
         shadowOffset: { width: 1, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
+
     },
     bugIcon: {
         width: WP(10),
@@ -96,6 +97,8 @@ const style = StyleSheet.create({
         shadowOffset: { width: 1, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
+
+        
     },
     aboutPrivacyDesc: {
         color: colors.b1,
