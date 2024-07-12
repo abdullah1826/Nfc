@@ -10,7 +10,7 @@ import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet
 import { useDispatch, useSelector } from 'react-redux'
 import { MyAppHeader, MyStatusBar } from '../../../exporter'
 import NfcManager, { NfcTech, Ndef, nfcManager, NfcEvents } from 'react-native-nfc-manager';
-import { checkNfcSupport, useNetworkStatus } from '../../../shared/utilities/Helper'
+import { checkNfcSupport, showErrorToast, useNetworkStatus } from '../../../shared/utilities/Helper'
 import { getAllTags } from '../../../shared/utilities/services/mainServices'
 import { setTagsAllRecord } from '../../../redux/Slices/MainSlice'
 import { AppLoader } from '../../../components/AppLoader'
@@ -35,19 +35,17 @@ const dispatch = useDispatch()
         const isConnected = useNetworkStatus()
 
         const readNdef = async () => {
+            showErrorToast("Alert", "Please Keep the Tag close with back");
             try {
             const nfcSupported = await checkNfcSupport();
             if (!nfcSupported) return
                 
       await NfcManager.start();
       await NfcManager.requestTechnology(NfcTech.Ndef);
-      NfcManager.setEventListener(NfcTech.Ndef, (tag) => {
-        console.log('NFC Tag:', tag);
-        NfcManager.setAlertMessageIOS('NFC Tag Detected');
-        NfcManager.unregisterTagEvent().catch(() => 0);
-      });
-      NfcManager.setAlertMessageIOS('Aproxime o NFC Tag do dispositivo.');
-      console.log('NFC reading started.');
+    //   NfcManager.setEventListener(NfcTech.Ndef, (tag:any) => {
+    //     NfcManager.setAlertMessageIOS('NFC Tag Detected');
+    //     // NfcManager.unregisterTagEvent().catch(() => 0);
+    //   });
                         NfcManager.registerTagEvent()
                         .then(() => console.log('NFC reading started.'))
                         .catch(error => console.warn('Error starting NFC reading:', error));
@@ -55,11 +53,12 @@ const dispatch = useDispatch()
                         if(tag){
                             // const message= await nfcManager.ndefHandler.getNdefMessage();
                             //  const status = await nfcManager.ndefHandler.getNdefStatus();
-                             console.log("status+++++++++++++++++++++++++", tag)
+                            //  console.log("status+++++++++++++++++++++++++", tag)
                             //  console.log("status___________", status)
-                        } 
+                        } else{
+                            showErrorToast("'Error', 'No NFC tag detected. Please try again.'");
+                        }
                      } catch (ex) {
-                        console.log("tagsssss++++++", ex)
                          if (ex instanceof Error) {
                              if (ex.message.includes('NFC tag is not connected')) {
                                  Alert.alert('Error', 'NFC tag is not connected. Please try again.');
@@ -129,6 +128,11 @@ try {
         )
       }
 
+const handleLockFeature = ()=>{
+    showErrorToast("Alert", "Currently This feature is not avaliable");
+}
+
+
     return (
         <SafeAreaView style={style.container}>       
         <KeyboardAwareScrollView
@@ -158,7 +162,7 @@ try {
                             Icon={appIcons.Locked}
                             title={'Locked Tag'}
                             desc={"Lock device to make it secure!"}
-                            onClick={() => { }}
+                            onClick={() => {handleLockFeature()}}
                         />
                     </View>
                     <View style={style.RecordsHeadingBox}>

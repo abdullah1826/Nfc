@@ -36,6 +36,7 @@ const handleSubmit = async(values: any, { resetForm }: any)=>{
         Alert.alert('No Internet Connection', 'Please check your internet connection and try again.');
         return;
       }
+      showErrorToast("Alert", "Please Keep the Tag close with back");
     const nfcSupported = await checkNfcSupport();
     if (!nfcSupported) return
     await NfcManager.start();

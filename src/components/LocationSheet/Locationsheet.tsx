@@ -1,10 +1,10 @@
 import React, { useRef, forwardRef, useImperativeHandle, useState } from 'react';
-import { View, Text, StyleSheet, Image,TouchableOpacity, Dimensions,PermissionsAndroid, Alert, } from 'react-native';
+import { View, Text, StyleSheet, Image,TouchableOpacity, Dimensions,PermissionsAndroid, Alert, Platform, } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { HP, WP, appRadius, colors, family, size } from '../../exporter';
 import LinearGradient from 'react-native-linear-gradient';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE,PROVIDER_DEFAULT } from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import NfcManager, { NfcTech, Ndef, } from 'react-native-nfc-manager';
@@ -15,9 +15,6 @@ import { AppLoader } from '../AppLoader';
 import { addTag, updateTagAction } from '../../redux/Slices/MainSlice';
 import { getIconOfSocialLink } from '../../shared/utilities/constants';
 const Locationsheet = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
-
-
-
     // locaal states
     const [location, setLocation] = useState(null);
     const dispatch = useDispatch()
@@ -46,7 +43,6 @@ const Locationsheet = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
   
         switch (status) {
           case RESULTS.UNAVAILABLE:
-            console.log('This feature is not available (on this device / in this context)');
             return false;
           case RESULTS.DENIED:
             console.log('The permission has not been requested / is denied but requestable');
@@ -83,6 +79,7 @@ const handleSubmit = async()=>{
       Alert.alert("Warning!", "Please select a location.");
       return;
     }
+    showErrorToast("Alert", "Please Keep the Tag close with back");
     const nfcSupported = await checkNfcSupport();
     if (!nfcSupported) return
     await NfcManager.start();
@@ -229,7 +226,7 @@ const handlePress = (data, details = null) => {
   };
 
   const handleError = (error) => {
-    console.error("Error occurred:", error);
+
   };
 
     return (       
@@ -331,24 +328,23 @@ const handlePress = (data, details = null) => {
     
     
     />
-
-
-
-
 <View style={{width:WP("80"),height:HP("30"), justifyContent:"center", alignItems:"center",}}>
-<MapView
+            <MapView
             style={styles.map}
-            provider={PROVIDER_GOOGLE}
+            // provider={PROVIDER_GOOGLE}
+            provider={Platform.OS === 'ios' ? PROVIDER_DEFAULT : PROVIDER_GOOGLE }
             ref={mapRef}
             region={location}
              showsUserLocation={true}
-           onPress={handleMapPress}
+            onPress={handleMapPress}
             zoomEnabled={true}
             showsUserLocation={true}>
+           
             {location && (
           <Marker coordinate={location} />
         )}
         </MapView>
+  
 </View>
 
 <TouchableOpacity style={styles.btnlocation}

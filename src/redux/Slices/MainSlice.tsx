@@ -22,12 +22,29 @@ const mainReducer = createSlice({
               state.TagsAllRecord = newTagsAllRecord;
               state.deleteTag = action.payload;
         },
-        updateTagAction: (state, action) => {
+        updateTagAction: (state:any, action:any) => {
             const index = state.TagsAllRecord.findIndex(tag => tag.id === action.payload.id);
+            
             if (index !== -1) {
-              state.TagsAllRecord[index] = action.payload;
+              // Remove the item from its current position
+              const updatedTag = action.payload;
+              const newArray = [...state.TagsAllRecord];
+              newArray.splice(index, 1);
+              
+              // Add the updated item to the beginning of the array
+              newArray.unshift(updatedTag);
+              
+              // Update state immutably
+              return {
+                ...state,
+                TagsAllRecord: newArray,
+              };
             }
+          
+            // Handle case where tag with given ID is not found
+            return state;
           }
+          
     },
 });
 

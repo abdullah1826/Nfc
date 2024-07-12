@@ -31,12 +31,13 @@ const Contactsheet = forwardRef(({textdata,isUpdated,setIsUpdated}, ref) => {
         },
     }));
 const handleSubmit =async (values: any, { resetForm }: any)=>{
+    showErrorToast("Alert", "Please Keep the Tag close with back");
     const nfcSupported = await checkNfcSupport();
     if (!nfcSupported) return
     await NfcManager.start();
     await NfcManager.requestTechnology(NfcTech.Ndef);
     const { ContectName, Company, Address, phoneNumber, webSite } = values;
-    const combinedText = `Contact Name: ${ContectName}\nCompany: ${Company}\nAddress: ${Address}\nPhone Number: ${phoneNumber}\nWebsite: ${webSite}`;    
+    const combinedText = `Contact Name: ${ContectName}\nCompany: ${Company}\nAddress: ${Address}\nPhone Number: ${phoneNumber}\nWebsite: ${webSite}`; 
     try {
         const record = Ndef.uriRecord(combinedText);
       const bytes = Ndef.encodeMessage([record]);
@@ -61,9 +62,9 @@ const HandleApidata =(value:any)=>{
     try {
         setIsLoading(true)
         const params = {
-      type:textdata?.iconName || "",
-      linkName:textdata?.iconName ||"",
-         value:value || "",
+      type:textdata?.iconName,
+      linkName:textdata?.iconName,
+         value:value,
      }
     createTags(params).then((res:any)=>{
         dispatch(addTag(res?.data?.data))
@@ -87,9 +88,9 @@ const handleupdate=(value)=>{
     try {
         setIsLoading(true)
         const params = {
-       type:textdata?.linkName || "",
-       linkName:textdata?.linkName ||"",
-         value:value || "",
+       type:textdata?.linkName,
+       linkName:textdata?.linkName,
+         value:value,
       }
      upadteTags(textdata?.id, params).then((res:any)=>{
         dispatch(updateTagAction(res?.data?.data))

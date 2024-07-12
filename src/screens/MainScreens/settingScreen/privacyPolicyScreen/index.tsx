@@ -13,7 +13,13 @@ const PrivacyPolicyScreen = ({ navigation }: any) => {
     console.log(isOpen)
 
     return (
-        <KeyboardAwareScrollView style={{ flex: 1, backgroundColor: colors.bg1 }}>
+        <KeyboardAwareScrollView 
+        contentContainerStyle={{ flexGrow: 1 }}
+        enableOnAndroid={true}
+        extraScrollHeight={20}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        >
             <SafeAreaView style={style.container}>
 <View style={style.secondcontainer}>
                 <ScreenHeader
