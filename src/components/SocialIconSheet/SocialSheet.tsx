@@ -1,5 +1,5 @@
 import React, { useRef, forwardRef, useImperativeHandle, useState } from 'react';
-import { View, Text, StyleSheet, Image,TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image,TouchableOpacity, Platform } from 'react-native';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { HP, UrlTextInput, WP, appRadius, colors, family, size } from '../../exporter';
 import { Formik } from 'formik'
@@ -36,7 +36,7 @@ const handleSubmit = async(values: any, { resetForm }: any)=>{
         Alert.alert('No Internet Connection', 'Please check your internet connection and try again.');
         return;
       }
-      showErrorToast("Alert", "Please Keep the Tag close with back");
+      Platform.OS == 'android' ? showSuccessToast("Alert", "Place the tag back of the phone to write.") : null;
     const nfcSupported = await checkNfcSupport();
     if (!nfcSupported) return
     await NfcManager.start();

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">NFC_Toolkit</string>
+    <string name="app_name">NFC Toolkit</string>
     <string name="facebook_app_id">1003356004633568</string>
 <string name="fb_login_protocol_scheme">fb1003356004633568</string>
 <string name="facebook_client_token">47bf192e3d652530cc73a0b9c316f958</string>

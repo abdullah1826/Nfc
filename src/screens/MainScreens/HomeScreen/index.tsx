@@ -10,7 +10,7 @@ import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet
 import { useDispatch, useSelector } from 'react-redux'
 import { MyAppHeader, MyStatusBar } from '../../../exporter'
 import NfcManager, { NfcTech, Ndef, nfcManager, NfcEvents } from 'react-native-nfc-manager';
-import { checkNfcSupport, showErrorToast, useNetworkStatus } from '../../../shared/utilities/Helper'
+import { checkNfcSupport, showErrorToast, showSuccessToast, useNetworkStatus } from '../../../shared/utilities/Helper'
 import { getAllTags } from '../../../shared/utilities/services/mainServices'
 import { setTagsAllRecord } from '../../../redux/Slices/MainSlice'
 import { AppLoader } from '../../../components/AppLoader'
@@ -35,7 +35,8 @@ const dispatch = useDispatch()
         const isConnected = useNetworkStatus()
 
         const readNdef = async () => {
-            showErrorToast("Alert", "Please Keep the Tag close with back");
+            
+            Platform.OS == 'android' ? showSuccessToast("Alert", "Place the tag back of the phone to read.") : null;
             try {
             const nfcSupported = await checkNfcSupport();
             if (!nfcSupported) return
@@ -56,7 +57,7 @@ const dispatch = useDispatch()
                             //  console.log("status+++++++++++++++++++++++++", tag)
                             //  console.log("status___________", status)
                         } else{
-                            showErrorToast("'Error', 'No NFC tag detected. Please try again.'");
+                            showErrorToast('Error', 'No NFC tag detected. Please try again.');
                         }
                      } catch (ex) {
                          if (ex instanceof Error) {
@@ -129,7 +130,7 @@ try {
       }
 
 const handleLockFeature = ()=>{
-    showErrorToast("Alert", "Currently This feature is not avaliable");
+    showSuccessToast("Alert", "This feature will be coming soon.");
 }
 
 

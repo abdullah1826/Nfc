@@ -24,7 +24,7 @@ const ContactUsScreen = () => {
     const emailContent = `Name: ${name}\nEmail: ${email}\nMessage: ${message}`;
 
     // Example: Using Linking to open email client
-    const emailUrl = `mailto:usmanhabib482@gmail.com?subject=Contact%20Form&body=${emailContent}`;
+    const emailUrl = `mailto:info@avicennaenterprise.com?subject=Contact%20Form&body=${emailContent}`;
     Linking.openURL(emailUrl);
   };
 

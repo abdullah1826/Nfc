@@ -79,7 +79,7 @@ const handleSubmit = async()=>{
       Alert.alert("Warning!", "Please select a location.");
       return;
     }
-    showErrorToast("Alert", "Please Keep the Tag close with back");
+    Platform.OS == 'android' ? showSuccessToast("Alert", "Place the tag back of the phone to write.") : null;
     const nfcSupported = await checkNfcSupport();
     if (!nfcSupported) return
     await NfcManager.start();
