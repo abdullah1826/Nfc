@@ -1,197 +1,322 @@
+// import { View, Text, Alert } from 'react-native';
+// import React, { useCallback, useEffect, useRef } from 'react';
+// import style from './style';
+// import MyAppHeader from '../../../components/appHeader/MyAppHeader';
+// import ActionCard from '../../../components/card/ActionCard';
+// import { appIcons, appImages } from '../../../shared/theme/assets';
+// import RecentRecordsCard from '../../../components/RecentRecordsCard/RecentRecordsCard';
+// import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+// import ReadTagBottomSheetModal from '../../../components/BottomSheetReadTag/ReadTagBottomSheetModal';
+// import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+// import { useSelector } from 'react-redux';
+// import NfcManager, { NfcTech, Ndef } from 'react-native-nfc-manager';
 
-import { View, Text, Alert, FlatList, Platform, SafeAreaView } from 'react-native'
-import React, { useCallback, useEffect, useRef,useState } from 'react'
-import style from './style'
-import ActionCard from '../../../components/card/ActionCard'
-import { appIcons,} from '../../../shared/theme/assets'
-import RecentRecordsCard from '../../../components/RecentRecordsCard/RecentRecordsCard'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet'
-import { useDispatch, useSelector } from 'react-redux'
-import { MyAppHeader, MyStatusBar } from '../../../exporter'
-import NfcManager, { NfcTech, Ndef, nfcManager, NfcEvents } from 'react-native-nfc-manager';
-import { checkNfcSupport, showErrorToast, showSuccessToast, useNetworkStatus } from '../../../shared/utilities/Helper'
-import { getAllTags } from '../../../shared/utilities/services/mainServices'
-import { setTagsAllRecord } from '../../../redux/Slices/MainSlice'
-import { AppLoader } from '../../../components/AppLoader'
-import { getIconOfSocialLink } from '../../../shared/utilities/constants'
-import { TouchableOpacity } from 'react-native'
+// const HomeScreen = ({ navigation }: any) => {
+//     const userData = useSelector<any>(state => state.user);
 
-const HomeScreen = ({ navigation }: any) => {
+//     useEffect(() => {
+//         if (userData) {
+//             console.log('Home UserData=>>>>>>>>>>>>>>>>>', userData);
+//         }
 
-// redux
-const dispatch = useDispatch()
+//         const initNfc = async () => {
+//             try {
+//                 await NfcManager.start();
+//                 console.log('NFC Manager started successfully!');
+//             } catch (error) {
+//                 console.error('Failed to start NFC Manager:', error);
+//             }
+//         };
 
-// redux states
-    const userData = useSelector<any>(state => state.user);
-    const {TagsAllRecord} =useSelector<any>(state => state.main);
-    const tagdata = TagsAllRecord.slice(0, 4)
+//         initNfc();
+//     }, [userData]);
 
-    // local states
-    const [isLoading, setIsLoading] = useState(false)
-   
+//     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
-        // internet checking
-        const isConnected = useNetworkStatus()
+//     const checkNfcSupport = async () => {
+//         const supported = await NfcManager.isSupported();
+//         if (!supported) {
+//             Alert.alert('NFC Not Supported', 'Your device does not support NFC.');
+//             return false;
+//         }
+//         const enabled = await NfcManager.isEnabled();
+//         if (!enabled) {
+//             Alert.alert('NFC Disabled', 'Please enable NFC in settings.');
+//             return false;
+//         }
+//         return true;
+//     }
 
-        const readNdef = async () => {
-            
-            Platform.OS == 'android' ? showSuccessToast("Alert", "Place the tag back of the phone to read.") : null;
-            try {
-            const nfcSupported = await checkNfcSupport();
-            if (!nfcSupported) return
-                
+//     const readNdef = async () => {
+//         console.log("Attempting to read NFC tag...");
+//         if (!await checkNfcSupport()) return;
+
+//         try {
+//             await NfcManager.requestTechnology(NfcTech.Ndef);
+//             console.log("NFC technology requested successfully.");
+
+//             const tag = await NfcManager.getTag();
+//             console.warn('Tag found', tag);
+//         } catch (ex) {
+//             console.warn('Oops!', ex);
+//             if (ex instanceof Error) {
+//                 if (ex.message.includes('NFC tag is not connected')) {
+//                     Alert.alert('Error', 'NFC tag is not connected. Please try again.');
+//                 } else if (ex.message.includes('NDEF not supported')) {
+//                     Alert.alert('Error', 'NFC tag does not support NDEF format.');
+//                 } else {
+//                     Alert.alert('Error', `An unexpected error occurred: ${ex.message}`);
+//                 }
+//             } else {
+//                 Alert.alert('Error', 'An unexpected error occurred. Please try again.');
+//             }
+//         } finally {
+//             await NfcManager.cancelTechnologyRequest();
+//         }
+//     }
+
+//     const writeNdef = async () => {
+//         console.log("Attempting to write NFC tag...");
+//         if (!await checkNfcSupport()) return;
+
+//         try {
+//             await NfcManager.requestTechnology(NfcTech.Ndef);
+
+//             const message = [Ndef.textRecord('Hello NFC')];
+//             await NfcManager.writeNdefMessage(message);
+//             Alert.alert('Success', 'NFC tag written successfully!');
+//         } catch (ex) {
+//             if (ex instanceof Error) {
+//                 if (ex.message.includes('NFC tag is not connected')) {
+//                     Alert.alert('Error', 'NFC tag is not connected. Please try again.');
+//                 } else if (ex.message.includes('NDEF not supported')) {
+//                     Alert.alert('Error', 'NFC tag does not support NDEF format.');
+//                 } else if (ex.message.includes('write operation failed')) {
+//                     Alert.alert('Error', 'Failed to write to NFC tag. Please try again.');
+//                 } else {
+//                     Alert.alert('Error', `An unexpected error occurred: ${ex.message}`);
+//                 }
+//             } else {
+//                 Alert.alert('Error', 'An unexpected error occurred. Please try again.');
+//             }
+//             console.warn('NFC Write Error:', ex);
+//         } finally {
+//             await NfcManager.cancelTechnologyRequest();
+//         }
+//     }
+
+//     const handleSheetChanges = useCallback((index: number) => {
+//         console.log('handleSheetChanges', index);
+//     }, []);
+
+//     return (
+//         <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
+//             <BottomSheetModalProvider>
+//                 <View style={style.rootContainer}>
+//                     <MyAppHeader onClick={() => navigation.navigate('Setting')} />
+//                     <View style={style.actionCardBox}>
+//                         <ActionCard
+//                             Icon={appIcons.Read}
+//                             title={'Read Tag'}
+//                             desc={"Read the NFC tag and see what's inside!"}
+//                             onClick={readNdef}
+//                         />
+//                         <ActionCard
+//                             Icon={appIcons.Write}
+//                             title={'Write Tag'}
+//                             desc={"Write anything over NFC!"}
+//                             onClick={writeNdef}
+//                         />
+//                         <ActionCard
+//                             Icon={appIcons.Locked}
+//                             title={'Locked Tag'}
+//                             desc={"Lock device to make it secure!"}
+//                             onClick={() => { }}
+//                         />
+//                     </View>
+
+//                     <View style={style.RecordsHeadingBox}>
+//                         <Text style={style.RecordsHeading}>Recent Records</Text>
+//                         <Text style={style.seeAllTxt} onPress={() => { navigation.navigate('RecentRecordsScreen') }}>See All</Text>
+//                     </View>
+
+//                     <RecentRecordsCard Icon={appImages.Email} title={'Email'} Desc={'2343weewabc1234@gmail.com'} />
+//                     <RecentRecordsCard Icon={appImages.Map} title={'Location'} Desc={'23232, St lowrence, Dhaka, Bangladesh'} />
+//                     <RecentRecordsCard Icon={appImages.QrScan} title={'QR Code'} Desc={'Lorem Ipsum doler zebta roakl locki grnjdw'} />
+//                     <RecentRecordsCard Icon={appImages.Url} title={'URL'} Desc={'www.konsasosssdnasnskmks.com'} />
+
+//                     <ReadTagBottomSheetModal ref={bottomSheetModalRef} onChange={handleSheetChanges} />
+//                 </View>
+//             </BottomSheetModalProvider>
+//         </KeyboardAwareScrollView>
+//     );
+// }
+
+// export default HomeScreen;
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {Alert, Text, View} from 'react-native';
+import style from './style';
+
+import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import NfcManager, {Ndef, NfcTech} from 'react-native-nfc-manager';
+import {useSelector} from 'react-redux';
+import ReadTagBottomSheetModal from '../../../components/BottomSheetReadTag/ReadTagBottomSheetModal';
+import ActionCard from '../../../components/card/ActionCard';
+import RecentRecordsCard from '../../../components/RecentRecordsCard/RecentRecordsCard';
+import {MyAppHeader} from '../../../exporter';
+import {appIcons, appImages} from '../../../shared/theme/assets';
+import CustomAlert from '../../../components/customAlert';
+
+const HomeScreen = ({navigation}: any) => {
+  const userData = useSelector<any>(state => state.user);
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const [nfcData, setNfcData] = useState('');
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState({title: '', message: ''});
+
+  const checkNfcSupport = async () => {
+    const supported = await NfcManager.isSupported();
+    if (!supported) {
+      setAlertMessage({
+        title: 'NFC Not Supported',
+        message: 'Your device does not support NFC.',
+      });
+      setAlertVisible(true);
+      return false;
+    }
+    const enabled = await NfcManager.isEnabled();
+    if (!enabled) {
+      setAlertMessage({
+        title: 'NFC Disabled',
+        message: 'Please enable NFC in settings.',
+      });
+      setAlertVisible(true);
+      return false;
+    }
+    return true;
+  };
+
+  const readNfc = async () => {
+    if (!(await checkNfcSupport())) return;
+    try {
       await NfcManager.start();
       await NfcManager.requestTechnology(NfcTech.Ndef);
-    //   NfcManager.setEventListener(NfcTech.Ndef, (tag:any) => {
-    //     NfcManager.setAlertMessageIOS('NFC Tag Detected');
-    //     // NfcManager.unregisterTagEvent().catch(() => 0);
-    //   });
-                        NfcManager.registerTagEvent()
-                        .then(() => console.log('NFC reading started.'))
-                        .catch(error => console.warn('Error starting NFC reading:', error));
-                        const tag = await NfcManager.getTag();
-                        if(tag){
-                            // const message= await nfcManager.ndefHandler.getNdefMessage();
-                            //  const status = await nfcManager.ndefHandler.getNdefStatus();
-                            //  console.log("status+++++++++++++++++++++++++", tag)
-                            //  console.log("status___________", status)
-                        } else{
-                            showErrorToast('Error', 'No NFC tag detected. Please try again.');
-                        }
-                     } catch (ex) {
-                         if (ex instanceof Error) {
-                             if (ex.message.includes('NFC tag is not connected')) {
-                                 Alert.alert('Error', 'NFC tag is not connected. Please try again.');
-                             } else if (ex.message.includes('NDEF not supported')) {
-                                 Alert.alert('Error', 'NFC tag does not support NDEF format.');
-                             } else {
-                                Alert.alert('Error', `An unexpected error occurred: ${ex.message}`);
-                             }
-                         } else {
-                             Alert.alert('Error', 'An unexpected error occurred. Please try again.');
-                         }
-                     } finally {
-                         await NfcManager.cancelTechnologyRequest();
-                     }
-                 }
-   
-useEffect(()=>{
-    getTags()
-},[])
-
-const getTags =()=>{
-try {
-    if (!isConnected) {
-        Alert.alert('No Internet Connection', 'Please check your internet connection and try again.');
-        return;
+      const tag = await NfcManager.getTag();
+      if (tag) {
+        const ndefMessage = tag.ndefMessage[0];
+        const payload = Ndef.text.decodePayload(ndefMessage.payload);
+        setNfcData(payload); // Update bottom sheet content with the NFC data
+      } else {
+        setNfcData('No Data Found');
       }
-    setIsLoading(true)
-    getAllTags().then((res)=>{
-    dispatch(setTagsAllRecord(res?.data?.data))
-    setIsLoading(false)
-}).catch((error)=>{
-    setIsLoading(false)
-}).finally(()=>{
-    setIsLoading(false)
-})  
-} catch (error) {
-    
-}
+    } catch (error) {
+      setAlertMessage({
+        title: 'Error',
+        message: 'Unable to read NFC tag.',
+      });
+      setAlertVisible(true);
+    } finally {
+      NfcManager.cancelTechnologyRequest();
+    }
+  };
 
-}
+  useEffect(() => {
+    checkNfcSupport(); // Check NFC support on component mount
+  }, []);
 
+  const handlePresentModalPress = useCallback(async () => {
+    const isNfcSupported = await checkNfcSupport();
+    if (isNfcSupported) {
+      bottomSheetModalRef.current?.present();
+      readNfc(); // Start NFC reading when the bottom sheet is opened
+    }
+  }, []);
 
-    const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-    const handlePresentModalPress = useCallback(() => {
-        bottomSheetModalRef.current?.present();
-    }, []);
-    const handleSheetChanges = useCallback((index: number) => {
-   
-    }, []);
+  const handlePressWriteModal = useCallback(async () => {
+    const isNfcSupported = await checkNfcSupport();
+    if (isNfcSupported) {
+      navigation.navigate('WriteTag');
+    }
+  }, []);
 
+  const handleSheetChanges = useCallback((index: number) => {}, []);
 
- 
-    const Recentrecord = ({ item }) => (
-        <RecentRecordsCard
-        Icon={getIconOfSocialLink(item?.linkName)}
-        title={item?.linkName}
-        Desc={item?.value}
-    />
-      );
+  return (
+    <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
+      <BottomSheetModalProvider>
+        <View style={style.rootContainer}>
+          <MyAppHeader onClick={() => navigation.navigate('Setting')} />
+          <View style={style.actionCardBox}>
+            <ActionCard
+              Icon={appIcons.Read}
+              title={'Read Tag'}
+              desc={"Read the NFC tag and see what's inside!"}
+              onClick={handlePresentModalPress}
+            />
+            <ActionCard
+              Icon={appIcons.Write}
+              title={'Write Tag'}
+              desc={'Write anything over NFC!'}
+              onClick={handlePressWriteModal}
+            />
+            <ActionCard
+              Icon={appIcons.Locked}
+              title={'Locked Tag'}
+              desc={'Lock device to make it secure!'}
+              onClick={() => {}}
+            />
+          </View>
 
+          <View style={style.RecordsHeadingBox}>
+            <Text style={style.RecordsHeading}>Recent Records</Text>
+            <Text
+              style={style.seeAllTxt}
+              onPress={() => {
+                navigation.navigate('RecentRecordsScreen');
+              }}>
+              See All
+            </Text>
+          </View>
 
-      const emptyrenderdata =()=>{
-        return (
-        <View style={style.emptyContainer}>
-        <Text style={style.emptyText}>No Tags available</Text>
-      </View>
-        )
-      }
+          {/* Recent Record Cards */}
 
-const handleLockFeature = ()=>{
-    showSuccessToast("Alert", "This feature will be coming soon.");
-}
-
-
-    return (
-        <SafeAreaView style={style.container}>       
-        <KeyboardAwareScrollView
-            showsVerticalScrollIndicator={false}
-        >
-            <MyStatusBar/>
-            <AppLoader loading={isLoading}/>
-            <BottomSheetModalProvider>
-                <View style={style.rootContainer}>
-                    <MyAppHeader
-                        onClick={() => navigation.navigate('Setting')}
-                    />
-                    <View style={style.actionCardBox}>
-                        <ActionCard
-                            Icon={appIcons.Read}
-                            title={'Read Tag'}
-                            desc={"Read the NFC tag and see what's inside!"}
-                            onClick={readNdef}
-                        />
-                        <ActionCard
-                            Icon={appIcons.Write}
-                            title={'Write Tag'}
-                            desc={"Write anything over NFC!"}
-                            onClick={() => { navigation.navigate('WriteTag') }}
-                        />
-                        <ActionCard
-                            Icon={appIcons.Locked}
-                            title={'Locked Tag'}
-                            desc={"Lock device to make it secure!"}
-                            onClick={() => {handleLockFeature()}}
-                        />
-                    </View>
-                    <View style={style.RecordsHeadingBox}>
-                        <Text style={style.RecordsHeading}>Recent Records</Text>
-                        <TouchableOpacity
-                        disabled={tagdata.length===0 }
-                      onPress={() => { navigation.navigate('RecentRecordsScreen') }}
-                        >
-                        <Text style={style.seeAllTxt}
-                        >See All</Text>
-                         </TouchableOpacity>
-                    </View>
-
-                </View>
-                <View>
-                <FlatList
-                style={{flex:1,}}
-                contentContainerStyle={style.viewflatlist}
-                  data={tagdata}
-              renderItem={Recentrecord}
-               keyExtractor={(item, index) => index.toString()}
-               ListEmptyComponent={emptyrenderdata}
+          <RecentRecordsCard
+            Icon={appImages.Email}
+            title={'Email'}
+            Desc={'2343weewabc1234@gmail.com'}
           />
-               </View>
-            </BottomSheetModalProvider>
-        </KeyboardAwareScrollView >
-        </SafeAreaView>
-    )
-}
+          <RecentRecordsCard
+            Icon={appImages.Map}
+            title={'Location'}
+            Desc={'23232, St lowrence, Dhaka, Bangladesh'}
+          />
+          <RecentRecordsCard
+            Icon={appImages.QrScan}
+            title={'QR Code'}
+            Desc={'Lorem Ipsum doler zebta roakl locki grnjdw'}
+          />
+          <RecentRecordsCard
+            Icon={appImages.Url}
+            title={'URL'}
+            Desc={'www.konsasosssdnasnskmks.com'}
+          />
 
-export default HomeScreen
+          <ReadTagBottomSheetModal
+            ref={bottomSheetModalRef}
+            onChange={handleSheetChanges}
+            content={nfcData}
+          />
+        </View>
+      </BottomSheetModalProvider>
+      <CustomAlert
+        visible={alertVisible}
+        title={alertMessage.title}
+        message={alertMessage.message}
+        onClose={() => setAlertVisible(false)} // Close alert on press
+      />
+    </KeyboardAwareScrollView>
+  );
+};
+
+export default HomeScreen;

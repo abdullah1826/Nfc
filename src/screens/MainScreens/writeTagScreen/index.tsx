@@ -1,36 +1,48 @@
-import { View, Text, Image, TextInput, FlatList, SafeAreaView } from 'react-native'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import style from './style'
-import ScreenHeader from '../../../components/screenHeader/ScreenHeader'
-import { appIcons, appImages } from '../../../shared/theme/assets'
-import { colors } from '../../../shared/theme/colors'
-import WriteTagScreenCard from '../../../components/writeTagScreenCard/WriteTagScreenCard'
-import { writeTagScreenCardData } from '../../../shared/utilities/constants'
-import { HP, WP } from '../../../shared/theme/PixelResponsive'
-import { Contactsheet, EmailSheet, Locationsheet, PhoneSheet, TextAction, UrlActionSheet } from '../../../exporter'
+import {
+  View,
+  Text,
+  Image,
+  TextInput,
+  FlatList,
+  SafeAreaView,
+} from 'react-native';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import style from './style';
+import ScreenHeader from '../../../components/screenHeader/ScreenHeader';
+import {appIcons, appImages} from '../../../shared/theme/assets';
+import {colors} from '../../../shared/theme/colors';
+import WriteTagScreenCard from '../../../components/writeTagScreenCard/WriteTagScreenCard';
+import {writeTagScreenCardData} from '../../../shared/utilities/constants';
+import {HP, WP} from '../../../shared/theme/PixelResponsive';
+import {
+  Contactsheet,
+  EmailSheet,
+  Locationsheet,
+  PhoneSheet,
+  TextAction,
+  UrlActionSheet,
+} from '../../../exporter';
 
+const WriteTag = ({navigation}: any) => {
+  // ref sheets
+  const refTextSheet = useRef();
+  const refUrlSheet = useRef();
+  const refPhoneSheet = useRef();
+  const refContectSheet = useRef();
+  const refEmailShet = useRef();
+  const refLocationsheet = useRef();
 
-const WriteTag = ({ navigation }: any) => {
-// ref sheets
-const refTextSheet = useRef();
-const refUrlSheet = useRef();
-const refPhoneSheet = useRef();
-const refContectSheet = useRef();
-const refEmailShet = useRef();
-const refLocationsheet = useRef();
-    
-// local states
-    const [selectedItem, setSelectedItem] = useState<any>(null);
-    const [search, setSearch] = useState('');
-    const [selectedData, setSelectedData] = useState(null);
+  // local states
+  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [search, setSearch] = useState('');
+  const [selectedData, setSelectedData] = useState(null);
 
-    // refs
-    const filteredData = writeTagScreenCardData?.filter(item =>
-        item?.iconName.toLowerCase().includes(search.toLowerCase())
-      );
+  // refs
+  const filteredData = writeTagScreenCardData?.filter(item =>
+    item?.iconName.toLowerCase().includes(search.toLowerCase()),
+  );
 
-
-const handleOnclicked=(item:any)=>{
+  const handleOnclicked = (item: any) => {
     setSelectedData(item);
     switch (item.iconName) {
       case 'Text':
@@ -55,79 +67,61 @@ const handleOnclicked=(item:any)=>{
         navigation.navigate('SocailLinksScreen');
         break;
       case 'QR Code':
-        navigation.navigate('QRCodeScreen',{selected:item});
+        navigation.navigate('QRCodeScreen', {selected: item});
         break;
       default:
         break;
     }
-}
-    return (
-            <SafeAreaView style={style.container}>
-              <View style={style.secondcontainer}>
-                <ScreenHeader
-                    heading={'Write Tag'}
-                    onClick={() => navigation.goBack()}
-                />
-                <View style={style.searchBox}>
-                    <Image source={appIcons.Search} style={style.searchIcon} />
-                    <TextInput
-                        placeholder='Search'
-                        placeholderTextColor={colors.g21}
-                        style={style.input}
-                        onChangeText={setSearch}
-                        value={search}
-                    />
-                </View>
-                <View>
-                    <FlatList
-                        contentContainerStyle={{ marginHorizontal: WP(1), height: HP(80) }}
-                        columnWrapperStyle={{ justifyContent: 'space-between', paddingHorizontal: 10 }}
-                        data={filteredData}
-                        numColumns={2}
-                        keyExtractor={(item) => item.key.toString()}
-                        renderItem={({ item, index }) => (
-                            
-                            <WriteTagScreenCard
-                                title={item?.iconName}
-                                icon={item?.icon}
-                                onClick={() => handleOnclicked(item)}
-                            />
-                        )}
-                    />
-                </View>
+  };
+  return (
+    <SafeAreaView style={style.container}>
+      <View style={style.secondcontainer}>
+        <ScreenHeader
+          heading={'Write Tag'}
+          onClick={() => navigation.goBack()}
+        />
+        <View style={style.searchBox}>
+          <Image source={appIcons.Search} style={style.searchIcon} />
+          <TextInput
+            placeholder="Search"
+            placeholderTextColor={colors.g21}
+            style={style.input}
+            onChangeText={setSearch}
+            value={search}
+          />
+        </View>
+        <View>
+          <FlatList
+            contentContainerStyle={{marginHorizontal: WP(1), height: HP(80)}}
+            columnWrapperStyle={{
+              justifyContent: 'space-between',
+              paddingHorizontal: 10,
+            }}
+            data={filteredData}
+            numColumns={2}
+            keyExtractor={item => item.key.toString()}
+            renderItem={({item, index}) => (
+              <WriteTagScreenCard
+                title={item?.iconName}
+                icon={item?.icon}
+                onClick={() => handleOnclicked(item)}
+              />
+            )}
+          />
+        </View>
 
-<TextAction 
-ref={refTextSheet}
-textdata={selectedData}
-/>
+        <TextAction ref={refTextSheet} textdata={selectedData} />
 
+        <UrlActionSheet ref={refUrlSheet} textdata={selectedData} />
+        <PhoneSheet ref={refPhoneSheet} textdata={selectedData} />
+        <Contactsheet ref={refContectSheet} textdata={selectedData} />
 
+        <EmailSheet ref={refEmailShet} textdata={selectedData} />
 
-<UrlActionSheet
-ref={refUrlSheet}
-textdata={selectedData}
-/>
-<PhoneSheet
-ref={refPhoneSheet}
-textdata={selectedData}
-/>
-<Contactsheet
-ref={refContectSheet}
-textdata={selectedData}
-/>
+        <Locationsheet ref={refLocationsheet} textdata={selectedData} />
+      </View>
+    </SafeAreaView>
+  );
+};
 
-<EmailSheet
-ref={refEmailShet}
-textdata={selectedData}
-/>
-
-<Locationsheet
-ref={refLocationsheet}
-textdata={selectedData}
-/>
-</View>
-            </SafeAreaView>
-    )
-}
-
-export default WriteTag
+export default WriteTag;
