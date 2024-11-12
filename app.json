@@ -1,4 +1,8 @@
 {
   "name": "NFC_READER",
-  "displayName": "NFC_READER"
+  "displayName": "NFC_READER",
+  "react-native-google-mobile-ads": {
+    "android_app_id": "ca-app-pub-4761647412571475~2369015259",
+    "ios_app_id": "ca-app-pub-1593000496031877~2904745962"
+  }
 }

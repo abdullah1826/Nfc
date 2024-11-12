@@ -154,7 +154,7 @@
 
 // export default HomeScreen;
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {Alert, Text, View} from 'react-native';
+import {Alert, Platform, ScrollView, Text, View} from 'react-native';
 import style from './style';
 
 import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
@@ -167,6 +167,13 @@ import RecentRecordsCard from '../../../components/RecentRecordsCard/RecentRecor
 import {MyAppHeader} from '../../../exporter';
 import {appIcons, appImages} from '../../../shared/theme/assets';
 import CustomAlert from '../../../components/customAlert';
+import {
+  BannerAd,
+  BannerAdSize,
+  TestIds,
+  useForeground,
+} from 'react-native-google-mobile-ads';
+import env from '../../../shared/utilities/env';
 
 const HomeScreen = ({navigation}: any) => {
   const userData = useSelector<any>(state => state.user);
@@ -243,10 +250,12 @@ const HomeScreen = ({navigation}: any) => {
   const handleSheetChanges = useCallback((index: number) => {}, []);
 
   return (
-    <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
+    <View style={{flex: 1}}>
       <BottomSheetModalProvider>
-        <View style={style.rootContainer}>
-          <MyAppHeader onClick={() => navigation.navigate('Setting')} />
+        <MyAppHeader onClick={() => navigation.navigate('Setting')} />
+        <ScrollView
+          style={style.rootContainer}
+          contentContainerStyle={{paddingBottom: 50}}>
           <View style={style.actionCardBox}>
             <ActionCard
               Icon={appIcons.Read}
@@ -269,7 +278,7 @@ const HomeScreen = ({navigation}: any) => {
           </View>
 
           <View style={style.RecordsHeadingBox}>
-            <Text style={style.RecordsHeading}>Recent Records</Text>
+            <Text style={style.RecordsHeading}>Popular Search</Text>
             <Text
               style={style.seeAllTxt}
               onPress={() => {
@@ -307,7 +316,18 @@ const HomeScreen = ({navigation}: any) => {
             onChange={handleSheetChanges}
             content={nfcData}
           />
-        </View>
+        </ScrollView>
+        <BannerAd
+          requestOptions={{
+            requestNonPersonalizedAdsOnly: true,
+          }}
+          unitId={
+            Platform.OS === 'android'
+              ? env.banner_unit_id_android
+              : env.banner_unit_id_ios
+          }
+          size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+        />
       </BottomSheetModalProvider>
       <CustomAlert
         visible={alertVisible}
@@ -315,7 +335,7 @@ const HomeScreen = ({navigation}: any) => {
         message={alertMessage.message}
         onClose={() => setAlertVisible(false)} // Close alert on press
       />
-    </KeyboardAwareScrollView>
+    </View>
   );
 };
 

@@ -5,6 +5,7 @@ import {
   TextInput,
   FlatList,
   SafeAreaView,
+  Platform,
 } from 'react-native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import style from './style';
@@ -22,6 +23,8 @@ import {
   TextAction,
   UrlActionSheet,
 } from '../../../exporter';
+import {BannerAd, BannerAdSize} from 'react-native-google-mobile-ads';
+import env from '../../../shared/utilities/env';
 
 const WriteTag = ({navigation}: any) => {
   // ref sheets
@@ -120,6 +123,17 @@ const WriteTag = ({navigation}: any) => {
 
         <Locationsheet ref={refLocationsheet} textdata={selectedData} />
       </View>
+      <BannerAd
+        requestOptions={{
+          requestNonPersonalizedAdsOnly: true,
+        }}
+        unitId={
+          Platform.OS === 'android'
+            ? env.banner_unit_id_android
+            : env.banner_unit_id_ios
+        }
+        size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+      />
     </SafeAreaView>
   );
 };
